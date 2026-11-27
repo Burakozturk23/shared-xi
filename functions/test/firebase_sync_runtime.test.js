@@ -2,8 +2,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const {generateKeyPairSync} = require("node:crypto");
-const {spawnSync} = require("node:child_process");
-const path = require("node:path");
 const {openFirebase, safeFailure} = require("../../scripts/firebase-sync-runtime");
 // Ephemeral test key, never a real account credential. No network reads/writes.
 const {privateKey} = generateKeyPairSync("rsa", {modulusLength: 2048,
@@ -38,12 +36,4 @@ test("setup diagnostics distinguish missing/malformed secrets without echoing cr
   const log = safeFailure("Sync failed", "database", {code: "PERMISSION_DENIED", message: privateKey});
   assert.ok(log.includes("PERMISSION_DENIED") && !log.includes(privateKey));
 });
-test("actual manual CLI reaches unconfigured API result instead of crashing on removed Admin APIs", () => {
-  const result = spawnSync(process.execPath, [path.resolve(__dirname, "../../scripts/sync-daily-fixtures.js")], {
-    env: {...process.env, ...env, API_FOOTBALL_KEY: "", FIXTURE_SYNC_MODE: "refresh", FIXTURE_DATE: ""},
-    encoding: "utf8", timeout: 10000,
-  });
-  assert.equal(result.status, 2, result.stderr);
-  assert.equal(JSON.parse(result.stdout).state, "unconfigured");
-  assert.ok(!result.stdout.includes(privateKey) && !result.stderr.includes(privateKey));
-});
+

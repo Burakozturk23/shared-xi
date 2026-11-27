@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/ucl_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, matches: [...baseCatalog.matches, ...expansion.ucl]};
 const matches = Object.fromEntries(catalog.matches.map((m) => [m.id, m]));
 const stateOf = (raw) => ({completed: {}, rewards: {}, ...raw});
@@ -15,8 +16,9 @@ function accepts(match, answers) {
   return Array.isArray(answers) && answers.length === match.answerKeys.length &&
     answers.every((id, i) => typeof id === "string" && id === match.answerKeys[i]);
 }
-function createService({db, grantCoins, grantXp, now = Date.now}) {
-  const ref = (uid) => db.ref("uclMomentsState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("uclMomentsState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function accrue(s) {
     const earn = (id, coins, xp) => {
@@ -29,6 +31,9 @@ function createService({db, grantCoins, grantXp, now = Date.now}) {
     for (const milestone of catalog.economy.milestones) {
       if (count >= milestone.count) earn("milestone_" + milestone.count, milestone.coins, milestone.xp);
     }
+    // Whole catalog (base + expansion): its own receipt, old milestones untouched.
+    const final = Finals.FINALS.ucl_moments;
+    if (count === catalog.matches.length) earn(Finals.KEY, final.coins, final.xp);
     return s;
   }
   async function reconcile(uid) {
@@ -55,6 +60,7 @@ function createService({db, grantCoins, grantXp, now = Date.now}) {
     const results = Object.fromEntries(Object.keys(s.completed).filter((id) => Object.hasOwn(matches, id))
         .map((id) => [id, matches[id].result]));
     return {version: catalog.version, completed: s.completed, rewards: s.rewards, results,
+      expansionFinal: Finals.view("ucl_moments", s.rewards),
       rewardEligible: eligible};
   }
   async function submit(uid, input, eligible = true) {
@@ -62,7 +68,12 @@ function createService({db, grantCoins, grantXp, now = Date.now}) {
       throw new RewardError("failed-precondition", "UCL Moments içeriğini güncelle.");
     }
     const match = matchOf(input.matchId);
-    if (!accepts(match, input.answers)) return {correct: false};
+    await attempts.before(uid, "ucl_moments", match.id);
+    if (!accepts(match, input.answers)) {
+      await attempts.wrong(uid, "ucl_moments", match.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "ucl_moments", match.id);
     await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       s.completed[match.id] ||= now();

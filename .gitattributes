@@ -3,3 +3,6 @@
 
 # Private compressed catalogs must never undergo newline normalization.
 /functions/config/*.gz -text
+
+# Reviewed data evidence is hash-pinned in the game data manifest: keep it byte-exact (LF).
+/tools/data_platform_v4/** text eol=lf

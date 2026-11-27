@@ -1,0 +1,420 @@
+{
+  "version": "2.0",
+  "updated_at": "2026-10-25",
+  "repository": "Burakozturk23/shared-xi",
+  "branch_reviewed": "main",
+  "implementation_status": "ASSETS_AND_SPEC_ONLY__NOT_COMMITTED_OR_DEVICE_TESTED",
+  "decision_notes": {
+    "M1": "Kullanıcının kesin seçimi: Neon Tribün V2.5",
+    "M2": "Kupa Anı V6 Story Mode 8 bölümde tek döngü",
+    "M3_M4_M5": "Daha önce seçilen müziklerin modlara atanmış önerilen standartları; kullanıcı dinleme onayı sonrası değiştirilebilir"
+  },
+  "music": {
+    "M1": {
+      "title": "Neon Tribün V2.5",
+      "scene": "menu",
+      "decision": "Kullanici karari: KESIN",
+      "preview_asset": "assets/audio/music/neon_tribun_v2_5.mp3",
+      "android_loop_asset": "assets/audio/music/neon_tribun_v2_5_loop.ogg",
+      "source_duration_s": 51.43,
+      "loop_duration_s": 50.73,
+      "loop_samplerate": 32000,
+      "loop_rms": 0.08225,
+      "loop_peak": 0.26636,
+      "loop_edge_jump": 0.00508
+    },
+    "M2": {
+      "title": "Kupa Anı V6",
+      "scene": "story",
+      "decision": "Kullanici karari: tek Story temasi",
+      "preview_asset": "assets/audio/music/kupa_ani_v6_story.mp3",
+      "android_loop_asset": "assets/audio/music/kupa_ani_v6_story_loop.ogg",
+      "source_duration_s": 65.71,
+      "loop_duration_s": 65.71,
+      "loop_samplerate": 32000,
+      "loop_rms": 0.06192,
+      "loop_peak": 0.29565,
+      "loop_edge_jump": 0.00116
+    },
+    "M3": {
+      "title": "Tactical Focus V2",
+      "scene": "puzzle",
+      "decision": "Önerilen diger mod muzik",
+      "preview_asset": "assets/audio/music/tactical_focus_v2.mp3",
+      "android_loop_asset": "assets/audio/music/tactical_focus_v2_loop.ogg",
+      "source_duration_s": 23.92,
+      "loop_duration_s": 23.22,
+      "loop_samplerate": 32000,
+      "loop_rms": 0.08225,
+      "loop_peak": 0.26388,
+      "loop_edge_jump": 0.00159
+    },
+    "M4": {
+      "title": "Final Whistle Rush V2",
+      "scene": "rush",
+      "decision": "Önerilen diger mod muzik",
+      "preview_asset": "assets/audio/music/final_whistle_rush_v2.mp3",
+      "android_loop_asset": "assets/audio/music/final_whistle_rush_v2_loop.ogg",
+      "source_duration_s": 23.59,
+      "loop_duration_s": 22.89,
+      "loop_samplerate": 32000,
+      "loop_rms": 0.08224,
+      "loop_peak": 0.28488,
+      "loop_edge_jump": 0.00086
+    },
+    "M5": {
+      "title": "Neon Pas V3",
+      "scene": "competitive",
+      "decision": "Önerilen diger mod muzik",
+      "preview_asset": "assets/audio/music/neon_pas_v3.mp3",
+      "android_loop_asset": "assets/audio/music/neon_pas_v3_loop.ogg",
+      "source_duration_s": 35.56,
+      "loop_duration_s": 34.86,
+      "loop_samplerate": 32000,
+      "loop_rms": 0.08212,
+      "loop_peak": 0.37545,
+      "loop_edge_jump": 0.00062
+    }
+  },
+  "sfx": {
+    "achievement": {
+      "asset": "assets/audio/sfx/achievement.wav",
+      "role": "Görev/rozet/bölüm başarısı",
+      "status": "READY"
+    },
+    "answer_correct": {
+      "asset": "assets/audio/sfx/answer_correct.wav",
+      "role": "Sistemce doğrulanan doğru cevap",
+      "status": "READY"
+    },
+    "answer_wrong": {
+      "asset": "assets/audio/sfx/answer_wrong.wav",
+      "role": "Hatalı/başarısız tahmin",
+      "status": "READY"
+    },
+    "card_flip": {
+      "asset": "assets/audio/sfx/card_flip.wav",
+      "role": "Matching veya Kadro Kasası kart açma",
+      "status": "READY"
+    },
+    "card_swipe": {
+      "asset": "assets/audio/sfx/card_swipe.wav",
+      "role": "Kart/hafif kaydırma",
+      "status": "READY"
+    },
+    "champion": {
+      "asset": "assets/audio/sfx/champion.wav",
+      "role": "Gerçek maç/turnuva galibiyeti",
+      "status": "READY"
+    },
+    "coach_roulette_short": {
+      "asset": "assets/audio/sfx/coach_roulette_short.wav",
+      "role": "Teknik direktör çekilişi; yeni",
+      "status": "READY"
+    },
+    "coin_reward": {
+      "asset": "assets/audio/sfx/coin_reward.wav",
+      "role": "Sunucu tarafından onaylanmış LinkCoin ödülü",
+      "status": "READY"
+    },
+    "connection_alert_soft": {
+      "asset": "assets/audio/sfx/connection_alert_soft.wav",
+      "role": "Bağlantı kesildi/gecikti; yeni",
+      "status": "READY"
+    },
+    "countdown": {
+      "asset": "assets/audio/sfx/countdown.wav",
+      "role": "Son saniyelerde kontrollü uyarı",
+      "status": "READY"
+    },
+    "goal": {
+      "asset": "assets/audio/sfx/goal.wav",
+      "role": "Club Manager simülasyonunda gol",
+      "status": "READY"
+    },
+    "hint_reveal_soft": {
+      "asset": "assets/audio/sfx/hint_reveal_soft.wav",
+      "role": "İpucu açılması; yeni",
+      "status": "READY"
+    },
+    "level_up": {
+      "asset": "assets/audio/sfx/level_up.wav",
+      "role": "Seviye yükselişi",
+      "status": "READY"
+    },
+    "match_start": {
+      "asset": "assets/audio/sfx/match_start.wav",
+      "role": "Maç başlatma",
+      "status": "READY"
+    },
+    "online_opponent_join": {
+      "asset": "assets/audio/sfx/online_opponent_join.wav",
+      "role": "Rakip odaya katıldı; yeni",
+      "status": "READY"
+    },
+    "perfect_combo": {
+      "asset": "assets/audio/sfx/perfect_combo.wav",
+      "role": "Mükemmel eşleşme veya seri",
+      "status": "READY"
+    },
+    "round_transition": {
+      "asset": "assets/audio/sfx/round_transition.wav",
+      "role": "Tur geçişi; yeni",
+      "status": "READY"
+    },
+    "slot_lock": {
+      "asset": "assets/audio/sfx/slot_lock.wav",
+      "role": "Grid/kadro/sıralama slotunu kesinleştirme",
+      "status": "READY"
+    },
+    "soft_confirm": {
+      "asset": "assets/audio/sfx/soft_confirm.wav",
+      "role": "Nazik onay",
+      "status": "READY"
+    },
+    "streak": {
+      "asset": "assets/audio/sfx/streak.wav",
+      "role": "Seri kazanma",
+      "status": "READY"
+    },
+    "ui_tap": {
+      "asset": "assets/audio/sfx/ui_tap.wav",
+      "role": "Buton/sekme seçimi",
+      "status": "READY"
+    },
+    "whistle": {
+      "asset": "assets/audio/sfx/whistle.wav",
+      "role": "Maç bitişi",
+      "status": "READY"
+    },
+    "xp_reward": {
+      "asset": "assets/audio/sfx/xp_reward.wav",
+      "role": "XP kazanımı",
+      "status": "READY"
+    }
+  },
+  "mode_music_rules": {
+    "main_app_shell": "M1",
+    "tabs_home_games_online_profile": "M1",
+    "settings_store_rewards_friends_profile": "M1",
+    "discovery_selection": "M1",
+    "discovery_result": "M1",
+    "daily_match_list": "M1",
+    "daily_match_puzzle": "M3",
+    "story_mode_selection": "M2",
+    "story": {
+      "player_journey": "M2",
+      "what_if": "M2",
+      "ucl_moments": "M2",
+      "turk_futbolu_nostalji": "M2",
+      "international_glory": "M2",
+      "dynasties": "M2",
+      "football_docu_series": "M2",
+      "derby_day": "M2"
+    },
+    "story_chapter_navigation": "M2_KEEP_POSITION_NO_RESTART",
+    "solo": {
+      "gunun_maclari_liste": "M1",
+      "gunun_maclari_bulmaca": "M3",
+      "gunun_futbolcusu": "M3",
+      "ortak_oyuncu_kesfi_secim": "M1",
+      "ortak_oyuncu_kesfi_sonuc": "M1",
+      "club_manager_hub": "M3",
+      "club_manager_mac": "M3",
+      "squad_challenge": "M3",
+      "teknik_direktor_xi": "M3",
+      "kadro_kasasi": "M3",
+      "letter_11": "M3",
+      "career_puzzle": "M3",
+      "transfer_detective": "M3",
+      "mystery_player": "M3",
+      "chain_mastermind": "M3",
+      "chain_blitz": "M4",
+      "fake_club_sonsuz": "M3",
+      "fake_club_sureli": "M4",
+      "futbol_lingo": "M3",
+      "passaparola": "M3",
+      "anagram": "M3",
+      "burst_blitz": "M4",
+      "burst_survival": "M4",
+      "pyramid": "M3",
+      "matching": "M3",
+      "this_or_that_futbolcu": "M5",
+      "this_or_that_kulup": "M5",
+      "higher_or_lower": "M4",
+      "blind_ranking": "M3",
+      "kriter_kadro_kurma_planlanan": "M3"
+    },
+    "vs_bot": {
+      "football_loto": "M4",
+      "takim_yarisi": "M4",
+      "grid_klasik": "M5",
+      "grid_tersten": "M5",
+      "grid_rastgele": "M5",
+      "futbol_cinko": "M5",
+      "rastgele_besler": "M5"
+    },
+    "online_match": {
+      "kulup_kulup": "M5",
+      "kulup_ulke": "M5",
+      "grid_klasik": "M5",
+      "grid_rastgele": "M5",
+      "grid_tersten": "M5",
+      "rastgele_bes": "M4",
+      "cinko": "M5",
+      "football_loto": "M4",
+      "club_manager": "M5"
+    },
+    "friends_match": "MIRROR_ONLINE_MATCH",
+    "online_lobby_matchmaking": "M1_QUIET",
+    "waiting_invitation": "M1_QUIET",
+    "competitive_results": "CURRENT_MUSIC_DUCK_WHILE_OUTCOME_SFX",
+    "return_to_shell": "M1_FADE_IN"
+  },
+  "event_sfx_packs": {
+    "daily_puzzle": [
+      "soft_confirm",
+      "answer_correct",
+      "answer_wrong",
+      "achievement"
+    ],
+    "discovery": [
+      "ui_tap",
+      "soft_confirm"
+    ],
+    "manager": [
+      "slot_lock",
+      "soft_confirm",
+      "goal",
+      "champion"
+    ],
+    "squad": [
+      "slot_lock",
+      "hint_reveal_soft",
+      "achievement"
+    ],
+    "coach": [
+      "coach_roulette_short",
+      "slot_lock",
+      "hint_reveal_soft",
+      "achievement"
+    ],
+    "vault": [
+      "card_flip",
+      "hint_reveal_soft",
+      "answer_correct",
+      "achievement"
+    ],
+    "letter": [
+      "card_swipe",
+      "slot_lock",
+      "hint_reveal_soft",
+      "achievement"
+    ],
+    "career": [
+      "card_swipe",
+      "slot_lock",
+      "answer_correct",
+      "answer_wrong"
+    ],
+    "detective": [
+      "hint_reveal_soft",
+      "answer_correct",
+      "answer_wrong"
+    ],
+    "chain": [
+      "slot_lock",
+      "hint_reveal_soft",
+      "streak",
+      "answer_wrong"
+    ],
+    "word": [
+      "soft_confirm",
+      "answer_correct",
+      "answer_wrong",
+      "achievement"
+    ],
+    "fast": [
+      "answer_correct",
+      "answer_wrong",
+      "streak",
+      "countdown",
+      "whistle"
+    ],
+    "matching": [
+      "card_flip",
+      "perfect_combo",
+      "answer_wrong"
+    ],
+    "pyramid": [
+      "slot_lock",
+      "answer_wrong",
+      "perfect_combo"
+    ],
+    "bracket": [
+      "card_swipe",
+      "round_transition",
+      "champion"
+    ],
+    "ranking": [
+      "slot_lock",
+      "card_swipe",
+      "achievement"
+    ],
+    "grid": [
+      "slot_lock",
+      "answer_correct",
+      "answer_wrong",
+      "perfect_combo"
+    ],
+    "loto": [
+      "slot_lock",
+      "answer_correct",
+      "answer_wrong",
+      "countdown"
+    ],
+    "cinko": [
+      "slot_lock",
+      "perfect_combo",
+      "round_transition"
+    ],
+    "five": [
+      "answer_correct",
+      "round_transition",
+      "perfect_combo"
+    ],
+    "story": [
+      "soft_confirm",
+      "hint_reveal_soft",
+      "achievement"
+    ],
+    "online": [
+      "online_opponent_join",
+      "connection_alert_soft",
+      "match_start",
+      "champion"
+    ]
+  },
+  "event_policy": {
+    "on_screen_enter": "SELECT_MUSIC_ONCE",
+    "on_story_chapter_change": "KEEP_CURRENT_STORY_AUDIO",
+    "only_one_background_track": true,
+    "sfx_polyphony_max": 3,
+    "simultaneous_duplicate_sfx_block": true,
+    "sfx_play_only_after_verification": true,
+    "coin_sfx_after_server_grant": true,
+    "online_event_id_deduplication": true,
+    "connection_alert_after_genuine_failure_only": true,
+    "music_default_volume": 0.27,
+    "story_music_default_volume": 0.2,
+    "sfx_default_volume": 0.55,
+    "minimum_tap_sfx_interval_ms": 120,
+    "countdown_beeps_last_n_seconds": 5,
+    "crossfade_between_music_seconds": 0.7,
+    "pause_on_background_ad_audio_focus_loss": true,
+    "never_play_typing_sound_on_each_letter": true,
+    "respect_sound_settings_and_mute": true,
+    "no_audio_reset_on_state_rebuild": true,
+    "ios_codec_note": "Ogg Vorbis may require iOS alternative decoder/asset (MP3 supplied)"
+  }
+}

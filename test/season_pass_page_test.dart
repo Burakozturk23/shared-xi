@@ -15,7 +15,9 @@ import 'package:shared_xi/services/experience/badges_gateway.dart';
 import 'package:shared_xi/theme/ortak_saha_theme.dart';
 
 class SeasonFake extends SeasonGateway {
-  bool pro = false, fail = false;
+  bool pro = false, fail = false, grace = false;
+  int daysLeft = 20;
+  final previousIds = <String>[];
   int claims = 0;
   final claimed = <String>{};
   @override
@@ -29,8 +31,27 @@ class SeasonFake extends SeasonGateway {
       sp: 550,
       todaySp: 90,
       level: 5,
-      daysLeft: 20,
+      daysLeft: daysLeft,
       pro: pro,
+      previous: grace && !claimed.contains('old_free')
+          ? SeasonPrevious(
+              id: '2026-09',
+              level: 2,
+              claimDaysLeft: 2,
+              tiers: List.generate(
+                20,
+                (i) => SeasonTier(
+                  step: i + 1,
+                  requiredSp: (i + 1) * 100,
+                  unlocked: i == 1,
+                  freeCoins: 20,
+                  proCoins: 40,
+                  freeClaimed: false,
+                  proClaimed: false,
+                ),
+              ),
+            )
+          : null,
       tiers: List.generate(
         20,
         (i) => SeasonTier(
@@ -49,7 +70,12 @@ class SeasonFake extends SeasonGateway {
   @override
   Future<SeasonPass> claim(String id, int step, String lane) async {
     claims++;
-    claimed.add('${step}_$lane');
+    if (id == '2026-09') {
+      previousIds.add('$id/$step/$lane');
+      claimed.add('old_$lane');
+    } else {
+      claimed.add('${step}_$lane');
+    }
     return load();
   }
 }
@@ -142,6 +168,34 @@ void main() {
     await preview(t, 'season-rewards');
     expect(t.takeException(), isNull);
   });
+  testWidgets(
+    'season shows the pace, warns at month end and claims last month in the grace days',
+    (t) async {
+      final g = SeasonFake()
+        ..grace = true
+        ..daysLeft = 2;
+      await open(t, SeasonPassPage(gateway: g));
+      // 550 SP on day 30 of 31: about tier 5 at month end; 725 SP a day is out of reach.
+      expect(
+        find.textContaining('Bu tempoyla ay sonunda Kademe 5'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('rotanın tamamı yetişmez'), findsOneWidget);
+      final previous = find.text('Geçen ayın ödüllerini al');
+      await reveal(t, previous);
+      await t.tap(previous);
+      await t.pumpAndSettle();
+      expect(g.previousIds, ['2026-09/2/free']);
+      expect(find.byKey(const ValueKey('season-previous')), findsNothing);
+      // Back to the top: the list moved up when the grace card closed.
+      await t.drag(find.byType(Scrollable).first, const Offset(0, 3000));
+      await t.pumpAndSettle();
+      final ending = find.byKey(const ValueKey('season-ending'));
+      await reveal(t, ending);
+      expect(ending, findsOneWidget);
+      expect(t.takeException(), isNull);
+    },
+  );
   testWidgets('Pro shares progress and unlocks earned second-track reward', (
     t,
   ) async {

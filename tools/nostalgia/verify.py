@@ -2,10 +2,12 @@
 import json
 from pathlib import Path
 from collections import Counter
-from build_catalog import catalog
+from build_catalog import catalog, public
 ROOT=Path(__file__).resolve().parents[2]
-for path in ['assets/data/turkish_nostalgia_v2.json','functions/config/nostalgia_catalog.json']:
-    assert json.loads((ROOT/path).read_text()) == catalog, path
+assert json.loads((ROOT/'functions/config/nostalgia_catalog.json').read_text(encoding='utf-8')) == catalog
+app=json.loads((ROOT/'assets/data/turkish_nostalgia_v2.json').read_text(encoding='utf-8'))
+assert app == public(catalog), 'app asset drift'
+assert all('answerKeys' not in t and 'explanation' not in t for c in app['chapters'] for t in c['tasks'])
 chapters=catalog['chapters']; tasks=[t for c in chapters for t in c['tasks']]
 assert len(chapters)==12 and len(tasks)==24 and len({t['id'] for t in tasks})==24
 assert Counter(t['mechanic'] for t in tasks)==dict(season=7,squad=5,timeline=3,legend=5,route=4)

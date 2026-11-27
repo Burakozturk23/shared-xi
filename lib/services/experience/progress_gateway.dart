@@ -11,6 +11,6 @@ class ProgressGateway {
   Future<MissionProfile> missions() => MissionService.fetch();
   Future<DailyRewardClaimResult> claimDaily() =>
       ProgressionService.claimDailyReward();
-  Future<MissionClaimResult> claimMission(String id) =>
-      MissionService.claim(id);
+  Future<MissionClaimResult> claimMission(String id, {String periodKey = ''}) =>
+      MissionService.claim(id, periodKey: periodKey);
 }

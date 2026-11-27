@@ -25,7 +25,8 @@ with sqlite3.connect(ROOT / 'assets/runtime/linkball_game_data_v4.sqlite') as db
         x, y, w, h = p['crop']
         assert 0 <= x < x+w <= sw and 0 <= y < y+h <= sh, p
 legacy = dict(re.findall(r"'(persona_[^']+)': (\d+)", (ROOT / 'lib/data/player_portrait_catalog.dart').read_text()))
-active = {o['itemId'] for o in catalog['offers'] if o['itemType'] == 'avatar' and o['enabled']}
+active = {o['itemId'] for o in catalog['offers']
+          if o['itemType'] == 'avatar' and o['enabled'] and o['category'] != 'classic'}
 assert len(active) == 160
 assert active == set(manifest['avatarKeys']) | set(legacy)
 assert not active.intersection(manifest['retiredAvatarIds'])

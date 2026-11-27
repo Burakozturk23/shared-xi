@@ -1,3 +1,4 @@
+import 'supported_bot_page.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -16,15 +17,15 @@ import '../widgets/pitch_ui.dart';
 import '../widgets/rewarded_coin_card.dart';
 import '../widgets/player_avatar.dart';
 
-class VsBotCinkoPage extends StatefulWidget {
-  const VsBotCinkoPage({super.key, this.controllerFactory});
+class _LegacyVsBotCinkoPage extends StatefulWidget {
+  const _LegacyVsBotCinkoPage({this.controllerFactory});
   final VsBotCinkoController Function()? controllerFactory;
 
   @override
-  State<VsBotCinkoPage> createState() => _VsBotCinkoPageState();
+  State<_LegacyVsBotCinkoPage> createState() => __LegacyVsBotCinkoPageState();
 }
 
-class _VsBotCinkoPageState extends State<VsBotCinkoPage>
+class __LegacyVsBotCinkoPageState extends State<_LegacyVsBotCinkoPage>
     with WidgetsBindingObserver {
   late final VsBotCinkoController _c;
   final _answer = TextEditingController();
@@ -865,5 +866,16 @@ class _VsBotCinkoPageState extends State<VsBotCinkoPage>
         _board(),
       ],
     );
+  }
+}
+
+class VsBotCinkoPage extends StatelessWidget {
+  const VsBotCinkoPage({super.key, this.controllerFactory});
+  final VsBotCinkoController Function()? controllerFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyVsBotCinkoPage(controllerFactory: controllerFactory);
+    return controllerFactory != null ? legacy : SupportedBotPage(mode: 'bot_cinko', legacy: legacy);
   }
 }

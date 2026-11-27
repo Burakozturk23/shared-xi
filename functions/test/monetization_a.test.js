@@ -201,27 +201,32 @@ test("achievement authority, repricing and concurrent replay preserve a single o
 test("store guards quotes/funds and concurrent purchases preserve Squad progress", async () => {
   const h = harness({economyState: {alice: wallet(500)}});
   h.seed(coinPath + "/squadChallenge", {day: "2026-09-20", freeUsed: 2});
-  h.setConfig((c) => c.sinks.cosmetics.offers.avatar_speedster_bolt.priceCoins = 180);
-  const data = {offerId: "avatar_speedster_bolt", priceCoins: 1, expectedPriceCoins: 150};
+  // The early avatars are store-catalog items now (Şimşek 300); a live Remote Config copy
+  // at the old price can neither be listed twice nor sell at that price.
+  h.setConfig((c) => {
+    c.sinks.cosmetics.offers.avatar_speedster_bolt.enabled = true;
+    c.sinks.cosmetics.offers.avatar_speedster_bolt.priceCoins = 150;
+  });
+  const listed = (await h.call("getStoreCatalog")).offers.filter((o) => o.offerId === "avatar_speedster_bolt");
+  assert.equal(listed.length, 1); assert.equal(listed[0].priceCoins, 300);
+  const data = {offerId: "avatar_speedster_bolt", requestId: "speedster_request_0001", expectedPriceCoins: 150};
   await assert.rejects(h.call("purchaseEconomyOffer", data), {code: "failed-precondition"});
-  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: data.offerId}), {code: "failed-precondition"});
+  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: data.offerId, requestId: data.requestId}),
+      {code: "invalid-argument"});
   assert.equal(coins(h), 500);
   const results = await Promise.all([1, 2, 3].map(() => h.call("purchaseEconomyOffer", {
-    ...data, expectedPriceCoins: 180,
+    ...data, expectedPriceCoins: 300,
   })));
   assert.equal(results.filter((r) => r.purchased).length, 1);
-  assert.equal(coins(h), 320);
+  assert.equal(coins(h), 200);
   assert.equal(h.read(coinPath + "/squadChallenge/freeUsed"), 2);
-  h.setConfig((c) => c.sinks.cosmetics.offers.avatar_speedster_bolt.priceCoins = 250);
-  const replay = await h.call("purchaseEconomyOffer", data);
+  const replay = await h.call("purchaseEconomyOffer", {...data, requestId: "speedster_request_0002",
+    expectedPriceCoins: 300});
   assert.equal(replay.alreadyOwned, true);
-  assert.equal(replay.priceCoins, 180);
-  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: "avatar_champion_cup", expectedPriceCoins: 600}),
-      {code: "failed-precondition"});
-  const ledger = h.read("economyLedger/alice/purchase__speedster_bolt");
-  assert.equal(ledger.balanceBefore, 500);
-  assert.equal(ledger.balanceAfter, 320);
-  assert.equal(ledger.amount, -180);
+  assert.equal(coins(h), 200);
+  await assert.rejects(h.call("purchaseEconomyOffer", {offerId: "avatar_champion_cup",
+    requestId: "champion_request_0001", expectedPriceCoins: 450}), {code: "failed-precondition"});
+  assert.equal(coins(h), 200);
 });
 
 test("pausing sources blocks new rewards but keeps valid old receipts", async () => {
@@ -252,22 +257,25 @@ test("Squad applies configured price and caps while finishing an existing run at
   const day = engine.dayKey(now);
   const state = wallet(100);
   const mission = engine.missions(day, policy)[0];
+  // The configured price caps the extra attempt; it is half the mission reward.
+  assert.equal(mission.extraPrice, 13);
+  assert.equal(engine.missions(day, policy)[2].extraPrice, 15);
   const input = {missionId: mission.id, requestId: day + "__" + "a".repeat(32)};
   const first = engine.apply(state, "start", input, now, false, policy).run;
   engine.apply(state, "abandon", {runId: first.id}, now, false, policy);
   const paid = {...input, requestId: day + "__" + "b".repeat(32), payment: "coins", expectedPriceCoins: 20};
   assert.throws(() => engine.apply(state, "start", paid, now, false, policy), {code: "failed-precondition"});
   assert.equal(state.balances.coins, 100);
-  paid.expectedPriceCoins = 15;
+  paid.expectedPriceCoins = 13;
   const run = engine.apply(state, "start", paid, now, false, policy).run;
-  assert.equal(state.balances.coins, 85);
+  assert.equal(state.balances.coins, 87);
   assert.equal(engine.status(state, now, false, policy).extraRemaining, 0);
   const changed = {...policy, enabled: false, rewards: [90, 90, 90]};
   const result = engine.apply(state, "finish", {runId: run.id, playerIds: solve(run.mission)}, now, false, changed);
-  assert.equal(result.run.result.reward, 25);
-  assert.equal(state.balances.coins, 110);
+  assert.equal(result.run.result.reward, 25 + (engine.STAR_BONUS[result.run.result.stars] || 0));
+  assert.equal(state.balances.coins, 87 + result.run.result.reward);
   const receipt = state.claims["squad__" + mission.id];
-  assert.equal(receipt.balanceBefore, 85);
+  assert.equal(receipt.balanceBefore, 87);
   assert.equal(receipt.economyConfigId, policy.configId);
 });
 
@@ -279,7 +287,7 @@ test("trusted mission events count once and cannot leak yesterday's activity int
   await ctx.lbMissionRecordDailyChallenge(h.db, "alice", "2026-09-20");
   await ctx.lbMissionRecordDailyChallenge(h.db, "alice", "2026-09-20");
   assert.deepEqual(h.read("missionState/alice/daily/counters"), {
-    rankedPlayed: 1, rankedWins: 1, dailyChallenge: 1,
+    rankedPlayed: 1, rankedWins: 1, dailyChallenge: 1, online__grid_classic: 1,
   });
   const oldTime = h.now;
   h.setTime("2026-09-20T21:00:00Z");

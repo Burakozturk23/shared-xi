@@ -8,6 +8,8 @@ from apply_notable_players import ROOT, REVIEW, SOURCE, apply
 from apply_roster_expansion import norm
 
 DB = ROOT/'assets/runtime/linkball_game_data_v4.sqlite'
+from apply_club_twins import canonical
+TWIN = canonical(DB)  # Merged club rows (v4-2026-11-23.3, v4-2026-11-26.1) live on the kept row.
 MANIFEST = ROOT/'assets/runtime/linkball_game_data_v4_manifest.json'
 
 
@@ -26,7 +28,7 @@ class NotablePlayersTests(unittest.TestCase):
             for r in review['players'] + review['corrections']:
                 self.assertEqual(c.execute('SELECT name FROM players WHERE id=?', (r['id'],)).fetchone(), (r['name'],))
                 for club in r['clubs']:
-                    self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?', (r['id'],club['id'])).fetchone())
+                    self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?', (r['id'],TWIN.get(club['id'],club['id']))).fetchone())
                 for label in [r['name'], norm(r['name'])]:
                     rows = c.execute('''SELECT DISTINCT p.id FROM players p JOIN player_search_terms s ON s.player_id=p.id
                         WHERE (p.selection_rank BETWEEN 1 AND 30000 OR
@@ -37,7 +39,7 @@ class NotablePlayersTests(unittest.TestCase):
                 WHERE a.club_id=36 AND b.club_id=114''').fetchall()
             self.assertIn((4000000001,), common)
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE position IN ('GK','DF','MF','FW')").fetchone()[0], 0)
-            self.assertEqual(c.execute('SELECT COUNT(*) FROM transfers').fetchone()[0], 33994)
+            self.assertEqual(c.execute("SELECT COUNT(*) FROM transfers WHERE trust!='REVIEWED_SEASON'").fetchone()[0], 33992)  # 2 loan returns removed in v4-2026-11-12.1
             self.assertEqual(c.execute('SELECT COUNT(*) FROM career_spells').fetchone()[0], 37966 + sum(r.get('newCareerSpells', 0) for r in json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text()).get('reviewedAdditions', [])))
 
     def test_idempotency_and_changed_evidence_rejected_without_writes(self):

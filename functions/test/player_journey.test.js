@@ -11,10 +11,30 @@ const proof = (id, index) => ({version: 1, journeyId: id, taskId: journeys[id].t
 async function finish(h, id) {
   for (let i = 0; i < 4; i++) await h.call("submitPlayerJourney", proof(id, i));
 }
-test("server catalog matches all four bundled client assets", () => {
+test("app assets are the server chapters without answers or explanations", () => {
   for (const [i, n] of ["one", "two", "three", "four"].entries()) {
-    assert.deepEqual(catalog.chapters[i], require("../../assets/data/player_journey_chapter_" + n + ".json"));
+    const app = require("../../assets/data/player_journey_chapter_" + n + ".json");
+    const server = catalog.chapters[i];
+    assert.equal(app.chapterId, server.chapterId);
+    app.journeys.forEach((j, k) => j.tasks.forEach((t, x) => {
+      const full = server.journeys[k].tasks[x];
+      assert.ok(!("answerKeys" in t) && !("explanation" in t)); assert.equal(t.serverValidated, true);
+      const {answerKeys, explanation, ...rest} = full; assert.ok(answerKeys.length && explanation);
+      assert.deepEqual({...t, serverValidated: undefined, legacyHints: undefined},
+          {...rest, serverValidated: undefined, legacyHints: undefined});
+    }));
   }
+});
+test("a correct answer returns the explanation; bought hints come back computed by the server", async () => {
+  const h = harness();
+  let s = await h.call("submitPlayerJourney", proof("messi", 0));
+  const task = journeys.messi.tasks[0];
+  assert.equal(s.results[task.id].story, task.explanation);
+  assert.ok(!(journeys.messi.tasks[1].id in s.results));
+  h.seed("journeyRewardState/alice/hints/" + journeys.messi.tasks[1].id, {coin: true});
+  s = await h.call("getPlayerJourney");
+  const t1 = journeys.messi.tasks[1]; const assist = s.assist[t1.id];
+  assert.ok(assist.text); assert.ok(assist.eliminated.every((k) => !t1.answerKeys.includes(k)));
 });
 test("reject guest, unknown IDs, wrong answers and skipped stages", async () => {
   const h = harness();

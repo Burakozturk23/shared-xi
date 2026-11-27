@@ -1,13 +1,29 @@
 "use strict";
+const {pinCatalog} = require("./catalog_pin");
 const crypto = require("node:crypto");
 const zlib = require("node:zlib");
 const E = require("./pvp_engine");
+const BOT = require("./pvp_bot");
 const {validId} = require("./career_transfer");
 const {fail, hash, norm, catalog} = E;
 const catalogBody = JSON.stringify(catalog);
 const catalogArchive = {hash: hash(catalogBody), gzip: zlib.gzipSync(catalogBody).toString("base64")};
 const defaults = {friendEnabled: false, rankedEnabled: false, rewardsEnabled: false, eloEnabled: false};
-function createService({db, isLinked, blocked, profile, settle, getPolicy = async () => ({}),
+// Normalised names, built once per catalog: a search then scans prepared strings.
+const searchIndexes = new WeakMap();
+function searchIndex(c) {
+  let index = searchIndexes.get(c);
+  if (!index) {
+    index = Object.values(c.players).map((p) => {
+      const names = [p.name, ...(p.aliases || [])];
+      return {p, full: names.map(norm), words: names.flatMap((x) => String(x).toLowerCase()
+          .split(/[\s\-.']+/).map(norm).filter(Boolean))};
+    });
+    searchIndexes.set(c, index);
+  }
+  return index;
+}
+function createService({db, isLinked, searchLinked = isLinked, blocked, profile, settle, getPolicy = async () => ({}),
   now = Date.now, random = () => crypto.randomBytes(32).toString("hex")}) {
   const caches = new Map([[catalog.version, catalog]]);
   async function pinned(version) {
@@ -30,7 +46,6 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
   }
   async function policy(mode) {
     const p = await getPolicy(); const result = {...defaults, ...p, ...p.modes?.[mode]};
-    if (mode === "club_manager" && result.managerRankedVerified !== true) result.rankedEnabled = false;
     return result;
   }
   async function change(mode, fn) {
@@ -48,6 +63,15 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     if (error) throw error;
     if (!tx.committed) fail("aborted", "İşlem çakıştı; aynı isteği yeniden dene.");
     return tx.snapshot.val();
+  }
+  // The rematch or next series game: roles swap so the other side starts.
+  function next(s, r, id, time, series, seed) {
+    s.rooms[id] = E.hydrate({id, mode: r.mode, playKind: "friend", host: r.guest, guest: r.host,
+      names: r.names, status: "ready", revision: 0, createdAt: time, seed: hash([seed, id]), schemaVersion: 1,
+      ruleVersion: E.RULE, dataRevision: catalog.version, profile: r.profile, series, rankedEligible: false,
+      rewardPolicy: {rewardsEnabled: false, eloEnabled: false}});
+    for (const u of [r.host, r.guest]) if (!s.active[u] || s.active[u] === r.id) s.active[u] = id;
+    r.nextRoom = id;
   }
   async function status(uid, input) {
     check(input);
@@ -107,8 +131,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     }));
     const fingerprint = hash([input.action, input.code || null, input.playKind, input.profile || "standard"]);
     if (input.action !== "resume") {
-      await db.ref(`pvpCatalogs/${catalog.version}`).transaction((raw) => raw ||
-        catalogArchive);
+      await pinCatalog(db, `pvpCatalogs/${catalog.version}`, catalogArchive, "hash");
     }
     const s = await change(input.mode, (s, time) => {
       const key = uid + "__" + input.actionId; const receipt = s.requests[key];
@@ -171,6 +194,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
         room = E.hydrate({id: code, mode: input.mode, playKind: input.playKind, schemaVersion: 1, ruleVersion: E.RULE,
           dataRevision: catalog.version, seed, host: uid, guest: null, names: {[uid]: name}, blocked: [...denied],
           status: "waiting", revision: 0, createdAt: time, profile: input.profile || "standard",
+          ...input.playKind === "ranked" && p.botEnabled !== false ? {botAt: time + BOT.BOT_AFTER_MS} : {},
           rankedEligible: input.playKind === "ranked" && p.rankedEnabled, rewardPolicy: {rewardsEnabled:
               p.rewardsEnabled, eloEnabled: p.eloEnabled},
           series: {id: code, game: 1, limit: input.profile === "series3" ? 3 : 1, wins: {}}});
@@ -221,7 +245,8 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     if (event && !validId(input.actionId)) fail("invalid-argument", "Hamle kimliği gerekli.");
     const allowed = new Set(["mode", "schemaVersion", "ruleVersion", "dataRevision", "roomId",
       "actionId", "action", "revision",
-      "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice",
+      "playerId", "targetId", "criterionId", "round", "playerIds", "formation", "tactics", "choice", "cells", "swap",
+      "plan", "captain",
       "clientVersion", "platform"]);
     if (Object.keys(input).some((k) => !allowed.has(k))) {
       fail("invalid-argument",
@@ -237,33 +262,66 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
         if (r.receipts[key].fingerprint !== fp) fail("invalid-argument", "Aynı hamle kimliği değiştirilemez.");
         receipt = r.receipts[key].result; return;
       }
-      const was = hash([r.status, r.turnUid, r.turnDeadline, r.scores]); E.advance(r, time);
-      if (was !== hash([r.status, r.turnUid, r.turnDeadline, r.scores])) r.revision++;
+      const was = hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null]);
+      E.advance(r, time);
+      // Ranked fallback: nobody came within 20 s, so the bot takes the second seat.
+      if (r.botAt && r.status === "waiting" && !r.guest && p.botEnabled !== false && time >= r.botAt) {
+        BOT.join(r, time); delete s.queue[uid];
+      }
+      // The bot moves on the player's polls, by the same rules and clocks.
+      if (r.bot && BOT.step(c, r, time)) r.revision++;
+      if (was !== hash([r.status, r.turnUid, r.turnDeadline, r.scores, r.fiveStarts || null, r.draft?.k ?? null])) {
+        r.revision++;
+      }
       if (r.playKind === "ranked" && r.status === "waiting" && time >= r.createdAt + 30000) {
         E.finish(r, "expired", "Bu modda rakip bulunamadı. Yeniden arayabilirsin.", time, null); delete s.queue[uid];
       }
       if (event && !E.terminal(r)) {
         if (Object.keys(r.audit).length >= 600) fail("resource-exhausted", "Maç hamle sınırı doldu.");
         if (input.action === "leave") {
-          E.finish(r, r.status === "playing" ? "forfeit" : "cancelled", "Oyuncu maçtan ayrıldı.", time,
-              r.status === "playing" ? uid === r.host ? r.guest : r.host : null); delete s.queue[uid];
+          // Leaving between series games gives that game to the rival.
+          const lost = r.status === "playing" || r.status === "ready" && r.series?.limit > 1 && r.series.game > 1;
+          E.finish(r, lost ? "forfeit" : "cancelled", lost && r.status === "ready" ? "Oyuncu seriden çekildi." :
+            "Oyuncu maçtan ayrıldı.", time, lost ? uid === r.host ? r.guest : r.host : null); delete s.queue[uid];
           receipt = {accepted: true};
-        } else if (input.action === "choose" && r.status === "ready" && r.playKind === "friend" &&
+        } else if (input.action === "choose" && r.status === "ready" &&
           ["club_club", "club_country"].includes(r.mode)) {
+          // Club modes, friend and ranked: each side picks its club (Club-Country guest: a country).
           const side = uid === r.host ? "left" : "right";
           const options = r.mode === "club_country" && side === "right" ? c.countryOptions : c.clubOptions;
           if (!options.includes(input.choice)) fail("invalid-argument", "Geçersiz seçim.");
+          const other = r.choices[side === "left" ? "right" : "left"];
+          if (other && !E.pairOptions(c, r.mode, side, other).includes(input.choice)) {
+            fail("failed-precondition",
+                "Bu seçimle rakibinin seçimi arasında yeterli ortak futbolcu yok; başka seçim yap.");
+          }
           r.choices[side] = input.choice; r.ready = {}; receipt = {accepted: true};
         } else if (input.action === "ready" && r.status === "ready") {
-          if (r.playKind === "friend" && ["club_club", "club_country"].includes(r.mode) &&
-            (!r.choices.left || !r.choices.right)) fail("failed-precondition", "İki oyuncu da seçimini tamamlamalı.");
+          // Club modes: ready without a choice takes a playable one (players pressed
+          // ready, got a refusal they did not see, and the room expired); at the start
+          // a side still without one (the ranked fallback bot) gets one the same way.
+          const pairMode = ["club_club", "club_country"].includes(r.mode);
+          const fill = (side) => {
+            r.choices[side] ||= E.autoChoice(c, r.mode, side, r.choices[side === "left" ? "right" : "left"],
+                r.seed || r.id);
+          };
+          if (pairMode) fill(uid === r.host ? "left" : "right");
           r.ready[uid] = true;
-          if (r.ready[r.host] && r.ready[r.guest]) E.start(r, c, time);
+          if (r.ready[r.host] && r.ready[r.guest]) {
+            if (pairMode) ["left", "right"].forEach(fill);
+            E.start(r, c, time);
+          }
           receipt = {accepted: true};
         } else {
-          if (!["answer", "squad"].includes(input.action)) fail("invalid-argument", "Bu aşamada geçersiz işlem.");
+          if (!["answer", "squad"].includes(input.action) &&
+            !(input.action === "pass" && (r.mode === "cinko" || r.lotoRules === 3)) &&
+            !(input.action === "draw" && r.randomBoard) &&
+            !(["pick", "plan"].includes(input.action) && r.managerRules === 3)) {
+            fail("invalid-argument", "Bu aşamada geçersiz işlem.");
+          }
           // Simultaneous races validate current target/round atomically; stale turn claims do not consume a new turn.
-          if (["grid_classic", "grid_reverse", "cinko"].includes(r.mode) && input.revision !== r.revision) {
+          if ((["grid_classic", "grid_reverse", "cinko"].includes(r.mode) || r.randomBoard) &&
+            input.revision !== r.revision) {
             fail("aborted", "Sıra değişti; güncel maçı yenile.");
           }
           receipt = E.move(c, r, uid, input, time);
@@ -278,18 +336,20 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
         if (r.rematch[r.host] && r.rematch[r.guest] && !r.nextRoom) {
           const id = hash([seed, r.id]).slice(0, 8).toUpperCase();
           if (s.rooms[id]) fail("already-exists", "Rövanşı tekrar dene.");
-          const series = structuredClone(r.series); series.wins ||= {};
-          if (series.game >= series.limit) {
-            series.id = id; series.game = 1; series.wins = {}; series.draws = 0;
-          } else series.game++;
-          const next = E.hydrate({id, mode: r.mode, playKind: "friend", host: r.guest, guest: r.host,
-            names: r.names, status: "ready", revision: 0, createdAt: time, seed, schemaVersion: 1,
-            ruleVersion: E.RULE, dataRevision: c.version, profile: r.profile, series, rankedEligible: false,
-            rewardPolicy: {rewardsEnabled: false, eloEnabled: false}});
-          s.rooms[id] = next; s.active[r.host] = id; s.active[r.guest] = id; r.nextRoom = id;
+          // A finished series (or a single game) starts a new series of the same length.
+          next(s, r, id, time, {id, game: 1, limit: r.series?.limit || 1, wins: {}}, seed);
         }
       } else if (event && !["leave"].includes(input.action)) {
         fail("failed-precondition", "Maç sona erdi.");
+      }
+      // A series continues on its own: the next game's room opens as soon as one ends.
+      if (r.playKind === "friend" && ["finished", "forfeit"].includes(r.status) && r.series?.limit > 1 &&
+        !r.series.over && !r.nextRoom && r.dataRevision === catalog.version) {
+        const id = hash([seed, r.id, "series"]).slice(0, 8).toUpperCase();
+        if (!s.rooms[id]) {
+          const series = structuredClone(r.series); series.game++;
+          next(s, r, id, time, series, seed);
+        }
       }
       if (!E.terminal(r)) r.presence[uid] = time;
       if (event) r.receipts[key] = {fingerprint: fp, result: receipt || {accepted: false}};
@@ -306,7 +366,7 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
     return {room: E.view(c, r, uid, now()), receipt: receipt || null};
   }
   async function search(uid, input) {
-    check(input); if (!await isLinked(uid)) fail("permission-denied", "Kalıcı hesap gerekli.");
+    check(input); if (!await searchLinked(uid)) fail("permission-denied", "Kalıcı hesap gerekli.");
     const q = norm(input.query).slice(0, 80); if (q.length < 2) return {players: []};
     // Full allowed snapshot, never the question's answer set or relevance to its criteria.
     let c = catalog;
@@ -315,8 +375,17 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
       if (!r || ![r.host, r.guest].includes(uid)) fail("permission-denied", "Maç yetkisi yok.");
       c = await pinned(r.dataRevision);
     }
-    return {players: Object.values(c.players).filter((p) => [p.name, ...p.aliases].some((x) => norm(x).includes(q)))
-        .sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id)).slice(0, 24).map((p) => E.player(c, p.id))};
+    const words = String(input.query).toLowerCase().split(/[\s\-.']+/).map(norm).filter(Boolean).slice(0, 6);
+    const hits = [];
+    for (const e of searchIndex(c)) {
+      const fit = e.full.some((x) => x === q) ? 0 : e.full.some((x) => x.startsWith(q)) ? 1 :
+        words.length && words.every((w) => e.words.some((x) => x.startsWith(w) ||
+          w.length >= 3 && x.length >= 3 && w.startsWith(x))) ? 2 : e.full.some((x) => x.includes(q)) ? 3 : -1;
+      if (fit >= 0) hits.push([fit, e.p]);
+    }
+    // Ordered by how well the typed text fits, then fame: never by the room's criteria.
+    return {players: hits.sort(([f, a], [g, b]) => f - g || a.rank - b.rank || a.id.localeCompare(b.id))
+        .slice(0, 24).map(([, p]) => E.player(c, p.id))};
   }
   async function sweep() {
     for (const mode of E.MODES) {
@@ -350,4 +419,6 @@ function createService({db, isLinked, blocked, profile, settle, getPolicy = asyn
   }
   return {status, enter, act, search, sweep};
 }
-module.exports = {createService, defaults};
+// Isınma: open the catalog and its search index before the first keystroke.
+const warm = () => searchIndex(catalog).length;
+module.exports = {createService, defaults, warm};

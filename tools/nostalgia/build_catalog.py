@@ -80,8 +80,16 @@ chapter('Boğaz’dan Avrupa’ya','2017–18','2017–18 · Beşiktaş grup lid
 task('season','Beşiktaş, Şampiyonlar Ligi grubunu kaç puanla lider bitirdi?','12|13|14|16','14','Altı grup maçının puan toplamını düşün.','Dört galibiyet ve iki beraberliğin toplamını hesapla.','Beşiktaş dört galibiyet ve iki beraberlikle 14 puan topladı.','14')
 task('legend','2017 Porto deplasmanında uzak mesafeden gol atan Türk forvet kimdi?','Cenk Tosun|Burak Yılmaz|Mustafa Pektemek|Ömer Şişmanoğlu','Cenk Tosun','Takımın o dönemdeki santrforunu düşün.','Daha sonra Everton’a transfer olan forvet.','Cenk Tosun, Porto deplasmanında ceza alanı dışından gol attı.','cenk')
 catalog=dict(version=2,chapters=chapters,economy=dict(task=dict(coins=6,xp=15),chapter=dict(coins=15,xp=30),final=dict(coins=60,xp=120),hintPrice=6))
+def public(full):
+    """App asset without answers: the server checks them and returns the
+    explanation after a correct answer; the paid strong hint stays."""
+    out=json.loads(json.dumps(full))
+    for c in out['chapters']:
+        for t in c['tasks']:
+            t['requiredCount']=len(t.pop('answerKeys')); t.pop('explanation')
+            t['serverValidated']=True; t['legacyHints']=True
+    return out
 def main():
-    data=json.dumps(catalog,ensure_ascii=False,indent=2)+'\n'
-    for file in ['assets/data/turkish_nostalgia_v2.json','functions/config/nostalgia_catalog.json']:
-        (ROOT/file).write_text(data)
+    for file,data in [('functions/config/nostalgia_catalog.json',catalog),('assets/data/turkish_nostalgia_v2.json',public(catalog))]:
+        (ROOT/file).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 if __name__=='__main__':main()

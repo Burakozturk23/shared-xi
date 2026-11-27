@@ -6,9 +6,13 @@ import '../models/manager_season.dart';
 import '../models/manager_tactics.dart';
 import '../services/manager_career_store.dart';
 import '../services/manager_roster_service.dart';
+import '../services/manager_season_service.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/club_badge.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
+import '../widgets/share_result.dart';
 import 'club_manager_formation_page.dart';
 import 'club_manager_squad_page.dart';
 import 'club_manager_transfer_page.dart';
@@ -158,7 +162,7 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
           minimum: const EdgeInsets.all(12),
           child: PitchAction(
             label: season.isComplete
-                ? 'Yeni sezona başla'
+                ? 'Yeni sezona başla · +${widget.difficulty.seasonRewardLink(season.userRank())} LINK'
                 : c.hasSquad
                 ? 'Maça hazırlan'
                 : 'Kadronu kur',
@@ -240,6 +244,8 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
           'Goller ${user.gf}:${user.ga}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
+        const SizedBox(height: 16),
+        _boardPanel(c, season),
         if (next != null && opponent != null) ...[
           const PitchSectionTitle('Sıradaki rakip'),
           PitchPanel(
@@ -325,6 +331,73 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
     );
   }
 
+  /// Board target during the season; the reward and a share card at its end.
+  Widget _boardPanel(ManagerCareerState c, ManagerSeason season) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final d = widget.difficulty;
+    final rank = season.userRank();
+    final onTrack = rank <= d.boardTargetRank;
+    // Behind the target is a warning during the season, a miss only at its end.
+    final color = onTrack
+        ? p.success
+        : season.isComplete
+        ? p.error
+        : hubAmber(context);
+    return PitchPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(
+                onTrack ? Icons.verified_outlined : Icons.flag_outlined,
+                color: color,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Yönetim hedefi: ilk ${d.boardTargetRank}',
+                  style: text.titleMedium,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            season.isComplete
+                ? onTrack
+                      ? 'Hedef tuttu: ligi $rank. sırada bitirdin.'
+                      : 'Hedef kaçtı: ligi $rank. sırada bitirdin.'
+                : season.user.played == 0
+                ? 'Sezon sonunda ilk ${d.boardTargetRank} içinde olursan yönetim +${d.boardBonusLink} LINK ekler.'
+                : onTrack
+                ? 'Şu an $rank. sıradasın; hedefin içindesin.'
+                : 'Şu an $rank. sıradasın; hedefe ${rank - d.boardTargetRank} sıra var.',
+            style: text.bodyMedium?.copyWith(color: season.isComplete ? color : null),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            season.isComplete
+                ? 'Sezon sonu ödülü +${d.seasonRewardLink(rank)} LINK · yeni sezonda kasana eklenir.'
+                : 'Sezon sonu: sıralamaya göre LINK, hedef için +${d.boardBonusLink}, şampiyonluk için +30.',
+            style: text.bodySmall?.copyWith(color: p.accent),
+          ),
+          if (season.isComplete) ...[
+            const SizedBox(height: 12),
+            ShareResultButtons(
+              text: managerSeasonShare(
+                season: season,
+                seasonNumber: c.seasonNumber,
+                difficulty: d,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _leagueScore(ManagerSeason season, LeagueFixture f) {
     String name(String id) => season.clubs.firstWhere((c) => c.id == id).name;
     return Column(
@@ -390,8 +463,12 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
         child: DataTable(
           columnSpacing: 16,
           horizontalMargin: 12,
+          // A DataTable cell always fills the max height: room for a two-line
+          // club name at the reader's text size, not a fixed 140 for every row.
           dataRowMinHeight: 56,
-          dataRowMaxHeight: 140,
+          dataRowMaxHeight: MediaQuery.textScalerOf(
+            context,
+          ).scale(64).clamp(56.0, 140.0),
           columns: [
             for (final title in ['#', 'Takım', 'O', 'G', 'B', 'M', 'AV', 'P'])
               DataColumn(label: Text(title), numeric: title != 'Takım'),
@@ -404,7 +481,20 @@ class _ClubManagerSeasonPageState extends State<ClubManagerSeasonPage> {
                     : null,
                 cells: [
                   DataCell(Text('${index + 1}')),
-                  DataCell(SizedBox(width: 190, child: Text(c.name))),
+                  DataCell(
+                    SizedBox(
+                      width: 190,
+                      child: Row(
+                        children: [
+                          if (ManagerSeasonService.clubOf(c) case final club?) ...[
+                            ClubBadge(club: club.club, size: 22),
+                            const SizedBox(width: 8),
+                          ],
+                          Expanded(child: Text(c.name)),
+                        ],
+                      ),
+                    ),
+                  ),
                   for (final n in [
                     c.played,
                     c.won,

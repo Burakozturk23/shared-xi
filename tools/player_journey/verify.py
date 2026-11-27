@@ -10,7 +10,7 @@ chapters = [
 ]
 journeys=[]
 for number, chapter_id, ids in chapters:
- path=root/f'assets/data/player_journey_chapter_{number}.json'
+ path=root/f'tools/player_journey/source/chapter_{number}.json'
  original=path.read_bytes()
  subprocess.run([sys.executable,str(Path(__file__).with_name(f'build_chapter_{number}.py'))],check=True)
  assert path.read_bytes()==original, f'Regenerate chapter {number} before committing'
@@ -42,6 +42,13 @@ with sqlite3.connect(root/'assets/runtime/linkball_game_data_v4.sqlite') as c:
     assert key(opts[k]['label']) not in public, (t['id'],'answer in pre-solve copy')
    assert t['hint'] and t['explanation'] and j['sources']
 assert len({t['introNarrative'] for j in journeys for t in j['tasks']}) == 128
-server=json.loads((root/'functions/config/journey_catalog.json').read_text())
-assert server['chapters'] == [json.loads((root/f'assets/data/player_journey_chapter_{n}.json').read_text()) for n,_,_ in chapters]
-print('[PASS] Chapters 1–4: 32 canonical players, 128 valid tasks, no answer in pre-solve text.')
+server=json.loads((root/'functions/config/journey_catalog.json').read_text(encoding='utf-8'))
+assert server['chapters'] == [json.loads((root/f'tools/player_journey/source/chapter_{n}.json').read_text(encoding='utf-8')) for n,_,_ in chapters]
+# The app assets carry no answers or explanations; build_catalog.py --check pins them.
+subprocess.run([sys.executable,str(Path(__file__).with_name('build_catalog.py')),'--check'],check=True)
+for n,_,_ in chapters:
+ app=json.loads((root/f'assets/data/player_journey_chapter_{n}.json').read_text(encoding='utf-8'))
+ for j in app['journeys']:
+  for t in j['tasks']:
+   assert 'answerKeys' not in t and 'explanation' not in t and t['serverValidated'] is True, t['id']
+print('[PASS] Chapters 1–4: 32 canonical players, 128 valid tasks, no answer in pre-solve text or app assets.')

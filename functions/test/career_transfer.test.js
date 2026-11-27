@@ -2,7 +2,7 @@
 const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const {harness} = require("./support/economy_harness");
-const {catalog} = require("../career_transfer");
+const {catalog, cardsOf, maxChecks, players} = require("../career_transfer");
 const version = catalog.version;
 let n = 0;
 const id = () => (++n).toString(16).padStart(32, "0");
@@ -16,7 +16,7 @@ const puzzle = (h, s) => (s.mode === "career" ? catalog.careers : catalog.transf
 const solve = async (h, s) => {
   const p = puzzle(h, s);
   s = await act(h, s, {action: "guess", playerId: p.playerId});
-  return s.mode === "transfer" ? s : act(h, s, {action: "order", order: p.stops.map((x) => x.id)});
+  return s.mode === "transfer" ? s : act(h, s, {action: "order", order: cardsOf(p).map((x) => x.id)});
 };
 test("catalog uses unique events, disjoint difficulties and preserves return periods", () => {
   assert.ok(catalog.careers.length > 700);
@@ -46,7 +46,7 @@ test("auth, answer concealment and unknown or ambiguous guesses preserve lives",
 });
 test("career: first order failure retains solution secrecy; second order earns gold only", async () => {
   const h = harness({}, {omitEmptyObjects: true});
-  let s = await start(h, "career"); const p = puzzle(h, s); const order = p.stops.map((x) => x.id);
+  let s = await start(h, "career"); const p = puzzle(h, s); const order = cardsOf(p).map((x) => x.id);
   s = await act(h, s, {action: "guess", playerId: p.playerId});
   assert.equal(h.read("economyState/alice/balances/coins"), 3);
   s = await act(h, s, {action: "order", order: [...order].reverse()});
@@ -61,7 +61,7 @@ test("career: three wrongs allow reward-free ordering practice", async () => {
   const wrong = catalog.careers.filter((x) => x.playerId !== p.playerId).slice(0, 3);
   for (const x of wrong) s = await act(h, s, {action: "guess", playerId: x.playerId});
   assert.equal(s.phase, "order"); assert.equal(s.found, false);
-  s = await act(h, s, {action: "order", order: p.stops.map((x) => x.id)});
+  s = await act(h, s, {action: "order", order: cardsOf(p).map((x) => x.id)});
   assert.equal(s.result.coins, 0); assert.equal(s.result.practice, true);
 });
 test("energy is atomic with content and survives lost start response and other normalizers", async () => {
@@ -78,14 +78,184 @@ test("energy is atomic with content and survives lost start response and other n
   for (let i = 0; i < 5; i++) await act(h, await start(h, "transfer"), {action: "skip"});
   await assert.rejects(start(h, "transfer"), {code: "resource-exhausted"});
 });
+test("solo transfer files never ask a loan or a loan return", async () => {
+  assert.ok(catalog.transfers.some((p) => p.loan));
+  for (let i = 0; i < 30; i++) {
+    const h = harness();
+    for (const difficulty of ["easy", "normal", "hard"]) {
+      const s = await start(h, "transfer", {difficulty}); assert.notEqual(puzzle(h, s).loan, true, difficulty);
+      await act(h, s, {action: "skip"});
+    }
+  }
+});
 test("transfer freezes first economic attempt and uses correct streak multiplier", async () => {
   const h = harness(); let s = await start(h, "transfer"); const p = puzzle(h, s);
   s = await act(h, s, {action: "skip"});
   s = await start(h, "transfer", {target: p.id}); s = await solve(h, s);
-  assert.equal(s.result.coins, 0); assert.equal(s.score, 100);
+  // The archive replay neither extends the streak nor earns its multiplier.
+  assert.equal(s.result.coins, 0); assert.equal(s.score, 100); assert.equal(s.streak, 0);
+  s = await solve(h, await start(h, "transfer")); assert.equal(s.score, 100);
   s = await solve(h, await start(h, "transfer")); assert.equal(s.score, 120);
   s = await solve(h, await start(h, "transfer")); assert.equal(s.score, 150);
   s = await solve(h, await start(h, "transfer")); assert.equal(s.score, 200);
+});
+test("transfer: archive replays cannot farm the streak, badges or solved count", async () => {
+  const h = harness(); let s = await start(h, "transfer"); const p = puzzle(h, s);
+  s = await act(h, s, {action: "skip"});
+  for (let i = 0; i < 6; i++) {
+    s = await start(h, "transfer", {target: p.id}); s = await solve(h, s);
+  }
+  const st = await h.call("getCareerTransfer", {mode: "transfer"});
+  assert.equal(st.longestStreak, 0);
+  assert.ok(st.badges.every((b) => !b.earned));
+  assert.equal(st.collection.find((x) => x.id === p.id).solved, false);
+});
+test("transfer: five first-play finds pay the streak badge once", async () => {
+  const h = harness({}, {omitEmptyObjects: true}); let s;
+  for (let i = 0; i < 5; i++) s = await solve(h, await start(h, "transfer"));
+  assert.equal(s.result.badge, "streak_5"); assert.equal(s.result.coins, 6 + 10);
+  const st = await h.call("getCareerTransfer", {mode: "transfer"});
+  assert.deepEqual(st.badges.find((b) => b.id === "streak_5"),
+      {id: "streak_5", title: "Keskin Dedektif", target: 5, progress: 5, earned: true, coins: 10, xp: 20});
+  s = await solve(h, await start(h, "transfer"));
+  assert.equal(s.result.badge, undefined);
+});
+test("player search matches each word, so a full first name finds a short one", async () => {
+  const h = harness();
+  const names = async (query) => (await h.call("searchCareerTransfer", {mode: "transfer", version, query},
+      {uid: "alice"})).results.map((p) => p.name);
+  assert.ok((await names("Daniel alves")).includes("Dani Alves"));
+  assert.equal((await names("Cristiano Ronaldo"))[0], "Cristiano Ronaldo");
+  assert.equal((await names("jose sosa"))[0], "José Sosa");
+  assert.deepEqual(await names("zz qq"), []);
+});
+test("transfer: everyone who made the same move answers it, solo and in duels", async () => {
+  const shared = catalog.transfers.find((p) => p.alsoPlayerIds?.some((id) => players.has(id)));
+  assert.ok(catalog.transfers.filter((p) => p.alsoPlayerIds).length > 200);
+  const h = harness();
+  h.seed(`economyState/alice/careerTransfer/collection/transfer__${shared.id}`,
+      {firstAt: 1, difficulty: "normal", last: {score: 0}});
+  let s = await start(h, "transfer", {target: shared.id});
+  const other = shared.alsoPlayerIds.find((id) => players.has(id));
+  s = await act(h, s, {action: "guess", playerId: other});
+  assert.equal(s.finished, true); assert.equal(s.found, true);
+  assert.equal(s.answer.id, other); assert.ok(!s.transfer.alsoBy.includes(players.get(other).name));
+  const {questions} = require("../career_transfer_online");
+  // Duels keep shared moves and accept every player who made them.
+  for (let i = 0; i < 20; i++) {
+    for (const q of questions("transfer_duel", "seed" + i)) {
+      const move = catalog.transfers.find((p) => p.id === q.id);
+      assert.deepEqual(q.accepted, move.alsoPlayerIds ? [move.playerId, ...move.alsoPlayerIds] : undefined);
+    }
+  }
+});
+// Solo levels follow how known the player and both clubs are (the online modes'
+// gameplay rating and club lists), not the database rank that misses many stars.
+// Little-known moves and a reserve side's promotion (Barcelona Atlètic -> Barcelona)
+// stay in the archive but are never asked.
+test("transfer: levels by how known the player and clubs are; obscure and reserve moves are not asked", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const best = new Set(pv.gridClubs.map((k) => Number(k.slice(5))));
+  const known = new Set([...best, ...pv.clubOptions.map((k) => Number(k.slice(5)))]);
+  const rating = (p) => pv.players[String(p.playerId)]?.rating || 0;
+  const asked = catalog.transfers.filter((p) => !p.loan && !p.obscure);
+  for (const p of asked) {
+    const name = players.get(p.playerId).name;
+    if (p.difficulty === "easy") {
+      assert.ok(rating(p) >= 82 && best.has(p.fromClubId) && best.has(p.toClubId) && p.year >= 2008, name);
+    } else if (p.difficulty === "medium") {
+      assert.ok(rating(p) >= 78 && p.year >= 2003 && (best.has(p.fromClubId) || best.has(p.toClubId)) &&
+        known.has(p.fromClubId) && known.has(p.toClubId), name);
+    } else {
+      assert.ok(rating(p) >= 74 && known.has(p.fromClubId) && known.has(p.toClubId) ||
+        rating(p) >= 80 && (known.has(p.fromClubId) || known.has(p.toClubId)), name);
+    }
+  }
+  const mean = (d) => {
+    const xs = asked.filter((p) => p.difficulty === d).map(rating); return xs.reduce((a, b) => a + b, 0) / xs.length;
+  };
+  // Easy is the best known; hard is hard by its clubs or its era as much as by the player.
+  assert.ok(mean("easy") > mean("medium") && mean("easy") > mean("hard"));
+  for (const d of ["easy", "medium", "hard"]) assert.ok(asked.filter((p) => p.difficulty === d).length >= 100, d);
+  const cucurella = catalog.transfers.find((p) => players.get(p.playerId).name === "Marc Cucurella" &&
+    p.year === 2018 && p.toClubId === 131);
+  if (cucurella) assert.equal(cucurella.obscure, true);
+  for (let i = 0; i < 20; i++) {
+    const h = harness(); const s = await start(h, "transfer");
+    assert.notEqual(puzzle(h, s).obscure, true);
+  }
+});
+test("transfer: the nationality hint reads in Turkish", async () => {
+  const p = catalog.transfers.find((x) => !x.loan && !x.obscure && players.get(x.playerId).country === "Germany");
+  const h = harness(); let s = await start(h, "transfer", {difficulty: p.difficulty});
+  const run = privateRun(h, s); h.seed(`economyState/alice/careerTransfer/sessions/${s.id}`, {...run, puzzle: p.id});
+  s = await act(h, s, {action: "hint"});
+  assert.equal(s.hints[0].text, "Almanya");
+});
+// Loans are not career moves: a short spell between two spells at the same club is
+// left out (Emiliano Martínez: Arsenal -> Aston Villa -> Chelsea, not twelve cards of
+// loans), a real return stays (Ronaldo's two Manchester United spells). Levels follow how
+// known the player and his clubs are; little-known careers stay in the archive only.
+test("career: loans left out, levels by how known the player and clubs are", async () => {
+  const pv = require("../pvp_engine").catalog;
+  const known = new Set([...pv.gridClubs, ...pv.clubOptions].map((k) => Number(k.slice(5))));
+  const rating = (p) => pv.players[String(p.playerId)]?.rating || 0;
+  const share = (p) => {
+    const c = cardsOf(p); return c.filter((x) => known.has(x.clubId)).length / c.length;
+  };
+  for (const p of catalog.careers) {
+    const c = cardsOf(p);
+    // No spell, or chain of spells, of three years or less between two spells at one club.
+    for (let i = 0; i < c.length; i++) {
+      const j = c.findIndex((x, k) => k > i + 1 && x.clubId === c[i].clubId);
+      if (j < 0) continue;
+      const away = c.slice(i + 1, j).reduce((n, x) => n + (Date.parse(x.end) - Date.parse(x.start)) / 86400000, 0);
+      assert.ok(away > 1100, players.get(p.playerId).name);
+    }
+  }
+  const asked = catalog.careers.filter((p) => !p.obscure);
+  for (const p of asked) {
+    const name = players.get(p.playerId).name;
+    if (p.difficulty === "beginner") {
+      assert.ok(rating(p) >= 82 && share(p) >= .6 && cardsOf(p).length <= 6, name);
+    } else if (p.difficulty === "normal") assert.ok(rating(p) >= 77 && share(p) >= .4, name);
+    else assert.ok(rating(p) >= 72, name);
+  }
+  for (const d of ["beginner", "normal", "legend"]) assert.ok(asked.filter((p) => p.difficulty === d).length >= 60, d);
+  const martinez = catalog.careers.find((p) => players.get(p.playerId).name === "Emiliano Martínez");
+  if (martinez) assert.ok(cardsOf(martinez).length <= 4);
+  for (let i = 0; i < 15; i++) {
+    const h = harness(); const s = await start(h, "career");
+    assert.notEqual(puzzle(h, s).obscure, true);
+  }
+});
+test("transfer: level filter, one player per pick, detailed position and age hint", async () => {
+  for (const level of ["easy", "medium", "hard"]) {
+    const h = harness(); const s = await start(h, "transfer", {difficulty: level});
+    assert.equal(puzzle(h, s).difficulty, level); assert.equal(s.difficulty, level);
+  }
+  const h = harness(); const seen = new Set();
+  for (let i = 0; i < 6; i++) {
+    const s = await start(h, "transfer"); seen.add(puzzle(h, s).playerId);
+    await act(h, s, {action: "skip"});
+  }
+  assert.equal(seen.size, 6);
+  const withAge = catalog.transfers.find((p) => p.age && p.detailedPosition === "Centre-Forward");
+  const h2 = harness();
+  h2.seed(`economyState/alice/careerTransfer/collection/transfer__${withAge.id}`,
+      {firstAt: 1, difficulty: "normal", last: {score: 0}});
+  let s = await start(h2, "transfer", {target: withAge.id});
+  h2.seed(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`, 2);
+  s = await act(h2, s, {action: "hint", hint: "next"});
+  s = await act(h2, s, {action: "hint", hint: "next"});
+  assert.equal(s.hints[1].text, `Santrfor · transferde ${withAge.age} yaşında`);
+});
+test("transfer: today's file is shared and never ambiguous", async () => {
+  const a = harness(); const b = harness();
+  const s1 = await start(a, "transfer", {daily: true}); const s2 = await start(b, "transfer", {daily: true});
+  assert.equal(privateRun(a, s1).puzzle, privateRun(b, s2).puzzle);
+  assert.equal(puzzle(a, s1).alsoPlayerIds, undefined); assert.notEqual(puzzle(a, s1).difficulty, "hard");
+  assert.ok(s1.daily);
 });
 test("shared daily cap reserves FIFO pending entitlements and retries idempotently", async () => {
   const h = harness({}, {omitEmptyObjects: true});
@@ -168,5 +338,81 @@ test("expired first attempt is archived and cannot regain transfer reward or car
   h.setTime(h.now + 86400001);
   await h.call("getCareerTransfer", {mode: "career"});
   s = await start(h, "career", {target: c.id}); s = await solve(h, s);
-  assert.equal(s.result.coins, 8); assert.equal(s.result.medal, 3);
+  assert.equal(s.result.coins, 0); assert.equal(s.result.medal, 0);
+});
+const careerWhere = (fn) => catalog.careers.find((p) => p.difficulty === "normal" && fn(p));
+const startOn = async (h, p) => {
+  h.seed(`economyState/alice/careerTransfer/collection/career__${p.id}`,
+      {firstAt: 1, difficulty: "normal", last: {score: 0}});
+  return start(h, "career", {target: p.id});
+};
+test("career cards: back-to-back spells merge, returns show a count and never their order", async () => {
+  const back = catalog.careers.find((p) => p.stops.some((x, i) => i && p.stops[i - 1].clubId === x.clubId));
+  if (back) assert.ok(cardsOf(back).length < back.stops.length);
+  for (const p of catalog.careers) {
+    const cards = cardsOf(p);
+    assert.ok(cards.every((c, i) => !i || cards[i - 1].clubId !== c.clubId));
+  }
+  const ret = careerWhere((p) => new Set(cardsOf(p).map((c) => c.clubId)).size < cardsOf(p).length);
+  const h = harness(); const s = await startOn(h, ret);
+  const counts = {};
+  for (const c of cardsOf(ret)) counts[c.clubId] = (counts[c.clubId] || 0) + 1;
+  for (const v of s.stops) {
+    const n = counts[v.club.id];
+    assert.equal(v.visit, n > 1 ? n : null);
+  }
+});
+test("career: the starting order is never already solved and checks grow with career length", async () => {
+  for (const p of catalog.careers.filter((x) => x.difficulty === "normal").slice(0, 25)) {
+    const s = await startOn(harness(), p); const cards = cardsOf(p);
+    assert.ok(s.stops.some((v, i) => v.club.id !== cards[i].clubId));
+    assert.equal(s.maxChecks, maxChecks(cards.length));
+  }
+  assert.deepEqual([3, 5, 6, 8, 9, 12].map(maxChecks), [2, 2, 3, 3, 4, 4]);
+});
+test("career: same-club cards are interchangeable and long careers keep checking", async () => {
+  const long = careerWhere((p) => cardsOf(p).length >= 6);
+  const h = harness(); let s = await startOn(h, long); const cards = cardsOf(long);
+  s = await act(h, s, {action: "guess", playerId: long.playerId});
+  const wrong = [...cards.map((c) => c.id)].reverse();
+  for (let i = 1; i < maxChecks(cards.length); i++) {
+    s = await act(h, s, {action: "order", order: wrong});
+    assert.equal(s.finished, false); assert.match(s.feedback, /kontrol hakkın kaldı/);
+  }
+  s = await act(h, s, {action: "order", order: wrong});
+  assert.equal(s.finished, true);
+  const ret = careerWhere((p) => {
+    const ids = cardsOf(p).map((c) => c.clubId); return ids.some((x, i) => ids.indexOf(x) !== i);
+  });
+  const h2 = harness(); let r = await startOn(h2, ret); const rc = cardsOf(ret);
+  r = await act(h2, r, {action: "guess", playerId: ret.playerId});
+  const order = rc.map((c) => c.id);
+  const i = rc.findIndex((c, k) => rc.findIndex((d) => d.clubId === c.clubId) !== k);
+  const j = rc.findIndex((c) => c.clubId === rc[i].clubId);
+  [order[i], order[j]] = [order[j], order[i]];
+  r = await act(h2, r, {action: "order", order});
+  assert.equal(r.finished, true); assert.equal(r.score, 150);
+});
+test("career: order hints point at different misplaced cards; guess phase has a first letter", async () => {
+  const p = careerWhere((x) => cardsOf(x).length >= 5);
+  const credit = (h, s) => h.seed(`economyState/alice/careerTransfer/sessions/${s.id}/adCredits`, 2);
+  const h = harness(); let s = await startOn(h, p); credit(h, s);
+  s = await act(h, s, {action: "hint", hint: "country"});
+  s = await act(h, s, {action: "hint", hint: "position"});
+  s = await act(h, s, {action: "hint", hint: "letter"});
+  assert.match(s.hints.at(-1).text, /^İlk harf: /);
+  const h2 = harness(); let r = await startOn(h2, p);
+  r = await act(h2, r, {action: "guess", playerId: p.playerId}); credit(h2, r);
+  for (const hint of ["years", "short", "connection"]) r = await act(h2, r, {action: "hint", hint});
+  const texts = r.hints.map((x) => x.text);
+  assert.equal(new Set(texts).size, 3);
+  assert.equal(privateRun(h2, r).hints.map((x) => x.card).filter(Boolean).length, 3);
+  assert.equal(new Set(privateRun(h2, r).hints.map((x) => x.card)).size, 3);
+});
+test("career: today's career is shared by everyone", async () => {
+  const a = harness(); const b = harness();
+  const s1 = await start(a, "career", {daily: true}); const s2 = await start(b, "career", {daily: true});
+  assert.equal(privateRun(a, s1).puzzle, privateRun(b, s2).puzzle);
+  assert.equal(privateRun(a, s1).daily, privateRun(a, s1).daily && String(privateRun(a, s1).daily));
+  assert.equal(puzzle(a, s1).difficulty, "normal");
 });

@@ -29,14 +29,12 @@
               "label": "Derby County"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Alt liglerde yükselen Vardy, Fleetwood Town’daki golcü sezonunun ardından 2012’de Leicester City’ye geçti.",
           "hint": "Altyapısını değil, transferden hemen önce A takımında oynadığı kulübü düşün.",
           "id": "vardy_v2_1",
-          "introNarrative": "En üst seviyeye çıkan her yol, büyük bir akademiden başlamaz. Vardy’nin alt liglerdeki yükselişinde son büyük sıçramadan önceki durağı bul."
+          "introNarrative": "En üst seviyeye çıkan her yol, büyük bir akademiden başlamaz. Vardy’nin alt liglerdeki yükselişinde son büyük sıçramadan önceki durağı bul.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -74,16 +72,12 @@
               "playerId": 31909
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Riyad Mahrez, Kasper Schmeichel ve Danny Drinkwater o şampiyonluk kadrosundaydı. James Maddison kulübe 2018’de katıldı.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "vardy_v2_2",
-          "introNarrative": "Beklentilerin değiştiği o sezonda başarı, aynı hedefe inanan bir kadroyla geldi. Vardy’nin şampiyonluk yolculuğunu kimlerle paylaştığını hatırla."
+          "introNarrative": "Beklentilerin değiştiği o sezonda başarı, aynı hedefe inanan bir kadroyla geldi. Vardy’nin şampiyonluk yolculuğunu kimlerle paylaştığını hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "eraChoice",
@@ -111,14 +105,12 @@
               "playerId": 132098
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "James Maddison 2018–2023 arasında Vardy ile Leicester forması giydi. Kanté ise 2016’da ayrılmıştı.",
           "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
           "id": "vardy_v2_3",
-          "introNarrative": "Unutulmaz bir sezonun ardından kulübün hikâyesi devam etti. Vardy sahadayken kadroya katılan yeni kuşağı, daha önce ayrılan oyunculardan ayır."
+          "introNarrative": "Unutulmaz bir sezonun ardından kulübün hikâyesi devam etti. Vardy sahadayken kadroya katılan yeni kuşağı, daha önce ayrılan oyunculardan ayır.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "timeline",
@@ -142,17 +134,12 @@
               "label": "Leicester City"
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2",
-            "o3"
-          ],
           "requiredCount": 4,
-          "explanation": "Vardy alt liglerde Stocksbridge, Halifax ve Fleetwood basamaklarını geçti. 2012’de Leicester’a katıldı ve 2015/16 şampiyonluğunun başrollerinden biri oldu.",
           "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
           "id": "vardy_v2_4",
-          "introNarrative": "Alt liglerde biriken deneyim, adım adım daha büyük sahnelere taşındı. Vardy’nin erken kariyerindeki basamakları doğru sırayla yeniden kur."
+          "introNarrative": "Alt liglerde biriken deneyim, adım adım daha büyük sahnelere taşındı. Vardy’nin erken kariyerindeki basamakları doğru sırayla yeniden kur.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -188,14 +175,12 @@
               "label": "Nantes"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Kanté, Boulogne’un ardından Caen’de oynadı. 2015 yazında Leicester City’ye transfer oldu.",
           "hint": "İngiltere’ye taşınmadan önceki son Fransız kulübünü düşün.",
           "id": "kante_v2_1",
-          "introNarrative": "Sahanın her köşesine yetişen bir orta saha oyuncusunun çıkışı, Fransa’daki yıllarında şekillendi. İngiltere’ye geçişten hemen önceki durağı hatırla."
+          "introNarrative": "Sahanın her köşesine yetişen bir orta saha oyuncusunun çıkışı, Fransa’daki yıllarında şekillendi. İngiltere’ye geçişten hemen önceki durağı hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -233,16 +218,12 @@
               "playerId": 18922
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Jamie Vardy, Riyad Mahrez ve Kasper Schmeichel, Kanté ile Leicester’ın şampiyonluğunu paylaştı.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "kante_v2_2",
-          "introNarrative": "Kanté’nin ilk İngiltere sezonu, takım halinde yazılan sıra dışı bir hikâyenin parçasıydı. O sezonun kadrosunda birlikte oynadığı isimleri bul."
+          "introNarrative": "Kanté’nin ilk İngiltere sezonu, takım halinde yazılan sıra dışı bir hikâyenin parçasıydı. O sezonun kadrosunda birlikte oynadığı isimleri bul.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "eraChoice",
@@ -270,14 +251,12 @@
               "playerId": 31909
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Eden Hazard ve Kanté bu üç sezonda Chelsea’de birlikte oynadı. Lampard ve Drogba, Kanté gelmeden önce ayrılmıştı.",
           "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
           "id": "kante_v2_3",
-          "introNarrative": "Yeni kulübünde de oyunun dengesini sağlayan isimlerden biri oldu. Kanté’nin Londra’daki ilk sezonlarını düşün ve doğru dönemin oyuncusunu seç."
+          "introNarrative": "Yeni kulübünde de oyunun dengesini sağlayan isimlerden biri oldu. Kanté’nin Londra’daki ilk sezonlarını düşün ve doğru dönemin oyuncusunu seç.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "missingClub",
@@ -301,14 +280,12 @@
               "label": "Al-Ahli"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Kanté, Chelsea’deki yedi sezonun ardından 2023 yazında Al-Ittihad’a katıldı. Bu rota yalnızca o transfere kadar uzanıyor.",
           "hint": "2023 yazındaki Suudi Arabistan transferini hatırla.",
           "id": "kante_v2_4",
-          "introNarrative": "Uzun bir İngiltere döneminin ardından yolculuk başka bir lige uzandı. Kanté’nin bu yeni başlangıcının adresi, rotanın son boşluğunda seni bekliyor."
+          "introNarrative": "Uzun bir İngiltere döneminin ardından yolculuk başka bir lige uzandı. Kanté’nin bu yeni başlangıcının adresi, rotanın son boşluğunda seni bekliyor.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -345,14 +322,12 @@
               "label": "AS Monaco"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Drogba, Le Mans’tan sonra Guingamp’ta forma giydi. Buradaki çıkışı 2003’te Marseille’e transferinin önünü açtı.",
           "hint": "Fransa’daki yükselişinin ara durağını düşün.",
           "id": "drogba_v2_1",
-          "introNarrative": "Drogba’nın yükselişi tek bir transferden ibaret değildi. Fransa’daki ilk basamaklar arasında golcülüğünü geliştirdiği, kolayca atlanan bir dönem var."
+          "introNarrative": "Drogba’nın yükselişi tek bir transferden ibaret değildi. Fransa’daki ilk basamaklar arasında golcülüğünü geliştirdiği, kolayca atlanan bir dönem var.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "clubChoice",
@@ -376,14 +351,12 @@
               "label": "Rennes"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Drogba, Marseille’de geçirdiği 2003/04 sezonunun ardından Chelsea’ye transfer oldu.",
           "hint": "İngiltere’ye geçmeden önceki son sezonunu hatırla.",
           "id": "drogba_v2_2",
-          "introNarrative": "Büyük bir transferin öncesinde, kendini gösterdiği bir sezon bulunur. Drogba’nın İngiltere’ye taşınmadan hemen önce hangi formayla dikkat çektiğini hatırla."
+          "introNarrative": "Büyük bir transferin öncesinde, kendini gösterdiği bir sezon bulunur. Drogba’nın İngiltere’ye taşınmadan hemen önce hangi formayla dikkat çektiğini hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -421,16 +394,12 @@
               "playerId": 581678
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Frank Lampard, John Terry ve Michael Essien bu dönemde Drogba’nın Chelsea takım arkadaşlarıydı.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "drogba_v2_3",
-          "introNarrative": "Kritik anların golcüsü, sahada güçlü ortaklıkların da içindeydi. Drogba’nın Londra’daki uzun döneminde aynı kadroyu paylaştığı iki ismi ara."
+          "introNarrative": "Kritik anların golcüsü, sahada güçlü ortaklıkların da içindeydi. Drogba’nın Londra’daki uzun döneminde aynı kadroyu paylaştığı iki ismi ara.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "timeline",
@@ -454,17 +423,12 @@
               "label": "Galatasaray"
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2",
-            "o3"
-          ],
           "requiredCount": 4,
-          "explanation": "Drogba, Marseille ve Chelsea’nin ardından 2012’de Shanghai Shenhua’ya, 2013’te Galatasaray’a geçti. Çin dönemi, Londra ile İstanbul arasındaki duraktır.",
           "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
           "id": "drogba_v2_4",
-          "introNarrative": "Farklı kıtalara uzanan bu rota, Türkiye’de yeni bir sayfaya bağlandı. Drogba’nın yolculuğunda aradaki kısa durakları da unutmadan sıralamayı kur."
+          "introNarrative": "Farklı kıtalara uzanan bu rota, Türkiye’de yeni bir sayfaya bağlandı. Drogba’nın yolculuğunda aradaki kısa durakları da unutmadan sıralamayı kur.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -499,14 +463,12 @@
               "label": "Trabzonspor"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Arda, Galatasaray altyapısından yetişti ve A takım kaptanlığına kadar yükseldi. Arada 2006’da Manisaspor’da kiralık oynadı.",
           "hint": "Yetiştiği kulüp ile kısa kiralık dönemini birbirinden ayır.",
           "id": "arda_turan_v2_1",
-          "introNarrative": "Altyapıda başlayan bağ, yıllar içinde A takımda sorumluluğa dönüştü. Arda’nın genç bir oyuncudan kaptanlığa uzanan ilk büyük kulüp hikâyesini hatırla."
+          "introNarrative": "Altyapıda başlayan bağ, yıllar içinde A takımda sorumluluğa dönüştü. Arda’nın genç bir oyuncudan kaptanlığa uzanan ilk büyük kulüp hikâyesini hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -544,16 +506,12 @@
               "playerId": 581678
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Koke, Diego Godín ve Radamel Falcao bu aralıkta Arda ile Atlético Madrid forması giydi.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "arda_turan_v2_2",
-          "introNarrative": "İspanya’daki yeni hayat, farklı bir oyun düzenine uyum sağlamayı gerektiriyordu. Arda’nın bu dönemde birlikte mücadele ettiği takım arkadaşlarını seç."
+          "introNarrative": "İspanya’daki yeni hayat, farklı bir oyun düzenine uyum sağlamayı gerektiriyordu. Arda’nın bu dönemde birlikte mücadele ettiği takım arkadaşlarını seç.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "eraChoice",
@@ -581,14 +539,12 @@
               "playerId": 38253
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Lionel Messi bu dönemde Arda ile oynadı. Xavi 2015’te ayrılmıştı; Pedri ve Lewandowski daha sonra geldi.",
           "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
           "id": "arda_turan_v2_3",
-          "introNarrative": "Aynı kulübün tarihindeki bütün yıldızlar aynı anda oynamaz. Arda’nın sahaya çıktığı sezonlara odaklanarak doğru kuşağın içinden bir isim bul."
+          "introNarrative": "Aynı kulübün tarihindeki bütün yıldızlar aynı anda oynamaz. Arda’nın sahaya çıktığı sezonlara odaklanarak doğru kuşağın içinden bir isim bul.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "timeline",
@@ -616,18 +572,12 @@
               "label": "Galatasaray"
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2",
-            "o3",
-            "o4"
-          ],
           "requiredCount": 5,
-          "explanation": "2006’da Galatasaray’a dönen Arda, Atlético ve Barcelona’nın ardından Başakşehir’de kiralık oynadı. 2020’de tekrar Galatasaray’a katıldı. Daha önceki Manisaspor dönemi bu zaman aralığının dışındadır.",
           "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
           "id": "arda_turan_v2_4",
-          "introNarrative": "Yurt dışına çıkış, yeni formalar ve tanıdık bir yere dönüş… Arda’nın bu kariyer kesitinde kiralık dönemin ve dönüşün yerini dikkatle belirle."
+          "introNarrative": "Yurt dışına çıkış, yeni formalar ve tanıdık bir yere dönüş… Arda’nın bu kariyer kesitinde kiralık dönemin ve dönüşün yerini dikkatle belirle.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -662,14 +612,12 @@
               "label": "Bayer Leverkusen"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Özil, Schalke 04’ten Werder Bremen’e geçti. 2010’daki bir sonraki durağı Real Madrid oldu.",
           "hint": "İspanya’ya geçmeden önceki son Alman kulübünü düşün.",
           "id": "ozil_v2_1",
-          "introNarrative": "Oyunu görüşüyle öne çıkan genç bir futbolcu, büyük transferin eşiğindeydi. Özil’in Almanya’dan İspanya’ya geçmeden önceki kulübünü hatırla."
+          "introNarrative": "Oyunu görüşüyle öne çıkan genç bir futbolcu, büyük transferin eşiğindeydi. Özil’in Almanya’dan İspanya’ya geçmeden önceki kulübünü hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -707,16 +655,12 @@
               "playerId": 371998
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Cristiano Ronaldo, Sergio Ramos ve Karim Benzema bu dönemde Özil ile Real Madrid forması giydi.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "ozil_v2_2",
-          "introNarrative": "Pas yollarını açan oyuncunun çevresinde koşular yapan, mücadele eden bir takım vardı. Özil’in İspanya yıllarında aynı formayı giydiği isimleri seç."
+          "introNarrative": "Pas yollarını açan oyuncunun çevresinde koşular yapan, mücadele eden bir takım vardı. Özil’in İspanya yıllarında aynı formayı giydiği isimleri seç.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "eraChoice",
@@ -744,14 +688,12 @@
               "playerId": 581678
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Alexis Sánchez bu sezonlarda Özil’in Arsenal takım arkadaşıydı.",
           "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
           "id": "ozil_v2_3",
-          "introNarrative": "İngiltere’de yeni bir takımın oyununa yön verirken çevresindeki isimler de değişti. Özil’in soruda belirtilen sezonlarını dikkatle ayırt et."
+          "introNarrative": "İngiltere’de yeni bir takımın oyununa yön verirken çevresindeki isimler de değişti. Özil’in soruda belirtilen sezonlarını dikkatle ayırt et.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "timeline",
@@ -779,18 +721,12 @@
               "label": "Fenerbahçe"
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2",
-            "o3",
-            "o4"
-          ],
           "requiredCount": 5,
-          "explanation": "Bu rota Schalke, Bremen, Real Madrid, Arsenal ve 2021’de Fenerbahçe şeklindedir. Kariyerinin sonraki Başakşehir dönemi bu sorunun zaman sınırının dışındadır.",
           "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
           "id": "ozil_v2_4",
-          "introNarrative": "Farklı ülkelerde açılan kariyer sayfaları sonunda Türkiye’ye uzandı. Özil’in bu ilk Türkiye transferine kadar olan yolunu, başlangıcından itibaren birleştir."
+          "introNarrative": "Farklı ülkelerde açılan kariyer sayfaları sonunda Türkiye’ye uzandı. Özil’in bu ilk Türkiye transferine kadar olan yolunu, başlangıcından itibaren birleştir.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -825,14 +761,12 @@
               "label": "AZ Alkmaar"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Eriksen, Ajax A takımında kendini gösterdikten sonra 2013’te Tottenham’a geçti.",
           "hint": "İngiltere’den önceki Hollanda yıllarını düşün.",
           "id": "eriksen_v2_1",
-          "introNarrative": "Genç bir oyun kurucunun Avrupa’da kendini göstermesi, büyük lig transferinden önce başladı. Eriksen’in Hollanda’daki gelişim döneminin kulübünü hatırla."
+          "introNarrative": "Genç bir oyun kurucunun Avrupa’da kendini göstermesi, büyük lig transferinden önce başladı. Eriksen’in Hollanda’daki gelişim döneminin kulübünü hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -870,16 +804,12 @@
               "playerId": 31909
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Harry Kane, Heung-min Son ve Hugo Lloris, Eriksen’in Tottenham takım arkadaşlarıydı. Modrić 2012’de ayrılmıştı.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "eriksen_v2_2",
-          "introNarrative": "Orta sahadan kurulan bağlantılar, uzun sezonlar boyunca ortaklıklara dönüştü. Eriksen’in İngiltere’deki bu döneminde beraber oynadığı iki futbolcuyu bul."
+          "introNarrative": "Orta sahadan kurulan bağlantılar, uzun sezonlar boyunca ortaklıklara dönüştü. Eriksen’in İngiltere’deki bu döneminde beraber oynadığı iki futbolcuyu bul.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "eraChoice",
@@ -907,14 +837,12 @@
               "playerId": 8198
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Romelu Lukaku ve Eriksen, Inter’in 2020/21 lig şampiyonluğu kadrosundaydı.",
           "hint": "Oyuncuların kulübe geliş ve ayrılış dönemlerini karşılaştır.",
           "id": "eriksen_v2_3",
-          "introNarrative": "İtalya’da geçen kariyer sayfası bir şampiyonluk kadrosuna bağlandı. Eriksen’in o tek sezonunu düşünerek farklı dönemlerden gelen adayları ayır."
+          "introNarrative": "İtalya’da geçen kariyer sayfası bir şampiyonluk kadrosuna bağlandı. Eriksen’in o tek sezonunu düşünerek farklı dönemlerden gelen adayları ayır.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "missingClub",
@@ -938,14 +866,12 @@
               "label": "Aston Villa"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Eriksen, Brentford’da sahalara döndükten sonra 2022 yazında Manchester United’a katıldı. Rota o transferde sona eriyor.",
           "hint": "2022 yazında katıldığı İngiliz kulübünü düşün.",
           "id": "eriksen_v2_4",
-          "introNarrative": "Sahaya dönüşün ardından yeni bir başlangıç daha geldi. Eriksen’in bu kariyer kesitinde, kısa İngiltere döneminden sonraki transfer durağını tamamla."
+          "introNarrative": "Sahaya dönüşün ardından yeni bir başlangıç daha geldi. Eriksen’in bu kariyer kesitinde, kısa İngiltere döneminden sonraki transfer durağını tamamla.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -981,14 +907,12 @@
               "label": "Grasshoppers"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Salah, Mısır’daki başlangıcının ardından 2012’de Basel’e geçti. Burada gösterdiği performans onu Chelsea’ye taşıdı.",
           "hint": "İsviçre’de başlayan Avrupa kariyerini düşün.",
           "id": "salah_v2_1",
-          "introNarrative": "Mısır’dan Avrupa’ya açılan yol, ilk büyük lig deneyiminden önce başlamıştı. Salah’ın yeni bir futbol ortamıyla tanıştığı ilk Avrupa durağını bul."
+          "introNarrative": "Mısır’dan Avrupa’ya açılan yol, ilk büyük lig deneyiminden önce başlamıştı. Salah’ın yeni bir futbol ortamıyla tanıştığı ilk Avrupa durağını bul.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "missingClub",
@@ -1012,14 +936,12 @@
               "label": "Inter"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Salah, Fiorentina’nın ardından Roma’da oynadı ve 2017’de Liverpool’a transfer oldu.",
           "hint": "İtalya’da geçirdiği ikinci dönemi düşün.",
           "id": "salah_v2_2",
-          "introNarrative": "Kariyerde yükseliş bazen farklı bir ülkede yeniden şekillenir. Salah’ın İngiltere’ye dönüşünden önceki İtalya döneminde eksik kalan kulübü hatırla."
+          "introNarrative": "Kariyerde yükseliş bazen farklı bir ülkede yeniden şekillenir. Salah’ın İngiltere’ye dönüşünden önceki İtalya döneminde eksik kalan kulübü hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -1057,16 +979,12 @@
               "playerId": 31909
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Sadio Mané, Roberto Firmino ve Jordan Henderson bu sezonlarda Salah ile Liverpool forması giydi.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "salah_v2_3",
-          "introNarrative": "Birbirini tamamlayan hücum oyuncuları, takımın hafızasında birlikte yer edinir. Salah’ın bu İngiltere sezonlarında aynı formayı paylaştığı isimleri seç."
+          "introNarrative": "Birbirini tamamlayan hücum oyuncuları, takımın hafızasında birlikte yer edinir. Salah’ın bu İngiltere sezonlarında aynı formayı paylaştığı isimleri seç.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "timeline",
@@ -1094,18 +1012,12 @@
               "label": "Liverpool"
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2",
-            "o3",
-            "o4"
-          ],
           "requiredCount": 5,
-          "explanation": "Salah’ın Avrupa rotası Basel, Chelsea, Fiorentina, Roma ve 2017’de Liverpool sırasını izledi. İtalya’da yeniden yükselip İngiltere’ye döndü.",
           "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
           "id": "salah_v2_4",
-          "introNarrative": "İlk Avrupa adımı, kiralık dönemler ve yeniden yükseliş… Salah’ın farklı formalar arasında ilerleyen yolculuğunun sırasını, belirtilen zaman aralığında kur."
+          "introNarrative": "İlk Avrupa adımı, kiralık dönemler ve yeniden yükseliş… Salah’ın farklı formalar arasında ilerleyen yolculuğunun sırasını, belirtilen zaman aralığında kur.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [
@@ -1140,14 +1052,12 @@
               "label": "SC Braga"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Falcao’nun ilk Avrupa durağı Porto oldu. 2009–2011 arasında burada oynayıp golcülüğünü Avrupa sahnesine taşıdı.",
           "hint": "Portekiz’deki ilk dönemini düşün.",
           "id": "falcao_v2_1",
-          "introNarrative": "Güney Amerika’da gelişen bir golcü, Avrupa’da kendini kanıtlamaya hazırlanıyordu. Falcao’nun kıta değiştirdiğinde katıldığı ilk kulübü hatırla."
+          "introNarrative": "Güney Amerika’da gelişen bir golcü, Avrupa’da kendini kanıtlamaya hazırlanıyordu. Falcao’nun kıta değiştirdiğinde katıldığı ilk kulübü hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "teammate",
@@ -1185,16 +1095,12 @@
               "playerId": 418560
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2"
-          ],
           "requiredCount": 2,
-          "explanation": "Arda Turan, Koke ve Diego Godín bu yıllarda Falcao’nun Atlético Madrid takım arkadaşlarıydı.",
           "hint": "Aynı kulüp yetmez. Sorudaki yıllarda birlikte oynamış olmaları gerekiyor.",
           "id": "falcao_v2_2",
-          "introNarrative": "İspanya yılları, golcünün çevresindeki takım düzeniyle birlikte hatırlanır. Falcao’nun o dönemde birlikte sahaya çıktığı iki ismi seç."
+          "introNarrative": "İspanya yılları, golcünün çevresindeki takım düzeniyle birlikte hatırlanır. Falcao’nun o dönemde birlikte sahaya çıktığı iki ismi seç.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "missingClub",
@@ -1218,14 +1124,12 @@
               "label": "Liverpool"
             }
           ],
-          "answerKeys": [
-            "o0"
-          ],
           "requiredCount": 1,
-          "explanation": "Falcao, 2014/15 sezonunda Manchester United’a kiralandı. Chelsea’deki kiralık sezonu 2015/16’ydı; bu yüzden burada doğru cevap Chelsea değil.",
           "hint": "İngiltere’deki iki kiralık döneminden önce geleni düşün.",
           "id": "falcao_v2_3",
-          "introNarrative": "Kiralık transferler, kariyer haritalarında kolayca birbirine karışabilir. Falcao’nun İngiltere’deki iki ayrı sezonundan hangisinin önce geldiğini hatırla."
+          "introNarrative": "Kiralık transferler, kariyer haritalarında kolayca birbirine karışabilir. Falcao’nun İngiltere’deki iki ayrı sezonundan hangisinin önce geldiğini hatırla.",
+          "serverValidated": true,
+          "legacyHints": true
         },
         {
           "type": "timeline",
@@ -1253,18 +1157,12 @@
               "label": "Galatasaray"
             }
           ],
-          "answerKeys": [
-            "o0",
-            "o1",
-            "o2",
-            "o3",
-            "o4"
-          ],
           "requiredCount": 5,
-          "explanation": "Seçilen durakların sırası River, Porto, Atlético, Monaco ve Galatasaray’dır. Arada United ve Chelsea’de kiralık oynayıp Monaco’ya döndü; 2019’da Galatasaray’a geçti.",
           "hint": "Bir kulübe dönüş varsa aynı kulüp rotada yeniden yer alır.",
           "id": "falcao_v2_4",
-          "introNarrative": "Her kariyer özeti bütün durakları içermez. Falcao’nun burada seçilmiş kulüplerini düşün; dönüşleri değil, bu formalara ilk katılma sırasını izle."
+          "introNarrative": "Her kariyer özeti bütün durakları içermez. Falcao’nun burada seçilmiş kulüplerini düşün; dönüşleri değil, bu formalara ilk katılma sırasını izle.",
+          "serverValidated": true,
+          "legacyHints": true
         }
       ],
       "sources": [

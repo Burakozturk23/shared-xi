@@ -716,8 +716,9 @@ class GameDataV4QueryService {
   Future<bool> hasClubCountryMatch(int clubId, String country) async {
     if (clubId <= 0) return false;
 
-    final canonicalCountry = CountryNames.canonical(country);
-    if (canonicalCountry.isEmpty) return false;
+    final variants = CountryNames.variants(country);
+    if (variants.isEmpty) return false;
+    final marks = _placeholders(variants.length);
 
     await initialize();
 
@@ -729,17 +730,17 @@ class GameDataV4QueryService {
         ON pc.player_id = p.id
       WHERE pc.club_id = ?
         AND (
-          p.country = ? COLLATE NOCASE
+          p.country COLLATE NOCASE IN ($marks)
           OR EXISTS (
             SELECT 1
             FROM player_countries pn
             WHERE pn.player_id = p.id
-              AND pn.country = ? COLLATE NOCASE
+              AND pn.country COLLATE NOCASE IN ($marks)
           )
         )
       LIMIT 1
       ''',
-      <Object?>[clubId, canonicalCountry, canonicalCountry],
+      <Object?>[clubId, ...variants, ...variants],
     );
 
     return rows.isNotEmpty;
@@ -816,21 +817,25 @@ class GameDataV4QueryService {
         ''';
 
       case MatchEntityType.country:
-        final country = CountryNames.canonical(entity.countryName ?? '');
-        if (country.isEmpty) return '0 = 1';
-        args.add(country);
-        args.add(country);
+        final variants = CountryNames.variants(entity.countryName ?? '');
+        if (variants.isEmpty) return '0 = 1';
+        final marks = _placeholders(variants.length);
+        args
+          ..addAll(variants)
+          ..addAll(variants);
         return '''
           (
-            p.country = ? COLLATE NOCASE
+            p.country COLLATE NOCASE IN ($marks)
             OR EXISTS (
               SELECT 1
               FROM player_countries pn$slot
               WHERE pn$slot.player_id = p.id
-                AND pn$slot.country = ? COLLATE NOCASE
+                AND pn$slot.country COLLATE NOCASE IN ($marks)
             )
           )
         ''';
     }
   }
+
+  static String _placeholders(int n) => List.filled(n, '?').join(', ');
 }

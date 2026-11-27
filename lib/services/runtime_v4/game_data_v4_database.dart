@@ -12,7 +12,7 @@ class GameDataV4Database {
       GameDataV4Database._();
 
   static const String _dbAsset =
-      'assets/runtime/linkball_game_data_v4.sqlite';
+      'assets/runtime/linkball_game_data_v4.sqlite.gz';
 
   static const String _manifestAsset =
       'assets/runtime/linkball_game_data_v4_manifest.json';
@@ -150,10 +150,17 @@ class GameDataV4Database {
         _dbAsset,
       );
 
-      if (data.lengthInBytes != expectedBytes) {
+      final compressed = data.buffer.asUint8List(
+        data.offsetInBytes,
+        data.lengthInBytes,
+      );
+
+      final bytes = Uint8List.fromList(gzip.decode(compressed));
+
+      if (bytes.length != expectedBytes) {
         throw StateError(
           'V4 asset size mismatch: '
-          '${data.lengthInBytes} != $expectedBytes',
+          '${bytes.length} != $expectedBytes',
         );
       }
 
@@ -164,11 +171,6 @@ class GameDataV4Database {
       if (await tmp.exists()) {
         await tmp.delete();
       }
-
-      final bytes = data.buffer.asUint8List(
-        data.offsetInBytes,
-        data.lengthInBytes,
-      );
 
       await tmp.writeAsBytes(
         bytes,

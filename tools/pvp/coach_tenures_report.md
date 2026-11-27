@@ -1,0 +1,134 @@
+# Teknik direktör görev geçmişi raporu
+
+- Fatih Terim: "Turkey at the UEFA European Championship 2016" (Turkey, Q22002178) eşlenemedi
+- Fatih Terim: 13 görev
+- Şenol Güneş: görevler elle tablodan (12)
+- Şenol Güneş: 12 görev
+- Mustafa Denizli: görevler elle tablodan (12)
+- Mustafa Denizli: 12 görev
+- Abdullah Avcı: görevler elle tablodan (5)
+- Abdullah Avcı: 5 görev
+- Ersun Yanal: görevler elle tablodan (13)
+- Ersun Yanal: 13 görev
+- Okan Buruk: görevler elle tablodan (8)
+- Okan Buruk: 8 görev
+- Jorge Jesus: "C.F. União" (Portugal, Q1762119) eşlenemedi
+- Jorge Jesus: "Amora F.C." (Portugal, Q2843873) eşlenemedi
+- Jorge Jesus: 21 görev
+- Mircea Lucescu: "FC Dinamo Bucharest" (Romania, Q204237) eşlenemedi
+- Mircea Lucescu: "FC Rapid București" (Romania, Q245162) eşlenemedi
+- Mircea Lucescu: "FC Rapid București" (Romania, Q245162) eşlenemedi
+- Mircea Lucescu: "FC Corvinul Hunedoara" (Romania, Q1135735) eşlenemedi
+- Mircea Lucescu: 12 görev
+- Ertuğrul Sağlam: görevler elle tablodan (11)
+- Ertuğrul Sağlam: 11 görev
+- Rıza Çalımbay: görevler elle tablodan (17)
+- Rıza Çalımbay: 17 görev
+- Ünal Karaman: görevler elle tablodan (7)
+- Ünal Karaman: 7 görev
+- Hamza Hamzaoğlu: görevler elle tablodan (14)
+- Hamza Hamzaoğlu: 14 görev
+- Aykut Kocaman: görevler elle tablodan (10)
+- Aykut Kocaman: 10 görev
+- Sergen Yalçın: görevler elle tablodan (11)
+- Sergen Yalçın: 11 görev
+- İsmail Kartal: görevler elle tablodan (14)
+- İsmail Kartal: 14 görev
+- Christoph Daum: "FK Austria Wien" (Austria, Q131209) eşlenemedi
+- Christoph Daum: 12 görev
+- Guus Hiddink: 10 görev
+- Vítor Pereira: "2012–13 F.C. Porto season" (Portugal, Q3023986) eşlenemedi
+- Vítor Pereira: 5 görev
+- Phillip Cocu: 6 görev
+- Slaven Bilić: "Al Fateh SC" başlangıç tarihi yok, atlandı
+- Slaven Bilić: 10 görev
+- Ole Gunnar Solskjær: "Manchester United F.C. Reserves and Academy" (United Kingdom, Q2593147) eşlenemedi
+- Ole Gunnar Solskjær: "Manchester United F.C. Reserves and Academy" (United Kingdom, Q2593147) eşlenemedi
+- Ole Gunnar Solskjær: 6 görev
+- Vincenzo Montella: "Turkey at the UEFA European Championship 2024" (Turkey, Q123862221) eşlenemedi
+- Vincenzo Montella: 9 görev
+- Igor Tudor: 13 görev
+- Nuri Şahin: 4 görev
+- José Mourinho: "FC Barcelona" 2013-07-01 elle çıkarıldı
+- José Mourinho: "Alianza Cristiana" (Peru, Q8347042) eşlenemedi
+- José Mourinho: 18 görev
+- Pep Guardiola: "2009–10 FC Barcelona season" (Spain, Q135755) eşlenemedi
+- Pep Guardiola: "2011–12 FC Barcelona season" (Spain, Q135775) eşlenemedi
+- Pep Guardiola: "2010–11 FC Barcelona season" (Spain, Q135820) eşlenemedi
+- Pep Guardiola: "2008–09 FC Barcelona season" (Spain, Q170605) eşlenemedi
+- Pep Guardiola: "Lionel Messi" (, Q615) eşlenemedi
+- Pep Guardiola: "2022–23 Manchester City F.C. season" (, Q111982593) eşlenemedi
+- Pep Guardiola: 8 görev
+- Carlo Ancelotti: "2003–04 A.C. Milan season" (Italy, Q3626095) eşlenemedi
+- Carlo Ancelotti: 18 görev
+- Jürgen Klopp: 3 görev
+- Alex Ferguson: "East Stirlingshire F.C." (United Kingdom, Q1387066) eşlenemedi
+- Alex Ferguson: "East Stirlingshire F.C." (United Kingdom, Q1387066) eşlenemedi
+- Alex Ferguson: 3 görev
+- Arsène Wenger: 5 görev
+- Zinedine Zidane: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
+- Zinedine Zidane: "2019–20 Real Madrid CF season" (Spain, Q63036025) eşlenemedi
+- Zinedine Zidane: 4 görev
+- Diego Simeone: "SSC Napoli" 2024-01-06 elle çıkarıldı
+- Diego Simeone: 8 görev
+- Antonio Conte: "Italy at the UEFA European Championship 2016" (Italy, Q22002167) eşlenemedi
+- Antonio Conte: 14 görev
+- Massimiliano Allegri: "Ars et Labor Ferrara Calcio" (Italy, Q13385) eşlenemedi
+- Massimiliano Allegri: 18 görev
+- Rafael Benítez: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
+- Rafael Benítez: "Real Madrid Castilla" (Spain, Q12217) eşlenemedi
+- Rafael Benítez: "Dalian Professional F.C." başlangıç tarihi yok, atlandı
+- Rafael Benítez: "2001–02 Valencia CF season" (Spain, Q4007629) eşlenemedi
+- Rafael Benítez: "Real Madrid Juvenil" (Spain, Q6101985) eşlenemedi
+- Rafael Benítez: 17 görev
+- Jupp Heynckes: "2012–13 FC Bayern Munich season" (Germany, Q3755332) eşlenemedi
+- Jupp Heynckes: "FC Bayern Munich squad" (, Q14736182) eşlenemedi
+- Jupp Heynckes: 14 görev
+- Louis van Gaal: "Royal Dutch Football Association" (Netherlands, Q213116) eşlenemedi
+- Louis van Gaal: "2002–03 FC Barcelona season" (Spain, Q2364922) eşlenemedi
+- Louis van Gaal: "1997–98 FC Barcelona season" (Spain, Q3755046) eşlenemedi
+- Louis van Gaal: "1998–99 FC Barcelona season" (Spain, Q3755048) eşlenemedi
+- Louis van Gaal: "1999–2000 FC Barcelona season" (Spain, Q3755049) eşlenemedi
+- Louis van Gaal: 7 görev
+- Thomas Tuchel: "FC Augsburg II" (Germany, Q5424829) eşlenemedi
+- Thomas Tuchel: "FC Augsburg II" (Germany, Q5424829) eşlenemedi
+- Thomas Tuchel: "1.FSV Mainz 05 under 19" (Germany, Q62018651) eşlenemedi
+- Thomas Tuchel: "1.FSV Mainz 05 under 19" (Germany, Q62018651) eşlenemedi
+- Thomas Tuchel: "FC Augsburg under-19" (, Q62018657) eşlenemedi
+- Thomas Tuchel: "FC Augsburg under-19" (, Q62018657) eşlenemedi
+- Thomas Tuchel: 7 görev
+- Mauricio Pochettino: "Lionel Messi" (, Q615) eşlenemedi
+- Mauricio Pochettino: 6 görev
+- Luis Enrique: "Lionel Messi" (, Q615) eşlenemedi
+- Luis Enrique: "2014–15 FC Barcelona season" (Spain, Q16746637) eşlenemedi
+- Luis Enrique: "2015–16 FC Barcelona season" (Spain, Q19885911) eşlenemedi
+- Luis Enrique: "2016–17 FC Barcelona season" (Spain, Q24073885) eşlenemedi
+- Luis Enrique: 5 görev
+- Claudio Ranieri: "Vigor Lamezia" (Italy, Q1948889) eşlenemedi
+- Claudio Ranieri: "Vigor Lamezia" (Italy, Q1948889) eşlenemedi
+- Claudio Ranieri: "1998–99 Valencia CF season" (Spain, Q4594404) eşlenemedi
+- Claudio Ranieri: 26 görev
+- Roberto Mancini: "Italian Football Federation" (Italy, Q201897) eşlenemedi
+- Roberto Mancini: "Italy at the UEFA European Championship 2020" (Italy, Q78514643) eşlenemedi
+- Roberto Mancini: 10 görev
+- Luciano Spalletti: "Italian Football Federation" (Italy, Q201897) eşlenemedi
+- Luciano Spalletti: "Italy at the UEFA European Championship 2024" (Italy, Q123984543) eşlenemedi
+- Luciano Spalletti: 18 görev
+- Unai Emery: 9 görev
+- Hansi Flick: "2024–25 FC Barcelona season" (Spain, Q125821538) eşlenemedi
+- Hansi Flick: "2025-26 FC Barcelona season" (Spain, Q134625282) eşlenemedi
+- Hansi Flick: 5 görev
+- Xabi Alonso: "Real Sociedad B" (Spain, Q1067750) eşlenemedi
+- Xabi Alonso: "Real Sociedad B" (Spain, Q1067750) eşlenemedi
+- Xabi Alonso: 3 görev
+- Mikel Arteta: 1 görev
+- Erik ten Hag: "FC Bayern Munich II" (Germany, Q994701) eşlenemedi
+- Erik ten Hag: "FC Bayern Munich II" (Germany, Q994701) eşlenemedi
+- Erik ten Hag: "2023–24 Manchester United F.C. season" (United Kingdom, Q117428134) eşlenemedi
+- Erik ten Hag: "2024–25 Manchester United F.C. season" (United Kingdom, Q124971712) eşlenemedi
+- Erik ten Hag: 6 görev
+- Julian Nagelsmann: "German Football Association" (Germany, Q154191) eşlenemedi
+- Julian Nagelsmann: "Germany at the UEFA European Championship 2024" (Germany, Q123951964) eşlenemedi
+- Julian Nagelsmann: 3 görev
+- Simone Inzaghi: "2018–19 S.S. Lazio season" (Italy, Q55388556) eşlenemedi
+- Simone Inzaghi: 5 görev

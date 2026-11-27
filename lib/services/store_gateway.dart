@@ -11,6 +11,8 @@ class StoreGateway {
   Future<EconomyPurchaseResult> purchase(StoreOffer offer) =>
       StoreService.purchase(offer);
   Future<void> equip(String itemId) => StoreService.equip(itemId);
+  Future<Map<String, int>> convertLegacy() =>
+      StoreService.convertLegacyBoosts();
   Future<int> consume(String itemId, String modeId, String roundId) =>
       StoreService.consume(itemId: itemId, modeId: modeId, roundId: roundId);
   Future<void> view() => MonetizationAnalytics.instance.surfaceViewed('store');

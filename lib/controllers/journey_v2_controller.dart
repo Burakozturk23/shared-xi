@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../app/app_feedback.dart';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../models/journey_task.dart';
@@ -103,17 +104,26 @@ class JourneyV2Controller extends ChangeNotifier {
     if (task.serverValidated) {
       await _persist(checkpoint!);
       if (verify == null) throw StateError('Sunucu doğrulaması gerekli.');
-      results[task.id] = await verify!(task, List<String>.from(selected));
+      try {
+        results[task.id] = await verify!(task, List<String>.from(selected));
+      } on StateError catch (e) {
+        if ('$e'.contains('doğru değil')) AppFeedback.answer(correct: false);
+        rethrow;
+      }
       if (_disposed) return;
     } else if (!task.accepts(selected)) {
+      AppFeedback.answer(correct: false);
       message = task.isTimeline ? 'Bu sıra uyuşmadı. Durakları değiştirip tekrar dene.' : 'Bu seçim döneme uymadı. Tekrar deneyebilirsin.'; return;
     }
+    AppFeedback.answer(correct: true);
     if (!task.serverValidated) await onSolved?.call(task, List<String>.from(selected));
     await _save(JourneyCheckpoint(index: checkpoint!.index, solved: checkpoint!.index + 1));
   });
   Future<void> next() => _run(() async {
     final state = checkpoint;
     if (state == null || !state.reviewing || state.complete) return;
+    // The saved draft belongs to the next task: never carry the solved answer over.
+    selected = [];
     await _save(JourneyCheckpoint(index: state.index + 1, solved: state.solved));
     _prepare();
   });

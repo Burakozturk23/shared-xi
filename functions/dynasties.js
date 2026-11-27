@@ -2,6 +2,7 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/dynasties_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
 const catalog = {...baseCatalog, tasks: [...baseCatalog.tasks, ...expansion.dynastyTasks],
   dynasties: [...baseCatalog.dynasties, ...expansion.dynasties]};
 const tasks = Object.fromEntries(catalog.tasks.map((t) => [t.id, t]));
@@ -17,8 +18,9 @@ function accepts(t, answers) {
     answers.every((a, i) => a === t.answerKeys[i]);
 }
 const completedDynasties = (s) => catalog.dynasties.filter((d) => d.taskIds.every((id) => s.completed[id]));
-function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
-  const ref = (uid) => db.ref("dynastiesState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, isPro, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("dynastiesState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   function check(input) {
     if (input.version !== catalog.version) {
@@ -40,6 +42,8 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     for (const m of catalog.economy.milestones) {
       if (count >= m.count) earn("milestone_" + m.count, m.coins, m.xp);
     }
+    // Every dynasty of the full catalog (base + expansion): its own receipt.
+    if (count === catalog.dynasties.length) earn(Finals.KEY, Finals.FINALS.dynasties.coins, Finals.FINALS.dynasties.xp);
     return s;
   }
   async function reconcile(uid) {
@@ -73,7 +77,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
     return {version: catalog.version, rewardEligible: eligible, pro: eligible && await isPro(uid),
       results: Object.fromEntries(Object.keys(s.completed).filter((id) => Object.hasOwn(tasks, id))
           .map((id) => [id, tasks[id].result])),
-      rewards: s.rewards,
+      rewards: s.rewards, expansionFinal: Finals.view("dynasties", s.rewards),
       seals: Object.fromEntries(seals.map((d) => [d.id, {story: d.story,
         earnedAt: Math.max(...d.taskIds.map((id) => s.completed[id]))}])),
       historian: baseCatalog.dynasties.every((d) => d.taskIds.every((id) => s.completed[id])),
@@ -83,7 +87,12 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   async function submit(uid, input, eligible = true) {
     const t = check(input);
     if (!available(await get(uid), t)) throw new RewardError("failed-precondition", "Önce Yükseliş görevini tamamla.");
-    if (!accepts(t, input.answers)) return {correct: false};
+    await attempts.before(uid, "dynasties", t.id);
+    if (!accepts(t, input.answers)) {
+      await attempts.wrong(uid, "dynasties", t.id, input.answers);
+      return {correct: false};
+    }
+    await attempts.solved(uid, "dynasties", t.id);
     const tx = await ref(uid).transaction((raw) => {
       const s = stateOf(raw);
       if (!available(s, t)) return raw; // A cold null snapshot must be retried by RTDB.
@@ -98,6 +107,7 @@ function createService({db, grantCoins, grantXp, chargeHint, isPro, now = Date.n
   }
   async function hint(uid, input, eligible = true) {
     const t = check(input);
+    await documentRef?.guardHint?.(uid, t.id);
     if (!eligible) throw new RewardError("permission-denied", "Ek yardım için Google hesabına bağlan.");
     const s = await get(uid);
     if (!available(s, t)) throw new RewardError("failed-precondition", "Önce Yükseliş görevini tamamla.");

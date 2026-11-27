@@ -1,6 +1,62 @@
 {
-  "version": 8,
+  "version": 10,
   "offers": [
+    {
+      "offerId": "avatar_speedster_bolt",
+      "itemId": "speedster_bolt",
+      "itemType": "avatar",
+      "category": "classic",
+      "title": "Şimşek",
+      "subtitle": "Hız tutkunları için Linkball avatarı.",
+      "badge": "LINKBALL",
+      "priceCoins": 300,
+      "oneTime": true,
+      "units": 1,
+      "enabled": true,
+      "sortOrder": 96
+    },
+    {
+      "offerId": "avatar_tactician_board",
+      "itemId": "tactician_board",
+      "itemType": "avatar",
+      "category": "classic",
+      "title": "Taktisyen",
+      "subtitle": "Oyunu tahtada kazananlar için Linkball avatarı.",
+      "badge": "LINKBALL",
+      "priceCoins": 300,
+      "oneTime": true,
+      "units": 1,
+      "enabled": true,
+      "sortOrder": 97
+    },
+    {
+      "offerId": "avatar_night_owl",
+      "itemId": "night_owl",
+      "itemType": "avatar",
+      "category": "classic",
+      "title": "Gece Kuşu",
+      "subtitle": "Gece maçlarının Linkball avatarı.",
+      "badge": "LINKBALL",
+      "priceCoins": 450,
+      "oneTime": true,
+      "units": 1,
+      "enabled": true,
+      "sortOrder": 98
+    },
+    {
+      "offerId": "avatar_champion_cup",
+      "itemId": "champion_cup",
+      "itemType": "avatar",
+      "category": "classic",
+      "title": "Şampiyon",
+      "subtitle": "Kupa koleksiyonunun Linkball avatarı.",
+      "badge": "LINKBALL",
+      "priceCoins": 450,
+      "oneTime": true,
+      "units": 1,
+      "enabled": true,
+      "sortOrder": 99
+    },
     {
       "offerId": "avatar_cristiano_ronaldo",
       "itemId": "persona_cristiano_ronaldo",
@@ -899,7 +955,7 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "İlk Harf",
-      "subtitle": "Futbol Lingo, Mystery Player ve Transfer Detective",
+      "subtitle": "Futbolcunun adının ilk harfini açar. Sonuç Yardımlı olarak kaydedilir.",
       "badge": "TEK KULLANIM",
       "priceCoins": 25,
       "oneTime": false,
@@ -918,7 +974,7 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "İlk Harf · 3 kullanım",
-      "subtitle": "Futbol Lingo, Mystery Player ve Transfer Detective",
+      "subtitle": "Futbolcunun adının ilk harfini açar. Sonuç Yardımlı olarak kaydedilir.",
       "badge": "3’LÜ PAKET",
       "priceCoins": 65,
       "oneTime": false,
@@ -937,7 +993,7 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Son Harf",
-      "subtitle": "Futbol Lingo, Mystery Player ve Transfer Detective",
+      "subtitle": "Futbolcunun adının son harfini açar. Klasik modlarda kullanılır.",
       "badge": "TEK KULLANIM",
       "priceCoins": 25,
       "oneTime": false,
@@ -948,7 +1004,8 @@
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 141
+      "sortOrder": 141,
+      "legacyOnly": true
     },
     {
       "offerId": "boost_last_letter_3",
@@ -956,7 +1013,7 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Son Harf · 3 kullanım",
-      "subtitle": "Futbol Lingo, Mystery Player ve Transfer Detective",
+      "subtitle": "Futbolcunun adının son harfini açar. Klasik modlarda kullanılır.",
       "badge": "3’LÜ PAKET",
       "priceCoins": 65,
       "oneTime": false,
@@ -967,7 +1024,8 @@
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 142
+      "sortOrder": 142,
+      "legacyOnly": true
     },
     {
       "offerId": "boost_anagram_1",
@@ -975,7 +1033,7 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Harf Karışımı",
-      "subtitle": "Futbol Lingo, Mystery Player ve Transfer Detective",
+      "subtitle": "Futbolcunun adının harflerini karışık gösterir. Klasik modlarda kullanılır.",
       "badge": "TEK KULLANIM",
       "priceCoins": 60,
       "oneTime": false,
@@ -986,7 +1044,8 @@
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 143
+      "sortOrder": 143,
+      "legacyOnly": true
     },
     {
       "offerId": "boost_anagram_3",
@@ -994,7 +1053,7 @@
       "itemType": "boost",
       "category": "boosts",
       "title": "Harf Karışımı · 3 kullanım",
-      "subtitle": "Futbol Lingo, Mystery Player ve Transfer Detective",
+      "subtitle": "Futbolcunun adının harflerini karışık gösterir. Klasik modlarda kullanılır.",
       "badge": "3’LÜ PAKET",
       "priceCoins": 150,
       "oneTime": false,
@@ -1005,7 +1064,8 @@
         "mystery_player",
         "transfer_detective"
       ],
-      "sortOrder": 144
+      "sortOrder": 144,
+      "legacyOnly": true
     },
     {
       "offerId": "kit_galatasaray",

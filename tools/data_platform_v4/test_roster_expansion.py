@@ -1,14 +1,16 @@
+from contextlib import closing
 import json
 from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
 from apply_roster_expansion import ROOT,apply,digest,load_review,ID_OFFSET,norm
+from apply_club_twins import canonical
 
 class ExpansionTests(unittest.TestCase):
     def fixture(self, directory):
         root=Path(directory);db=root/'data.sqlite';manifest=root/'manifest.json';review=root/'review.json';part=root/'part.json'
-        with sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite') as source,sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')) as source, source,closing(sqlite3.connect(db)) as con, con:
             for (sql,) in source.execute("SELECT sql FROM sqlite_master WHERE type='table' AND sql IS NOT NULL AND name NOT LIKE 'sqlite_%'"):
                 con.execute(sql)
             con.execute("INSERT INTO players(id,name,selection_rank,source) VALUES(1,'Existing Player',1,'v4')")
@@ -24,7 +26,7 @@ class ExpansionTests(unittest.TestCase):
     def test_expansion_search_preservation_and_idempotency(self):
         with tempfile.TemporaryDirectory() as td:
             db,manifest,review=self.fixture(td);apply(db,manifest,review)
-            with sqlite3.connect(db) as c:
+            with closing(sqlite3.connect(db)) as c, c:
                 self.assertEqual(c.execute('SELECT name FROM players WHERE id=1').fetchone()[0],'Existing Player')
                 self.assertEqual(c.execute('SELECT COUNT(*) FROM players').fetchone()[0],2)
                 self.assertEqual(c.execute('SELECT player_id FROM player_search_terms WHERE compact_term=?',('cagriozturk',)).fetchone()[0],ID_OFFSET+10)
@@ -48,7 +50,10 @@ class ExpansionTests(unittest.TestCase):
         review=ROOT/'tools/data_platform_v4/patches/roster-expansion-2026-09-29.json'
         if not review.exists():self.skipTest('Review has not been generated yet')
         evidence=load_review(review);m=json.loads((ROOT/'assets/runtime/linkball_game_data_v4_manifest.json').read_text())
-        with sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite') as c:
+        fixed={x['playerId'] for f in (ROOT/'tools/data_platform_v4/patches').glob('player-fixes-*.json')
+               for x in json.loads(f.read_text(encoding='utf-8'))['players']}
+        twin=canonical(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')  # v4-2026-11-23.3 merged twin club rows: a reviewed twin id now lives on its primary row.
+        with closing(sqlite3.connect(ROOT/'assets/runtime/linkball_game_data_v4.sqlite')) as c, c:
             self.assertEqual(c.execute('SELECT COUNT(*) FROM players').fetchone()[0],m['counts']['players'])
             self.assertEqual(c.execute("SELECT COUNT(*) FROM players WHERE source='worldcup26-roster'").fetchone()[0],evidence['newPlayers'])
             for r in evidence['rows']:
@@ -56,7 +61,8 @@ class ExpansionTests(unittest.TestCase):
                 pid=ID_OFFSET+int(r['sourcePlayerId'])
                 self.assertEqual(c.execute('SELECT answer_eligible FROM players WHERE id=?',(pid,)).fetchone(),(1,))
                 self.assertTrue(c.execute('SELECT 1 FROM player_search_terms WHERE player_id=?',(pid,)).fetchone())
-                self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?',(pid,r['clubId'])).fetchone())
+                self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?',(pid,twin.get(r['clubId'],r['clubId']))).fetchone())
+                if pid in fixed: continue  # A later reported-player fix added his career.
                 self.assertFalse(c.execute('SELECT 1 FROM career_spells WHERE player_id=?',(pid,)).fetchone())
                 self.assertFalse(c.execute('SELECT 1 FROM transfers WHERE player_id=?',(pid,)).fetchone())
                 # Same predicate as the V4 per-club answer and player-search queries.

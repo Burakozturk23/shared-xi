@@ -21,10 +21,14 @@ class SquadPlayer {
     countries: (j['countries'] as List).cast<String>(),
     clubs: (j['clubIds'] as List).map((n) => (n as num).toInt()).toList(),
   );
+  /// Slots may name a position with its group ("Defender - Left-Back");
+  /// players carry the bare name, so compare the bare names.
   bool fits(FormationSlot slot) {
     const broad = {'Goalkeeper', 'Defender', 'Midfield', 'Attack'};
     return detailedPosition.isNotEmpty && !broad.contains(detailedPosition)
-        ? slot.acceptedDetailedPositions.contains(detailedPosition)
+        ? slot.acceptedDetailedPositions.any(
+            (p) => p.split(' - ').last == detailedPosition.split(' - ').last,
+          )
         : position == slot.fallbackBroadPosition;
   }
 }
@@ -63,8 +67,12 @@ class SquadCatalog {
     required this.themes,
     required this.formations,
     required this.continents,
+    this.clubNames = const {},
   });
   final String version;
+
+  /// Club id → name, for explaining which club a link runs through.
+  final Map<int, String> clubNames;
   final Map<int, SquadPlayer> players;
   final Map<String, SquadTheme> themes;
   final Map<String, Formation> formations;
@@ -105,6 +113,9 @@ class SquadCatalog {
       themes: {for (final t in ts) t.id: t},
       formations: {for (final f in fs) f.id: f},
       continents: Map<String, String>.from(j['continents'] as Map),
+      clubNames: (j['clubNames'] as Map? ?? {}).map(
+        (k, v) => MapEntry(int.parse(k.toString()), v.toString()),
+      ),
     );
   }
 }
@@ -121,10 +132,33 @@ class SquadMission {
     required this.links,
     required this.countries,
     this.completed = false,
+    this.twoStar = 0,
+    this.threeStar = 0,
+    this.maxLinks = 0,
+    this.clubLinkCap = 3,
+    this.extraPrice = 0,
+    this.starBonus = const {},
   });
   final String id, day, themeId, formationId, label;
   final int reward, budget, links, countries;
   final bool completed;
+
+  /// Links for the second and third star; 0 on missions from older servers.
+  final int twoStar, threeStar, maxLinks, clubLinkCap, extraPrice;
+
+  /// Extra coins by stars (2 and 3), paid once with the mission reward.
+  final Map<int, int> starBonus;
+
+  /// Stars a scored XI would earn: 0 below the target.
+  int starsFor(int linkCount, int countryCount) {
+    if (linkCount < links || countryCount < countries) return 0;
+    if (twoStar == 0) return 1;
+    return linkCount >= threeStar
+        ? 3
+        : linkCount >= twoStar
+        ? 2
+        : 1;
+  }
   factory SquadMission.fromJson(Map<String, dynamic> j) => SquadMission(
     id: j['id'] as String,
     day: j['day'] as String,
@@ -136,6 +170,12 @@ class SquadMission {
     links: squadInt(j['links']),
     countries: squadInt(j['countries']),
     completed: j['completed'] == true,
+    twoStar: squadInt(j['twoStar']),
+    threeStar: squadInt(j['threeStar']),
+    maxLinks: squadInt(j['maxLinks']),
+    clubLinkCap: j['clubLinkCap'] == null ? 3 : squadInt(j['clubLinkCap']),
+    extraPrice: squadInt(j['extraPrice']),
+    starBonus: squadIntMap(j['starBonus']),
   );
 }
 
@@ -147,11 +187,16 @@ class SquadResult {
     required this.cost,
     required this.links,
     required this.countries,
+    this.assisted = false, this.penalty = 0,
+    this.stars = 0,
   });
+  final bool assisted;
+  final int penalty;
   final bool won;
-  final int reward, score, cost, links, countries;
+  final int reward, score, cost, links, countries, stars;
   factory SquadResult.fromJson(Map<String, dynamic> j) => SquadResult(
-    won: j['won'] == true,
+    won: j['won'] == true, assisted: j['assisted'] == true, penalty: squadInt(j['penalty']),
+    stars: j['stars'] == null ? (j['won'] == true ? 1 : 0) : squadInt(j['stars']),
     reward: squadInt(j['reward']),
     score: squadInt(j['score']),
     cost: squadInt(j['cost']),
@@ -258,3 +303,15 @@ class SquadResponse {
 }
 
 int squadInt(Object? n) => (n as num?)?.toInt() ?? 0;
+
+/// RTDB reads a map with small integer keys ({2: 5, 3: 10}) back as a list
+/// ([null, null, 5, 10]); accept both.
+Map<int, int> squadIntMap(Object? raw) => {
+  if (raw is Map)
+    for (final e in raw.entries)
+      if (int.tryParse(e.key.toString()) != null && e.value is num)
+        int.parse(e.key.toString()): squadInt(e.value),
+  if (raw is List)
+    for (final (i, v) in raw.indexed)
+      if (v is num) i: v.toInt(),
+};

@@ -6,7 +6,9 @@ import '../app/app_feedback.dart';
 import '../app/route_appearance.dart';
 import '../controllers/vs_bot_controller.dart';
 import '../models/club.dart';
+import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
+import '../services/story_support_service.dart';
 import '../services/search_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/club_badge.dart';
@@ -15,7 +17,10 @@ import 'team_race_page.dart';
 
 /// V4-backed setup for Botla Oyna > Takım Yarışı.
 class VsBotClubSelectionPage extends StatefulWidget {
-  const VsBotClubSelectionPage({super.key});
+  const VsBotClubSelectionPage({super.key, this.loadRaceClubIds});
+
+  /// The clubs a match can start with (server list); null keeps every club.
+  final Future<Set<String>?> Function()? loadRaceClubIds;
 
   @override
   State<VsBotClubSelectionPage> createState() => _VsBotClubSelectionPageState();
@@ -50,10 +55,18 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
       });
     }
     try {
-      final clubs = await GameDataV4QueryService.instance.sharedXiClubCatalog();
+      final (clubs, playable) = await (
+        GameDataV4QueryService.instance.sharedXiClubCatalog(),
+        (widget.loadRaceClubIds ?? _serverRaceClubIds)(),
+      ).wait;
       if (!mounted) return;
       setState(() {
-        _clubs = clubs;
+        // A club with no rival sharing enough players cannot start a match: leave it out.
+        _clubs = playable == null || playable.isEmpty
+            ? clubs
+            : clubs
+                  .where((c) => playable.contains('club:${c.id}'))
+                  .toList(growable: false);
         _loading = false;
       });
     } catch (error) {
@@ -66,6 +79,23 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
     }
   }
 
+  // The server lists playable clubs with its setup answer; any failure keeps the full list
+  // (the server still refuses a club without a rival).
+  static Future<Set<String>?> _serverRaceClubIds() async {
+    try {
+      await AuthService.ensureGuestSignedIn();
+      final data = await StorySupportService(
+        useCallable: 'actBotSupport',
+        loadCallable: 'getBotSupport',
+        watchPlacement: 'bot_support_hint',
+      ).load('bot_team_race', 'bot_team_race');
+      final ids = data['raceClubIds'];
+      return ids is List ? {for (final id in ids) '$id'} : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   void _start() {
     final club = _selected;
     if (club == null) return;
@@ -73,10 +103,7 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
     Navigator.of(context).push(
       LinkballRoute(
         modern: true,
-        builder: (_) => TeamRacePage(
-          userClub: club,
-          difficulty: _difficulty,
-        ),
+        builder: (_) => TeamRacePage(userClub: club, difficulty: _difficulty),
       ),
     );
   }
@@ -87,8 +114,8 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
     final filtered = query.isEmpty
         ? _clubs
         : _clubs
-            .where((club) => SearchService.contains(club.name, query))
-            .toList(growable: false);
+              .where((club) => SearchService.contains(club.name, query))
+              .toList(growable: false);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Takım Yarışı')),
@@ -127,11 +154,11 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
                       ),
                       gridDelegate:
                           const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 190,
-                        mainAxisExtent: 148,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                      ),
+                            maxCrossAxisExtent: 190,
+                            mainAxisExtent: 148,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
                     ),
                   ),
                   if (filtered.isEmpty)
@@ -164,8 +191,9 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
         const SizedBox(height: 8),
         Text(
           'Seçtiğin kulübün ortak oyuncularını bottan önce bul.',
-          style:
-              Theme.of(context).textTheme.bodyMedium?.copyWith(color: p.muted),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: p.muted),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -191,6 +219,19 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
                 },
               ),
           ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          switch (_difficulty) {
+            VsBotDifficulty.easy =>
+              'En tanınmış ortak futbolcular gelir; bot yalnız çok bilinenleri, yavaş bulur.',
+            VsBotDifficulty.medium =>
+              'Tanınmış ortak futbolcular gelir; bot bilinenleri orta hızda bulur.',
+            VsBotDifficulty.hard =>
+              'Daha az bilinen ortak futbolcular da gelir; bot herkesi bilir ve hızlı bulur.',
+          },
+          key: const ValueKey('race-level-about'),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         if (_selected != null) ...[
           const SizedBox(height: 16),
@@ -254,8 +295,8 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: selected ? p.accent : p.muted,
-                  ),
+                color: selected ? p.accent : p.muted,
+              ),
             ),
           ],
         ),
@@ -283,17 +324,14 @@ class _VsBotClubSelectionPageState extends State<VsBotClubSelectionPage> {
           const SizedBox(height: 24),
           const LinearProgressIndicator(minHeight: 4),
         ],
-        if (actions.isNotEmpty) ...[
-          const SizedBox(height: 28),
-          ...actions,
-        ],
+        if (actions.isNotEmpty) ...[const SizedBox(height: 28), ...actions],
       ],
     );
   }
 
   String _difficultyLabel(VsBotDifficulty difficulty) => switch (difficulty) {
-        VsBotDifficulty.easy => 'Kolay',
-        VsBotDifficulty.medium => 'Orta',
-        VsBotDifficulty.hard => 'Zor',
-      };
+    VsBotDifficulty.easy => 'Kolay',
+    VsBotDifficulty.medium => 'Orta',
+    VsBotDifficulty.hard => 'Zor',
+  };
 }

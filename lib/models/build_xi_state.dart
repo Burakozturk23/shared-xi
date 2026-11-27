@@ -8,11 +8,19 @@ class BuildXiScoreBreakdown {
     this.continentBonus = 0,
     this.budgetBonus = 0,
     this.links = 0,
+    this.rawLinks = 0,
     this.countries = 0,
     this.cost = 0,
+    this.cappedClubs = const {},
   });
   final int chemistry, countryBonus, clubBonus, continentBonus, budgetBonus;
-  final int links, countries, cost;
+
+  /// [links] are credited (each club at most its cap); [rawLinks] counts
+  /// every adjacent pair with a shared club.
+  final int links, rawLinks, countries, cost;
+
+  /// Clubs already crediting their maximum number of links.
+  final Set<int> cappedClubs;
   int get total =>
       chemistry + countryBonus + clubBonus + continentBonus + budgetBonus;
 }

@@ -15,7 +15,7 @@
 </head>
 <body>
   <h1>Linkball Gizlilik Politikası</h1>
-  <p class="meta"><strong>Son güncelleme:</strong> 1 Eylül 2026<br>
+  <p class="meta"><strong>Son güncelleme:</strong> 13 Kasım 2026<br>
   <strong>Uygulama:</strong> Linkball<br>
   <strong>Paket:</strong> <code>com.burakozturk.linkball</code><br>
   <strong>Gizlilik iletişimi:</strong> <a href="mailto:burakozturk1315@gmail.com">burakozturk1315@gmail.com</a></p>
@@ -27,7 +27,12 @@
 
   <h2>İşlenen hesap ve oyun verileri</h2>
   <ul>
-    <li>Anonim Firebase kullanıcı kimliği (UID) ve kullanıcının seçtiği görünen ad.</li>
+    <li>Firebase kullanıcı kimliği (UID) ve kullanıcının seçtiği görünen ad.</li>
+    <li>Google ile giriş yapıldığında Google hesabının e-posta adresi ve adı, hesabı
+    tanımak için Firebase Authentication tarafından işlenir. Linkball e-posta adresini
+    oyun veritabanında saklamaz ve başka oyunculara göstermez; oyunda kullanıcının
+    seçtiği görünen ad kullanılır.</li>
+    <li>Coin, XP, görev, başarım, koleksiyon ve mod ilerlemesi gibi oyun verileri.</li>
     <li>Galibiyet, mağlubiyet, beraberlik, Elo ve maç geçmişi gibi profil istatistikleri.</li>
     <li>Günlük meydan okuma skorları ve skor oturumu verileri.</li>
     <li>Çevrim içi eşleştirme kuyruğu, oda/maç durumu ve oyun sonuçları.</li>
@@ -59,17 +64,38 @@
   uygulama/istek bütünlüğünü doğrulamak ve kötüye kullanımı azaltmak için
   integrity/attestation token ve teknik sinyalleri işleyebilir.</p>
 
+  <h2>Satın almalar</h2>
+  <p>Coin paketleri, Pro ve abonelikler Google Play Faturalandırma üzerinden satılır.
+  Ödeme ve kart bilgileri Google'da kalır, Linkball'a gelmez. Linkball satın almayı
+  doğrulamak, satın alınan içeriği vermek ve iadeleri işlemek için ürün kimliğini,
+  sipariş/satın alma jetonunu ve satın alma durumunu saklar.</p>
+
+  <h2>Reklamlar (Google AdMob)</h2>
+  <p>Linkball, kullanıcının isteğiyle izlenen ödüllü reklamlar için Google AdMob
+  kullanır. AdMob reklam göstermek, ölçmek ve sahtekârlığı önlemek için Android
+  reklam kimliği, IP adresinden türetilen yaklaşık konum, cihaz ve uygulama bilgileri
+  ile reklam etkileşimlerini işleyebilir. Gerekli bölgelerde (ör. AB ve Birleşik
+  Krallık) reklam tercihleri Google'ın onay formuyla sorulur ve uygulama ayarlarından
+  değiştirilebilir. Android reklam kimliği cihaz ayarlarından sıfırlanabilir veya
+  silinebilir.</p>
+
+  <h2>Bildirimler</h2>
+  <p>Hatırlatma bildirimleri cihazda planlanır; bunun için sunucuya veri gönderilmez.
+  Bildirimler Android ayarlarından kapatılabilir.</p>
+
   <h2>Kullanım amaçları</h2>
   <ul>
     <li>Oyunu, hesabı, eşleştirmeyi, odaları ve skor tablolarını sunmak.</li>
     <li>Hile, bot ve yetkisiz istekleri azaltmak.</li>
     <li>Çökme, ANR ve teknik sorunları teşhis etmek.</li>
     <li>Uygulama kullanım ve kararlılık kalitesini ölçmek.</li>
+    <li>Satın alınan içeriği vermek ve ödüllü reklam göstermek.</li>
   </ul>
 
   <h2>Paylaşım</h2>
   <p>Linkball kişisel verileri satmaz. Google Firebase/Google Analytics
-  altyapı ve hizmet sağlayıcı olarak kullanılır. Kullanıcı çevrim içi oyunu
+  altyapı ve hizmet sağlayıcı olarak kullanılır. Reklam verileri yukarıda anlatıldığı
+  gibi Google AdMob ile, satın alma verileri Google Play ile işlenir. Kullanıcı çevrim içi oyunu
   başlattığında görünen ad, skor ve gerekli oyun bilgileri rakibe veya skor
   tablosuna gösterilebilir.</p>
 
@@ -93,6 +119,7 @@
   <p>Uygulama içinde <strong>Gizlilik &amp; Hesap → Hesabımı ve verilerimi sil</strong>
   yolunu kullanabilirsin. Uygulamaya erişemiyorsan
   <a href="/account-deletion.html">hesap silme sayfasından</a> talep başlatabilirsin.</p>
+  <p>Uygulamanın kullanım kuralları için <a href="/terms.html">Hizmet Şartları</a>'na bak.</p>
 
   <h2>İletişim</h2>
   <p>Gizlilik, veri veya hesap silme soruları:

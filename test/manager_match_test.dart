@@ -39,7 +39,10 @@ void main() {
           expect(r.userGoals, home ? s.goalsHome : s.goalsAway);
           expect(r.isWin, r.userGoals > r.opponentGoals);
           expect(r.isLoss, r.userGoals < r.opponentGoals);
-          expect(r.remainingAfter, 14 + (r.isWin ? 18 : 0));
+          expect(
+            r.remainingAfter,
+            14 + (r.isWin ? 18 : 0) + (r.isDraw ? 6 : 0),
+          );
           expect(r.spentOnXi, 0);
           expect(s.shotsOnHome, inInclusiveRange(s.goalsHome, s.shotsHome));
           expect(s.shotsOnAway, inInclusiveRange(s.goalsAway, s.shotsAway));

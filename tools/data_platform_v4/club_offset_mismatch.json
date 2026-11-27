@@ -1,0 +1,215 @@
+{
+ "note": "Transfermarkt club ids are stored as 1000000000 + TM id. Most of them equal an older id of the same club (PSG = Paris Saint-Germain), so builders map id - 1000000000 back. These ids collide with a different club and must keep their own id. Reviewed by name, 2026-11-11; the other 153 offset pairs are the same club.",
+ "ids": [
+  {
+   "id": 1000000119,
+   "name": "M. Tel Aviv",
+   "notSameAs": 119,
+   "otherName": "Valladolid"
+  },
+  {
+   "id": 1000000208,
+   "name": "CSKA-Sofia",
+   "notSameAs": 208,
+   "otherName": "Haras El Hodood"
+  },
+  {
+   "id": 1000000663,
+   "name": "Dinamo Tbilisi",
+   "notSameAs": 663,
+   "otherName": "Chaves"
+  },
+  {
+   "id": 1000000829,
+   "name": "Omonia Nicosia",
+   "notSameAs": 829,
+   "otherName": "Sloga Doboj"
+  },
+  {
+   "id": 1000001037,
+   "name": "U. de Chile",
+   "notSameAs": 1037,
+   "otherName": "B 93"
+  },
+  {
+   "id": 1000001076,
+   "name": "Esteghlal FC",
+   "notSameAs": 1076,
+   "otherName": "Cardiff MET"
+  },
+  {
+   "id": 1000001450,
+   "name": "Sport. Cristal",
+   "notSameAs": 1450,
+   "otherName": "Shkendija"
+  },
+  {
+   "id": 1000002524,
+   "name": "Al-Jazira",
+   "notSameAs": 2524,
+   "otherName": "Universitatea Craiova"
+  },
+  {
+   "id": 1000002573,
+   "name": "Zeljeznicar",
+   "notSameAs": 2573,
+   "otherName": "Barau FC"
+  },
+  {
+   "id": 1000002730,
+   "name": "Sport Boys",
+   "notSameAs": 2730,
+   "otherName": "Dynamo"
+  },
+  {
+   "id": 1000003342,
+   "name": "Esperance",
+   "notSameAs": 3342,
+   "otherName": "Glenavon FC"
+  },
+  {
+   "id": 1000003698,
+   "name": "Chelmsford",
+   "notSameAs": 3698,
+   "otherName": "VfL Osnabrück"
+  },
+  {
+   "id": 1000004131,
+   "name": "LC Sailors",
+   "notSameAs": 4131,
+   "otherName": "Simba"
+  },
+  {
+   "id": 1000004720,
+   "name": "Saprissa",
+   "notSameAs": 4720,
+   "otherName": "Dungannon Swifts"
+  },
+  {
+   "id": 1000004812,
+   "name": "Stade Tunisien",
+   "notSameAs": 4812,
+   "otherName": "Milsami Orhei"
+  },
+  {
+   "id": 1000005223,
+   "name": "Maccabi Netanya",
+   "notSameAs": 5223,
+   "otherName": "Trujillanos FC"
+  },
+  {
+   "id": 1000006028,
+   "name": "Kiryat Shmona",
+   "notSameAs": 6028,
+   "otherName": "Dinaz Vyshhorod"
+  },
+  {
+   "id": 1000006105,
+   "name": "FC Ashdod",
+   "notSameAs": 6105,
+   "otherName": "De Graafschap"
+  },
+  {
+   "id": 1000006335,
+   "name": "Valletta",
+   "notSameAs": 6335,
+   "otherName": "Nublense"
+  },
+  {
+   "id": 1000006603,
+   "name": "Wydad AC",
+   "notSameAs": 6603,
+   "otherName": "Sportivo Ameliano"
+  },
+  {
+   "id": 1000010301,
+   "name": "Pyunik Yerevan",
+   "notSameAs": 10301,
+   "otherName": "Zimbru"
+  },
+  {
+   "id": 1000010625,
+   "name": "Qarabağ",
+   "notSameAs": 10625,
+   "otherName": "Antwerp"
+  },
+  {
+   "id": 1000013950,
+   "name": "Nam Dinh FC",
+   "notSameAs": 13950,
+   "otherName": "Bunyodkor"
+  },
+  {
+   "id": 1000014933,
+   "name": "A. Üsküdar 1908",
+   "notSameAs": 14933,
+   "otherName": "Beykoz Ishakli Spor"
+  },
+  {
+   "id": 1000017482,
+   "name": "Cobresal",
+   "notSameAs": 17482,
+   "otherName": "Difaa EL Jadida"
+  },
+  {
+   "id": 1000017584,
+   "name": "Uni. Católica",
+   "notSameAs": 17584,
+   "otherName": "Waterford"
+  },
+  {
+   "id": 1000021283,
+   "name": "Muangthong Utd.",
+   "notSameAs": 21283,
+   "otherName": "Gualberto Villarroel SJ"
+  },
+  {
+   "id": 1000022220,
+   "name": "FC Astana",
+   "notSameAs": 22220,
+   "otherName": "Dynamo Dresden"
+  },
+  {
+   "id": 1000024971,
+   "name": "Ha Noi FC",
+   "notSameAs": 24971,
+   "otherName": "Albacete"
+  },
+  {
+   "id": 1000033783,
+   "name": "RFS",
+   "notSameAs": 33783,
+   "otherName": "Kyoto Sanga"
+  },
+  {
+   "id": 1000039805,
+   "name": "Tuzlaspor",
+   "notSameAs": 39805,
+   "otherName": "Beykoz Anadolu Spor"
+  },
+  {
+   "id": 1000045193,
+   "name": "Puerto Cabello",
+   "notSameAs": 45193,
+   "otherName": "CS Sfaxien"
+  },
+  {
+   "id": 1000045457,
+   "name": "Pafos",
+   "notSameAs": 45457,
+   "otherName": "All Boys"
+  },
+  {
+   "id": 1000049425,
+   "name": "Bali United",
+   "notSameAs": 49425,
+   "otherName": "Eintracht Braunschweig"
+  },
+  {
+   "id": 1000118989,
+   "name": "Arabian Falcons",
+   "notSameAs": 118989,
+   "otherName": "Altınordu"
+  }
+ ]
+}

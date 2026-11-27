@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 
 import '../models/manager_match.dart';
 import '../models/manager_pool.dart';
@@ -40,6 +42,9 @@ class ClubManagerMatchPage extends StatefulWidget {
 }
 
 class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
+  /// First half, shown before the half-time decision.
+  ManagerMatchResult? _halfTime;
+  ManagerHalftimePlan? _plan;
   ManagerMatchResult? _result;
   ManagerCareerState? _saved;
   bool _running = true, _allowExit = false;
@@ -48,6 +53,39 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
   @override
   void initState() {
     super.initState();
+    _firstHalf();
+  }
+
+  // The week's seed fixes the first half; the decision only reshapes the
+  // second, so leaving and coming back cannot re-roll it.
+  ManagerMatchResult _simulate(ManagerHalftimePlan plan) =>
+      ManagerMatchService.instance.simulate(
+        xi: widget.xi,
+        difficulty: widget.difficulty,
+        budgetLink: widget.budgetLink,
+        tactics: widget.tactics,
+        opponent: widget.opponent,
+        homeName: widget.userName,
+        userIsHome: widget.fixture.isHome,
+        homeAdvantage: 3,
+        chargeSquadCost: false,
+        halftime: plan,
+        seed: ManagerRoster.seedFor(
+          '${widget.seasonId}:${widget.fixture.week}',
+        ),
+      );
+
+  Future<void> _firstHalf() async {
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
+    setState(() {
+      _halfTime = _simulate(ManagerHalftimePlan.keep);
+      _running = false;
+    });
+  }
+
+  void _decide(ManagerHalftimePlan plan) {
+    _plan = plan;
     _run();
   }
 
@@ -61,20 +99,7 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
       await Future<void>.delayed(const Duration(milliseconds: 350));
       if (!mounted) return;
       // Retain the same result if persistence needs a retry.
-      _result ??= ManagerMatchService.instance.simulate(
-        xi: widget.xi,
-        difficulty: widget.difficulty,
-        budgetLink: widget.budgetLink,
-        tactics: widget.tactics,
-        opponent: widget.opponent,
-        homeName: widget.userName,
-        userIsHome: widget.fixture.isHome,
-        homeAdvantage: 3,
-        chargeSquadCost: false,
-        seed: ManagerRoster.seedFor(
-          '${widget.seasonId}:${widget.fixture.week}',
-        ),
-      );
+      _result ??= _simulate(_plan ?? ManagerHalftimePlan.keep);
       _saved = await (widget.store ?? ManagerCareerStore.instance)
           .applyMatchResult(
             difficulty: widget.difficulty,
@@ -84,6 +109,9 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
             userGoals: _result!.userGoals,
             oppGoals: _result!.opponentGoals,
           );
+      // Played once the result is stored; a retry of the same week stays silent.
+      AppFeedback.sfx(_result!.userGoals > 0 ? Sfx.goal : Sfx.whistle,
+        eventId: 'cm:${widget.seasonId}:${widget.fixture.week}');
     } catch (e) {
       _error = managerError(e);
     }
@@ -91,12 +119,16 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
   }
 
   void _finish() {
-    if (_running || _allowExit) return;
+    // The half-time decision has to be taken; nothing is saved before it.
+    if (_running || _allowExit || _awaitingDecision) return;
     setState(() => _allowExit = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) Navigator.of(context).pop(_saved != null);
     });
   }
+
+  bool get _awaitingDecision =>
+      _halfTime != null && _plan == null && _error == null;
 
   @override
   Widget build(BuildContext context) => PopScope(
@@ -108,7 +140,7 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
       appBar: AppBar(
         title: Text('Hafta ${widget.fixture.week} · Maç'),
         automaticallyImplyLeading: false,
-        leading: _running
+        leading: _running || _awaitingDecision
             ? null
             : IconButton(
                 tooltip: 'Geri',
@@ -120,14 +152,21 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
         top: false,
         child: _running || _error != null
             ? ManagerMessage(
-                title: _error == null ? 'Maç oynanıyor' : 'Sonuç kaydedilemedi',
-                message: _error ?? 'Sahadaki planın sonucu ve ligin diğer maçları hazırlanıyor.',
+                title: _error == null
+                    ? (_plan == null ? 'İlk yarı oynanıyor' : 'İkinci yarı oynanıyor')
+                    : 'Sonuç kaydedilemedi',
+                message: _error ??
+                    (_plan == null
+                        ? 'Sahadaki planın ilk 45 dakikası oynanıyor.'
+                        : 'Kararın uygulanıyor; ligin diğer maçları da hazırlanıyor.'),
                 loading: _error == null,
                 onRetry: _error == null ? null : _run,
               )
+            : _awaitingDecision
+            ? _halfTimeBody(_halfTime!)
             : _body(_result!),
       ),
-      bottomNavigationBar: _running
+      bottomNavigationBar: _running || _awaitingDecision
           ? null
           : SafeArea(
               top: false,
@@ -139,6 +178,92 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
             ),
     ),
   );
+
+  Widget _halfTimeBody(ManagerMatchResult r) {
+    final p = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final mine = r.halfTimeUser, theirs = r.halfTimeOpponent;
+    final home = widget.fixture.isHome;
+    final suggestion = mine < theirs
+        ? ManagerHalftimePlan.push
+        : mine > theirs
+        ? ManagerHalftimePlan.protect
+        : null;
+    return ListView(
+      key: const PageStorageKey<String>('manager-halftime'),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      children: [
+        Text(
+          'DEVRE ARASI',
+          style: text.labelLarge?.copyWith(color: p.accent, letterSpacing: 1.2),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 12),
+        PitchPanel(
+          child: Column(
+            children: [
+              Text(r.homeName, style: text.titleMedium, textAlign: TextAlign.center),
+              const SizedBox(height: 8),
+              Text(
+                home ? '$mine – $theirs' : '$theirs – $mine',
+                style: text.displaySmall,
+              ),
+              const SizedBox(height: 8),
+              Text(r.awayName, style: text.titleMedium, textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+        const PitchSectionTitle('İkinci yarı için kararın'),
+        Text(
+          mine < theirs
+              ? 'Gerideysen risk almak puanı kurtarabilir.'
+              : mine > theirs
+              ? 'Öndesin; skoru korumak ya da farkı açmak senin elinde.'
+              : 'Skor eşit; dengeyi bozmak iki yöne de işleyebilir.',
+          style: text.bodyMedium?.copyWith(color: p.muted),
+        ),
+        const SizedBox(height: 12),
+        for (final plan in ManagerHalftimePlan.values)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                key: ValueKey('halftime-${plan.name}'),
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => _decide(plan),
+                child: PitchPanel(
+                  child: Row(
+                    children: [
+                      Icon(
+                        switch (plan) {
+                          ManagerHalftimePlan.keep => Icons.balance_rounded,
+                          ManagerHalftimePlan.push => Icons.trending_up_rounded,
+                          ManagerHalftimePlan.protect => Icons.shield_outlined,
+                        },
+                        color: plan == suggestion ? p.accent : p.muted,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(plan.label, style: text.titleMedium),
+                            const SizedBox(height: 2),
+                            Text(plan.detail, style: text.bodySmall),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right_rounded),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _body(ManagerMatchResult r) {
     final color = r.isWin
@@ -199,11 +324,17 @@ class _ClubManagerMatchPageState extends State<ClubManagerMatchPage> {
                   ? '+1'
                   : '+0',
             ),
-            (label: 'Prim', value: '+${r.winBonus} LINK'),
+            (label: r.isDraw ? 'Beraberlik primi' : 'Prim', value: '+${r.winBonus} LINK'),
             (label: 'Kasa', value: '${_saved!.budgetLink} LINK'),
           ],
         ),
         const SizedBox(height: 12),
+        Text(
+          'Devre ${widget.fixture.isHome ? '${r.halfTimeUser}–${r.halfTimeOpponent}' : '${r.halfTimeOpponent}–${r.halfTimeUser}'}'
+          ' · İkinci yarı: ${r.halftime.label}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: 4),
         Text(
           'Sonuç kaydedildi · ${_saved!.season!.user.played}/38 maç tamamlandı.',
           style: Theme.of(context).textTheme.bodySmall,

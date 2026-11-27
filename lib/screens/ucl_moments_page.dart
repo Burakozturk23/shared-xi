@@ -1,3 +1,5 @@
+import '../widgets/story_support_panel.dart';
+import '../models/story_rewards.dart';
 import '../widgets/energy_sheet.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -141,12 +143,15 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
         ])),
       const SizedBox(height: 16),
       Text('Her ilk tamamlama: 8 coin + 20 XP', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 6), const Text('10, 20 ve 34 farklı maçta koleksiyon bonusu. Tekrar oynamak ücretsiz.'),
+      const SizedBox(height: 6), Text('${milestoneCounts(uclMilestones)} farklı maçta koleksiyon bonusu; '
+        'tüm ${c.catalog.matches.length} gece için kapanış ödülü. Tekrar oynamak ücretsiz.'),
       if (!c.rewardEligible) const Padding(padding: EdgeInsets.only(top: 8),
         child: Text('Misafir olarak oynayabilirsin. Ödülleri almak için bu misafir hesabını Google’a bağla.')),
       const SizedBox(height: 12),
       Wrap(spacing: 8, runSpacing: 4, children: [
-        for (final (n, coin) in [(10,40),(20,70),(34,100)]) Chip(label: Text('${c.catalog.matches.where((m) => c.results.containsKey(m.id)).length >= n ? '✓ ' : ''}$n gece · +$coin coin')),
+        for (final m in uclMilestones) Chip(label: Text('${c.catalog.matches.where((x) => c.results.containsKey(x.id)).length >= m.count ? '✓ ' : ''}${m.count} gece · +${m.coins} coin')),
+        Chip(key: const ValueKey('ucl-expansion-final'), label: Text('${c.catalog.matches.every((x) => c.results.containsKey(x.id)) ? '✓ ' : ''}'
+          'Tüm ${c.catalog.matches.length} gece · +${storyFinals['ucl_moments']!.coins} coin')),
       ]),
       if (c.activeId != null && !c.results.containsKey(c.activeId)) Padding(padding: const EdgeInsets.only(top: 12),
         child: PitchRow(title: 'Kaldığın yerden', subtitle: c.catalog.byId(c.activeId!).title, icon: Icons.play_circle_outline,
@@ -176,7 +181,7 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
     final m = c.active!;
     return [_matchHeader(m), const SizedBox(height: 20), Text(m.text('intro'), style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: 20), PitchRow(title: m.label, subtitle: 'Tek görev · yaklaşık 2–3 dakika', icon: _icon(m.type)),
-      const SizedBox(height: 16), const Text('Ücretsiz ipucu ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
+      const SizedBox(height: 16), const Text('İsteğe bağlı destek ve sınırsız tekrar deneme. Seçimin cihazda saklanır; cevap ve ödül bağlantı olduğunda doğrulanır.'),
       if (m.data['expansion'] != null) const Padding(padding: EdgeInsets.only(top: 12), child: Text('İlk tamamlama: 8 Coin + 20 XP. Tekrar oynama ikinci ödül vermez.')),
       const SizedBox(height: 24), FilledButton.icon(key: const ValueKey('ucl-start'), onPressed: c.busy ? null : () { _startWithEnergy(); _top(); },
         icon: const Icon(Icons.play_arrow), label: const Text('Bu geceye katıl'))];
@@ -208,8 +213,12 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
           icon: c.answers.contains(o['id']) ? Icons.radio_button_checked : Icons.radio_button_off,
           highlight: c.answers.contains(o['id']), trailing: const SizedBox.shrink(),
           onTap: c.busy ? null : () => c.choose(o['id'] as String)))),
+      StorySupportPanel(mode: 'ucl_moments', targetId: m.id, disabled: c.busy,
+        knownBasic: c.hintOpen ? m.text('hint') : null,
+        legacy: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       TextButton.icon(key: const ValueKey('ucl-hint'), onPressed: c.hint, icon: const Icon(Icons.lightbulb_outline), label: const Text('Ücretsiz ipucu')),
       if (c.hintOpen) Padding(padding: const EdgeInsets.only(bottom: 16), child: PitchPanel(child: Text(m.text('hint')))),
+      ])),
       FilledButton(key: const ValueKey('ucl-submit'), onPressed: c.busy || !c.canSubmit ? null : () async { await c.submit(); if (mounted && c.phase == 'result') _top(); },
         child: Text(c.busy ? 'Doğrulanıyor…' : 'Cevabı kontrol et')),
     ];
@@ -234,7 +243,9 @@ class _UclMomentsPageState extends State<UclMomentsPage> {
     final reward = uclMap(c.rewards[m.id]);
     final penalties = result['penalties'] as List?;
     final aggregate = result['aggregate'] as List?;
-    return [_hero('HATIRA #${m.data['number']} · ${m.year}', m.title, '${m.home}  ${result['score']}  ${m.away}',
+    return [
+      StorySupportPanel(mode: 'ucl_moments', targetId: m.id, resultOnly: true, legacy: const SizedBox.shrink()),
+_hero('HATIRA #${m.data['number']} · ${m.year}', m.title, '${m.home}  ${result['score']}  ${m.away}',
       footer: const Row(children: [Icon(Icons.verified, color: Color(0xFFFFD98D)), SizedBox(width: 8), Expanded(child: Text('Koleksiyonuna eklendi', style: TextStyle(color: Colors.white)))])),
       const SizedBox(height: 20), PitchPanel(key: const ValueKey('ucl-result'), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(result['answer']?.toString() ?? '', style: Theme.of(context).textTheme.titleLarge),

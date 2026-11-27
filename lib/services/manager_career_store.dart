@@ -261,6 +261,8 @@ class ManagerCareerStore {
       throw StateError('Yeni sezon için mevcut 38 maçı tamamla.');
     }
     return s.copyWith(
+      // Board target, final place and title pay once, when the season closes.
+      budgetLink: s.budgetLink + d.seasonRewardLink(s.season!.userRank()),
       archivedSeasons: [...s.archivedSeasons, s.season!],
       season: _seasons.createSeason(
         userName: s.season!.user.name,
@@ -399,7 +401,13 @@ class ManagerCareerStore {
     final draw = userGoals == oppGoals;
     return s.copyWith(
       season: season,
-      budgetLink: s.budgetLink + (win ? difficulty.winBonusLink : 0),
+      budgetLink:
+          s.budgetLink +
+          (win
+              ? difficulty.winBonusLink
+              : draw
+              ? difficulty.drawBonusLink
+              : 0),
       matchesPlayed: s.matchesPlayed + 1,
       wins: s.wins + (win ? 1 : 0),
       draws: s.draws + (draw ? 1 : 0),

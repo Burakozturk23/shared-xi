@@ -1,6 +1,6 @@
 # Teknik direktör başarı arşivi
 
-Kullanıcının `archive.zip` dosyasındaki iki CSV, uygulamada çevrimdışı okunabilen bir tarihsel arşive dönüştürülür. Hoca 11 üst çubuğu, ana ekranı ve hoca koleksiyonu üzerinden açılır. Veritabanı ekranında da giriş vardır. Mevcut hoca kimliklerine bağlantılar servis üzerinden erişilebilir: `CoachHonoursService.load()` → `catalog.forCoach(id)`.
+Kullanıcının `archive.zip` dosyasındaki iki CSV, uygulamada çevrimdışı okunabilen bir tarihsel arşive dönüştürülür. Veritabanı ekranından açılır. Mevcut hoca kimliklerine bağlantılar servis üzerinden erişilebilir: `CoachHonoursService.load()` → `catalog.forCoach(id)`.
 
 ## Kaynak ve kapsam
 

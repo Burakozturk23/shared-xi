@@ -2,12 +2,17 @@
 import json, subprocess, sys, unicodedata
 from pathlib import Path
 root=Path(__file__).resolve().parents[2]
-client=root/'assets/data/what_if_v2.json'
-before=client.read_bytes()
+client=root/'assets/data/what_if_v2.json'; server=root/'functions/config/what_if_catalog.json'
+before=(client.read_bytes(),server.read_bytes())
 subprocess.run([sys.executable,str(Path(__file__).with_name('build_catalog.py'))],check=True)
-assert before==client.read_bytes(),'Regenerate the catalog before committing'
-p=json.loads(before)
-assert p==json.loads((root/'functions/config/what_if_catalog.json').read_text())
+assert before==(client.read_bytes(),server.read_bytes()),'Regenerate the catalog before committing'
+p=json.loads(before[1])
+app=json.loads(before[0])
+# The app asset carries no answers, explanations or endings.
+for s in app['scenarios']:
+ for r in s['routes']:
+  assert 'ending' not in r and 'answerKeys' not in r['task'] and 'explanation' not in r['task'], r['task']['id']
+  assert r['task']['serverValidated'] is True
 def key(s):return ''.join(c for c in unicodedata.normalize('NFKD',s.casefold()) if c.isalnum())
 assert len(p['scenarios'])==24 and len({s['id'] for s in p['scenarios']})==24
 texts=[]; kinds=set()

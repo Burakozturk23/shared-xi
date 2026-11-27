@@ -113,13 +113,14 @@ test("concurrent paid starts and duplicate finishes commit one charge and one re
     missionId: mission.id, requestId: requestId(n), payment: "coins",
   })));
   assert.equal(starts[0].run.id, starts[1].run.id);
-  assert.equal(h.state.balances.coins, 80);
+  // Extra attempt = half the Isınma reward.
+  assert.equal(h.state.balances.coins, 90);
   assert.equal(h.state.squadChallenge.paidUsed, 1);
   const ids = solve(mission);
   const data = {runId: starts[0].run.id, playerIds: ids};
   const results = await Promise.all([h.call("finish", data), h.call("finish", data)]);
   assert.deepEqual(results[0].run.result, results[1].run.result);
-  assert.equal(h.state.balances.coins, 100);
+  assert.equal(h.state.balances.coins, 90 + results[0].run.result.reward);
   assert.equal(Object.keys(h.state.claims).length, 1);
   assert.equal(Object.keys(h.state.purchases).length, 1);
   assert.equal(h.state.squadChallenge.completedTotal, 1);
@@ -136,14 +137,14 @@ test("failed response after commit recovers the exact receipt without charging o
   h.failProjection();
   await assert.rejects(h.call("start", data), /Lost response/);
   const start = await h.call("start", data);
-  assert.equal(h.state.balances.coins, 80);
+  assert.equal(h.state.balances.coins, 90);
   const finish = {runId: start.run.id, playerIds: solve(mission)};
   h.failProjection();
   await assert.rejects(h.call("finish", finish), /Lost response/);
   const result = await h.call("finish", finish);
-  assert.equal(result.run.result.reward, 20);
-  assert.equal(h.state.balances.coins, 100);
-  assert.equal(h.state.lifetimeSpent, 20);
+  assert.equal(result.run.result.reward, 20 + (engine.STAR_BONUS[result.run.result.stars] || 0));
+  assert.equal(h.state.balances.coins, 90 + result.run.result.reward);
+  assert.equal(h.state.lifetimeSpent, 10);
   assert.equal(h.state.squadChallenge.completedTotal, 1);
 });
 
@@ -167,7 +168,7 @@ test("Premium requires verified unexpired server state, ignoring client flags", 
     h.setPremium(record);
     const status = await h.call("status");
     assert.equal(status.hub.premium, true);
-    assert.equal(status.hub.dailyMaxCoins, 90);
+    assert.equal(status.hub.dailyMaxCoins, 120);
   }
 });
 

@@ -4,9 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import '../data/popular_clubs_pool.dart';
-import '../models/club.dart';
 import '../models/player.dart';
-import '../repositories/repository.dart';
 
 /// Rastgele Beş online — path: fiveMatches/{matchId}
 class OnlineFiveService {

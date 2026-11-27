@@ -11,7 +11,7 @@ ManagerPoolPlayer managerPlayer(int id, String group, {bool star = false}) =>
       linkPotential: 20,
       rating: ManagerPlayerRating(
         playerId: id,
-        rating: star ? 94 : 60,
+        rating: star ? 94 : 73,
         tier: star ? ManagerTier.elite : ManagerTier.value,
         costLink: star ? 18 : 6,
         breakdown: const ManagerRatingBreakdown(

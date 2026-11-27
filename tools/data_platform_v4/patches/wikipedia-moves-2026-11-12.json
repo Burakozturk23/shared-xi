@@ -1,0 +1,1428 @@
+{
+ "id": "v4-2026-11-12.1",
+ "baseRevision": "v4-2026-11-11.1",
+ "builtUtc": "2026-11-12T03:00:00+00:00",
+ "scope": "Corrections to the summer-2026 moves from English Wikipedia infoboxes.",
+ "sources": {
+  "wikipedia": {
+   "evidence": "tools/data_platform_v4/patches/wikipedia-careers-2026-11-12.json",
+   "fetchedUtc": "2026-11-11T23:15:12+00:00"
+  }
+ },
+ "counts": {
+  "players": 56,
+  "operations": {
+   "addSpell": 36,
+   "addTransfer": 17,
+   "addPlayerClub": 28,
+   "removeSpell": 17,
+   "removePlayerClub": 16,
+   "updateSpell": 9,
+   "removeTransfer": 13,
+   "addClub": 1
+  },
+  "unresolvedMiddleClubs": 3
+ },
+ "unresolvedMiddleClubs": [
+  {
+   "playerId": 273438,
+   "name": "Danilo Barbosa",
+   "years": "2025-2026",
+   "club": "Al-Ula"
+  },
+  {
+   "playerId": 691892,
+   "name": "Nathaniel Brown",
+   "years": "2024",
+   "club": "1. FC Nürnberg"
+  },
+  {
+   "playerId": 655899,
+   "name": "Serdar Saatçı",
+   "years": "2026",
+   "club": "Al-Nasr"
+  }
+ ],
+ "players": [
+  {
+   "playerId": 36139,
+   "name": "Dušan Tadić",
+   "wiki": {
+    "title": "Dušan Tadić",
+    "revid": 1384903974
+   },
+   "reason": "Fenerbahçe -> Al Wahda (2025-08-08, the transfer already in the database) -> NEC (Sporx 130).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000000161,
+     "start": "2025-08-08",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:36139:2026:1000000161:467",
+     "fromClubId": 1000000161,
+     "toClubId": 467,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000000161,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 55619,
+   "name": "Nordin Amrabat",
+   "wiki": {
+    "title": "Nordin Amrabat",
+    "revid": 1383170727
+   },
+   "reason": "Clubs between Hull City and FC Utrecht from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000006603,
+     "start": "2025-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000006603,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 61892,
+   "name": "Rafael",
+   "wiki": {
+    "title": "Rafael (footballer, born 1990)",
+    "revid": 1382742229
+   },
+   "reason": "The roster's Rafael at Real Salt Lake is another player; this Rafael played for Botafogo 2021-2024.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6643,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 9030,
+     "start": "2021-07-01",
+     "end": "2024-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 9030,
+     "source": "reviewed:summer-2026:2026-11-12"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6643
+    }
+   ]
+  },
+  {
+   "playerId": 74857,
+   "name": "Marc-André ter Stegen",
+   "wiki": {
+    "title": "Marc-André ter Stegen",
+    "revid": 1384752245
+   },
+   "reason": "Barcelona -> Ajax on loan (Sporx 161).",
+   "ops": [
+    {
+     "op": "updateSpell",
+     "clubId": 131,
+     "start": "2026-06-30",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 610,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:74857:2026:131:610",
+     "fromClubId": 131,
+     "toClubId": 610,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 79573,
+   "name": "Sergio Padt",
+   "wiki": {
+    "title": "Sergio Padt",
+    "revid": 1385084963
+   },
+   "reason": "Clubs between FC Groningen and FC Utrecht from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000031614,
+     "start": "2021-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000031614,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 126664,
+   "name": "Lucas Digne",
+   "wiki": {
+    "title": "Lucas Digne",
+    "revid": 1382877709
+   },
+   "reason": "Aston Villa -> PSG (Sporx 183).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000000583,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:126664:2026:405:1000000583",
+     "fromClubId": 405,
+     "toClubId": 1000000583,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 128223,
+   "name": "Álvaro Morata",
+   "wiki": {
+    "title": "Álvaro Morata",
+    "revid": 1384580711
+   },
+   "reason": "Como (permanent) -> Leganés on loan; the 2026-06-30 return to Milan is replaced.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 5,
+     "start": "2026-06-30"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "tm:128223:2026-06-30:1047:5"
+    },
+    {
+     "op": "updateSpell",
+     "clubId": 1047,
+     "start": "2025-08-12",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 1244,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:128223:2026:1047:1244",
+     "fromClubId": 1047,
+     "toClubId": 1244,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1244,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 131102,
+   "name": "Jeison Murillo",
+   "wiki": {
+    "title": "Jeison Murillo",
+    "revid": 1384210892
+   },
+   "reason": "The roster's Jeison Murillo at Riestra is another player; he has been at Al-Shamal since 2023.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 19775,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 10775,
+     "start": "2023-07-01",
+     "end": null,
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 19775
+    }
+   ]
+  },
+  {
+   "playerId": 157396,
+   "name": "Rob Schoofs",
+   "wiki": {
+    "title": "Rob Schoofs",
+    "revid": 1382742424
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6571,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:157396:2026:3948:6571"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6571
+    }
+   ]
+  },
+  {
+   "playerId": 174733,
+   "name": "Omar Colley",
+   "wiki": {
+    "title": "Omar Colley",
+    "revid": 1385072231
+   },
+   "reason": "Al-Diriyah 2025-2026 between PAOK and Al-Fayha (from the day PAOK ends).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 5000000024,
+     "start": "2025-07-23",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 5000000024,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 182893,
+   "name": "Seko Fofana",
+   "wiki": {
+    "title": "Seko Fofana",
+    "revid": 1385084293
+   },
+   "reason": "Rennes -> Porto on loan again (Sporx 263).",
+   "ops": [
+    {
+     "op": "updateSpell",
+     "clubId": 273,
+     "start": "2026-06-30",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 720,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:182893:2026:273:720",
+     "fromClubId": 273,
+     "toClubId": 720,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 185245,
+   "name": "Jhon Córdoba",
+   "wiki": {
+    "title": "Jhon Córdoba",
+    "revid": 1384744496
+   },
+   "reason": "Wikipedia has him still at Krasnodar (or the roster row is another player with the same name); the roster move is taken back.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 1829,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:185245:2026:16704:1829"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 1829
+    }
+   ]
+  },
+  {
+   "playerId": 193867,
+   "name": "Liam Henderson",
+   "wiki": {
+    "title": "Liam Henderson",
+    "revid": 1385051840
+   },
+   "reason": "The roster's Liam Henderson at Falkirk is another player; he has been at Sampdoria since 2025.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 1191,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 1038,
+     "start": "2025-07-01",
+     "end": null,
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 1191
+    }
+   ]
+  },
+  {
+   "playerId": 203496,
+   "name": "Nabil Fekir",
+   "wiki": {
+    "title": "Nabil Fekir",
+    "revid": 1384925620
+   },
+   "reason": "Al Jazira 2024-2026 between Betis and Abha (from the day Betis ends); the Al Jazira link was stored as Universitatea Craiova (id 2524, the offset collision).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000002524,
+     "start": "2024-08-25",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 2524
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000002524,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 205927,
+   "name": "Dominik Livakovic",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 131,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 217111,
+   "name": "Hakim Ziyech",
+   "wiki": {
+    "title": "Hakim Ziyech",
+    "revid": 1385035243
+   },
+   "reason": "Clubs between Al-Duhail SC and Botafogo FC from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000006603,
+     "start": "2025-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000006603,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 220722,
+   "name": "Eduardo",
+   "wiki": {
+    "title": "Christian Giménez (footballer, born 1974)",
+    "revid": 1383183663
+   },
+   "reason": "The roster's Eduardo at V-Varen Nagasaki cannot be tied to this Eduardo (Estoril, Braga, Xanthi); the stop is removed.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 23581,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 23581
+    }
+   ]
+  },
+  {
+   "playerId": 228948,
+   "name": "Thilo Kehrer",
+   "wiki": {
+    "title": "Thilo Kehrer",
+    "revid": 1382893127
+   },
+   "reason": "Monaco -> Ajax on loan; Sporx 326 has the clubs reversed, the roster and Wikipedia agree on Ajax.",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 610,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:228948:2026:1000000162:610",
+     "fromClubId": 1000000162,
+     "toClubId": 610,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 229005,
+   "name": "Abdou Diallo",
+   "wiki": {
+    "title": "Abdou Diallo",
+    "revid": 1384767741
+   },
+   "reason": "Clubs between RB Leipzig and Abha from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1230,
+     "start": "2023-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 26091,
+     "start": "2025-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 10920,
+     "start": "2026-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    }
+   ]
+  },
+  {
+   "playerId": 251876,
+   "name": "Pablo Maffeo",
+   "wiki": {
+    "title": "Pablo Maffeo",
+    "revid": 1385073066
+   },
+   "reason": "Mallorca -> Olympiacos -> Valencia on loan (summer 2026).",
+   "ops": [
+    {
+     "op": "removeTransfer",
+     "eventId": "season:251876:2026:237:1049"
+    },
+    {
+     "op": "removeSpell",
+     "clubId": 1049,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 683,
+     "start": "2026-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 1049,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:251876:2026:237:683",
+     "fromClubId": 237,
+     "toClubId": 683,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:251876:2026:683:1049",
+     "fromClubId": 683,
+     "toClubId": 1049,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 683,
+     "source": "reviewed:summer-2026:2026-11-12"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 1049
+    }
+   ]
+  },
+  {
+   "playerId": 258626,
+   "name": "Talisca",
+   "wiki": {
+    "title": "Talisca",
+    "revid": 1384665740
+   },
+   "reason": "Fenerbahçe -> Al Jazira (Sporx 333).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 1000002524,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:258626:2026:36:1000002524",
+     "fromClubId": 36,
+     "toClubId": 1000002524,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000002524,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 293213,
+   "name": "Amir Hadziahmetovic",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000031614,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 319745,
+   "name": "Dani Ceballos",
+   "wiki": {
+    "title": "Dani Ceballos",
+    "revid": 1384499516
+   },
+   "reason": "Real Madrid -> Real Betis (Sporx 327).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 150,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:319745:2026:418:150",
+     "fromClubId": 418,
+     "toClubId": 150,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 323704,
+   "name": "Malcom",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000002524,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 328455,
+   "name": "Juriën Gaari",
+   "wiki": {
+    "title": "Juriën Gaari",
+    "revid": 1382925327
+   },
+   "reason": "Al-Hazem 2024-2025, Abha since 2025.",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 9131,
+     "start": "2024-07-01",
+     "end": "2025-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "updateSpell",
+     "clubId": 1000040039,
+     "start": "2026-07-01",
+     "set": {
+      "start_date": "2025-07-01",
+      "confidence": "REVIEWED_YEAR"
+     }
+    }
+   ]
+  },
+  {
+   "playerId": 338637,
+   "name": "Daam Foulon",
+   "wiki": {
+    "title": "Daam Foulon",
+    "revid": 1384435204
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 10625,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:338637:2026:1096:10625"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 10625
+    }
+   ]
+  },
+  {
+   "playerId": 338651,
+   "name": "Gaëtan Coucke",
+   "wiki": {
+    "title": "Gaëtan Coucke",
+    "revid": 1382910687
+   },
+   "reason": "Clubs between KV Mechelen and Cercle Brugge from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 39536,
+     "start": "2024-07-01",
+     "end": "2025-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 1038,
+     "start": "2025-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    }
+   ]
+  },
+  {
+   "playerId": 344600,
+   "name": "Michaël Cuisance",
+   "wiki": {
+    "title": "Michaël Cuisance",
+    "revid": 1383721689
+   },
+   "reason": "Clubs between UC Sampdoria and RC Lens from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 81,
+     "start": "2023-07-01",
+     "end": "2024-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 44,
+     "start": "2024-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    }
+   ]
+  },
+  {
+   "playerId": 354340,
+   "name": "Rick van Drongelen",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 265,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 357162,
+   "name": "Florentino",
+   "wiki": {
+    "title": "Florentino Luís",
+    "revid": 1385031526
+   },
+   "reason": "Burnley (permanent) -> Ipswich; the 2026-06-30 return to Benfica is replaced.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 294,
+     "start": "2026-06-30"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "tm:357162:2026-06-30:1132:294"
+    },
+    {
+     "op": "updateSpell",
+     "clubId": 1132,
+     "start": "2025-09-01",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 677,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:357162:2026:1132:677",
+     "fromClubId": 1132,
+     "toClubId": 677,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 363205,
+   "name": "Gabriel Jesus",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 131,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 368887,
+   "name": "Loïs Openda",
+   "wiki": {
+    "title": "Loïs Openda",
+    "revid": 1384606315
+   },
+   "reason": "Juventus -> Lyon on loan (Sporx 135).",
+   "ops": [
+    {
+     "op": "updateSpell",
+     "clubId": 506,
+     "start": "2026-07-01",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 1041,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:368887:2026:506:1041",
+     "fromClubId": 506,
+     "toClubId": 1041,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 373374,
+   "name": "Brian Mansilla",
+   "wiki": {
+    "title": "Braian Mansilla",
+    "revid": 1384306549
+   },
+   "reason": "Wikipedia has him still at Akhmat Grozny (on loan at Rodina) (or the roster row is another player with the same name); the roster move is taken back.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 8024,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:373374:2026:3725:8024"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 8024
+    }
+   ]
+  },
+  {
+   "playerId": 377468,
+   "name": "Anel Ahmedhodzic",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 1132,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 387047,
+   "name": "Danilho Doekhi",
+   "wiki": {
+    "title": "Danilho Doekhi",
+    "revid": 1383119612
+   },
+   "reason": "Union Berlin -> Lazio; Sporx 82 (Aston Villa) is wrong, the roster and Wikipedia agree on Lazio.",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 398,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:387047:2026:89:398",
+     "fromClubId": 89,
+     "toClubId": 398,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 422460,
+   "name": "Dani Gómez",
+   "wiki": {
+    "title": "Dani Gómez (footballer, born 1998)",
+    "revid": 1384240549
+   },
+   "reason": "Clubs between Valencia CF and FC Tokyo from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 142,
+     "start": "2025-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    }
+   ]
+  },
+  {
+   "playerId": 426624,
+   "name": "André Vidigal",
+   "wiki": {
+    "title": "André Vidigal",
+    "revid": 1384773580
+   },
+   "reason": "Clubs between CS Marítimo and FC Alverca from the infobox (mostly loans).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 512,
+     "start": "2023-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addSpell",
+     "clubId": 2805,
+     "start": "2026-07-01",
+     "end": "2026-07-01",
+     "confidence": "REVIEWED_YEAR"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 2805,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 428920,
+   "name": "Kevin Mac Allister",
+   "wiki": {
+    "title": "Kevin Mac Allister",
+    "revid": 1385048531
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6571,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:428920:2026:3948:6571"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6571
+    }
+   ]
+  },
+  {
+   "playerId": 480705,
+   "name": "Cherif Ndiaye",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 1091,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 480975,
+   "name": "Allahyar Sayyadmanesh",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 238,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 486039,
+   "name": "Anouar Ait El Hadj",
+   "wiki": {
+    "title": "Anouar Ait El Hadj",
+    "revid": 1381690147
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6571,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:486039:2026:3948:6571"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6571
+    }
+   ]
+  },
+  {
+   "playerId": 487969,
+   "name": "Randal Kolo Muani",
+   "wiki": {
+    "title": "Randal Kolo Muani",
+    "revid": 1384697340
+   },
+   "reason": "PSG -> Juventus (Sporx 152).",
+   "ops": [
+    {
+     "op": "updateSpell",
+     "clubId": 1000000583,
+     "start": "2026-06-30",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 506,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:487969:2026:1000000583:506",
+     "fromClubId": 1000000583,
+     "toClubId": 506,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 498529,
+   "name": "Miguel Crespo",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 6070,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 500689,
+   "name": "Evann Guessand",
+   "wiki": {
+    "title": "Evann Guessand",
+    "revid": 1384436405
+   },
+   "reason": "Aston Villa -> Crystal Palace on loan again (Sporx 195).",
+   "ops": [
+    {
+     "op": "updateSpell",
+     "clubId": 405,
+     "start": "2026-06-30",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 873,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:500689:2026:405:873",
+     "fromClubId": 405,
+     "toClubId": 873,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    }
+   ]
+  },
+  {
+   "playerId": 502247,
+   "name": "Louis Patris",
+   "wiki": {
+    "title": "Louis Patris",
+    "revid": 1385052876
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6571,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:502247:2026:3948:6571"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6571
+    }
+   ]
+  },
+  {
+   "playerId": 511401,
+   "name": "Anthony Musaba",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 1123,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 537860,
+   "name": "Mykhaylo Mudryk",
+   "wiki": {
+    "title": "Mykhailo Mudryk",
+    "revid": 1383119490
+   },
+   "reason": "Chelsea -> Tottenham on loan (Sporx 318).",
+   "ops": [
+    {
+     "op": "addSpell",
+     "clubId": 148,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:537860:2026:631:148",
+     "fromClubId": 631,
+     "toClubId": 148,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 148,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 543771,
+   "name": "Kristjan Asllani",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 1000002524,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 546543,
+   "name": "Darwin Núñez",
+   "wiki": {
+    "title": "Darwin Núñez",
+    "revid": 1384812043
+   },
+   "reason": "Al-Hilal -> Al-Diriyah on loan (Sporx 246).",
+   "ops": [
+    {
+     "op": "addClub",
+     "clubId": 5000000024,
+     "canonicalKey": "reviewed:summer-2026:al_diriyah",
+     "name": "Al-Diriyah",
+     "country": "Saudi Arabia"
+    },
+    {
+     "op": "updateSpell",
+     "clubId": 1114,
+     "start": "2025-08-09",
+     "set": {
+      "end_date": "2026-07-01"
+     }
+    },
+    {
+     "op": "addSpell",
+     "clubId": 5000000024,
+     "start": "2026-07-01",
+     "end": null,
+     "confidence": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addTransfer",
+     "eventId": "season:546543:2026:1114:5000000024",
+     "fromClubId": 1114,
+     "toClubId": 5000000024,
+     "date": "2026-07-01",
+     "trust": "REVIEWED_SEASON"
+    },
+    {
+     "op": "addPlayerClub",
+     "clubId": 5000000024,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 592403,
+   "name": "Adem Zorgane",
+   "wiki": {
+    "title": "Adem Zorgane",
+    "revid": 1382803405
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6571,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:592403:2026:3948:6571"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6571
+    }
+   ]
+  },
+  {
+   "playerId": 617679,
+   "name": "Zé Carlos",
+   "wiki": {
+    "title": "Zé Carlos (footballer, born 2001)",
+    "revid": 1384623040
+   },
+   "reason": "Wikipedia has him still at Gil Vicente (or the roster row is another player with the same name); the roster move is taken back.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 2425,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:617679:2026:2424:2425"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 2425
+    }
+   ]
+  },
+  {
+   "playerId": 618898,
+   "name": "Erencan Yardımcı",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 2,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 663244,
+   "name": "Jota Silva",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 683,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 684159,
+   "name": "Kevin Rodríguez",
+   "wiki": {
+    "title": "Kevin Rodríguez (footballer, born 2000)",
+    "revid": 1385048677
+   },
+   "reason": "No move: the roster lists the club he already played for under a second database row.",
+   "ops": [
+    {
+     "op": "removeSpell",
+     "clubId": 6571,
+     "start": "2026-07-01"
+    },
+    {
+     "op": "removeTransfer",
+     "eventId": "season:684159:2026:3948:6571"
+    },
+    {
+     "op": "removePlayerClub",
+     "clubId": 6571
+    }
+   ]
+  },
+  {
+   "playerId": 743591,
+   "name": "Savinho",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 148,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  },
+  {
+   "playerId": 787232,
+   "name": "David Datro Fofana",
+   "wiki": null,
+   "reason": "Grid link for a reviewed 2026 club.",
+   "ops": [
+    {
+     "op": "addPlayerClub",
+     "clubId": 61,
+     "source": "reviewed:summer-2026:2026-11-12"
+    }
+   ]
+  }
+ ]
+}

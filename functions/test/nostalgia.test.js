@@ -7,8 +7,13 @@ const {tasks} = require("../nostalgia");
 const catalog = require("../config/nostalgia_catalog.json");
 const all = Object.values(tasks).filter((t) => !t.expansion);
 const proof = (t) => ({version: 2, taskId: t.id, answers: t.answerKeys});
-test("nostalgia catalog: 12 chapters, 24 reviewed unique tasks, five mechanics and runtime parity", () => {
-  assert.deepEqual(catalog, require("../../assets/data/turkish_nostalgia_v2.json"));
+test("nostalgia catalog: 12 chapters, 24 reviewed unique tasks, five mechanics; app asset has no answers", () => {
+  const app = require("../../assets/data/turkish_nostalgia_v2.json");
+  app.chapters.forEach((c, i) => c.tasks.forEach((t, k) => {
+    const full = catalog.chapters[i].tasks[k];
+    assert.ok(!("answerKeys" in t) && !("explanation" in t)); assert.equal(t.serverValidated, true);
+    assert.equal(t.requiredCount, full.answerKeys.length); assert.deepEqual(t.options, full.options);
+  }));
   assert.equal(catalog.chapters.length, 12);
   assert.equal(all.length, 24);
   const counts = {};
@@ -121,4 +126,11 @@ test("server-only rules and deletion cover nostalgia namespace", () => {
   const code = fs.readFileSync(require.resolve("../index.js"), "utf8");
   assert.ok(code.includes("updates[\"nostalgiaState/\" + uid] = null;"));
   assert.ok(code.includes("exports.submitTurkishNostalgia = lbNostalgiaCallable(\"submit\")"));
+});
+test("a correct answer returns the answer, story and sources of that task only", async () => {
+  const h = harness(); const t = all[0];
+  const s = await h.call("submitTurkishNostalgia", proof(t));
+  assert.equal(s.correct, true);
+  assert.equal(s.results[t.id].story, t.explanation); assert.ok(s.results[t.id].answer);
+  assert.deepEqual(s.results[t.id].sources, t.sources); assert.ok(!(all[1].id in s.results));
 });

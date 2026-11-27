@@ -1,3 +1,4 @@
+import 'supported_bot_page.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -11,9 +12,8 @@ import '../widgets/club_badge.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/player_avatar.dart';
 
-class TeamRacePage extends StatefulWidget {
-  const TeamRacePage({
-    super.key,
+class _LegacyTeamRacePage extends StatefulWidget {
+  const _LegacyTeamRacePage({
     required this.userClub,
     this.difficulty = VsBotDifficulty.medium,
     this.controllerFactory,
@@ -24,10 +24,10 @@ class TeamRacePage extends StatefulWidget {
   final TeamRaceController Function()? controllerFactory;
 
   @override
-  State<TeamRacePage> createState() => _TeamRacePageState();
+  State<_LegacyTeamRacePage> createState() => __LegacyTeamRacePageState();
 }
 
-class _TeamRacePageState extends State<TeamRacePage>
+class __LegacyTeamRacePageState extends State<_LegacyTeamRacePage>
     with WidgetsBindingObserver {
   late final TeamRaceController _c;
   final TextEditingController _answerController = TextEditingController();
@@ -530,4 +530,19 @@ class _TeamRacePageState extends State<TeamRacePage>
           ],
         ],
       );
+}
+
+class TeamRacePage extends StatelessWidget {
+  const TeamRacePage({super.key, required this.userClub, this.difficulty = VsBotDifficulty.medium,
+    this.controllerFactory});
+  final Club userClub;
+  final VsBotDifficulty difficulty;
+  final TeamRaceController Function()? controllerFactory;
+
+  @override
+  Widget build(BuildContext context) {
+    final legacy = _LegacyTeamRacePage(userClub: userClub, difficulty: difficulty, controllerFactory: controllerFactory);
+    return controllerFactory != null ? legacy : SupportedBotPage(mode: 'bot_team_race', legacy: legacy,
+      difficulty: difficulty.name, clubId: 'club:${userClub.id}', clubName: userClub.name);
+  }
 }

@@ -1,0 +1,3835 @@
+{
+ "reviewedUtc": "2026-11-22",
+ "policy": "Notable Turkish players missing from V4 (found while fixing club x country discovery). Senior clubs and years from each English Wikipedia infobox (revision pinned). Reserve teams and clubs absent from the database are dropped, never created. Ids continue the reviewed-player namespace.",
+ "source": "https://en.wikipedia.org",
+ "players": [
+  {
+   "id": 4000000112,
+   "name": "Nuri Şahin",
+   "aliases": [
+    "Nuri Sahin"
+   ],
+   "birthYear": 1988,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Nuri Şahin",
+    "revid": 1385474358
+   },
+   "clubs": [
+    {
+     "id": 16,
+     "name": "Borussia Dortmund"
+    },
+    {
+     "id": 234,
+     "name": "Feyenoord Rotterdam"
+    },
+    {
+     "id": 418,
+     "name": "Real Madrid"
+    },
+    {
+     "id": 31,
+     "name": "Liverpool FC"
+    },
+    {
+     "id": 86,
+     "name": "SV Werder Bremen"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 16,
+     "startYear": 2005,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 234,
+     "startYear": 2007,
+     "endYear": 2008,
+     "loan": true
+    },
+    {
+     "id": 418,
+     "startYear": 2011,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 31,
+     "startYear": 2012,
+     "endYear": 2013,
+     "loan": true
+    },
+    {
+     "id": 16,
+     "startYear": 2013,
+     "endYear": 2014,
+     "loan": true
+    },
+    {
+     "id": 16,
+     "startYear": 2014,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 86,
+     "startYear": 2018,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 589,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Borussia Dortmund II (reserve)"
+   ]
+  },
+  {
+   "id": 4000000113,
+   "name": "Hamit Altıntop",
+   "aliases": [
+    "Hamit Altintop"
+   ],
+   "birthYear": 1982,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Hamit Altıntop",
+    "revid": 1385400720
+   },
+   "clubs": [
+    {
+     "id": 33,
+     "name": "FC Schalke 04"
+    },
+    {
+     "id": 27,
+     "name": "Bayern Munich"
+    },
+    {
+     "id": 418,
+     "name": "Real Madrid"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 105,
+     "name": "SV Darmstadt 98"
+    }
+   ],
+   "spells": [
+    {
+     "id": 33,
+     "startYear": 2003,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 27,
+     "startYear": 2007,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 418,
+     "startYear": 2011,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2012,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 105,
+     "startYear": 2017,
+     "endYear": 2018,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Wattenscheid 09 (not in database)"
+   ]
+  },
+  {
+   "id": 4000000114,
+   "name": "Halil Altıntop",
+   "aliases": [
+    "Halil Altintop"
+   ],
+   "birthYear": 1982,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Halil Altıntop",
+    "revid": 1381394912
+   },
+   "clubs": [
+    {
+     "id": 2,
+     "name": "1.FC Kaiserslautern"
+    },
+    {
+     "id": 33,
+     "name": "FC Schalke 04"
+    },
+    {
+     "id": 24,
+     "name": "Eintracht Frankfurt"
+    },
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 167,
+     "name": "FC Augsburg"
+    },
+    {
+     "id": 62,
+     "name": "SK Slavia Prague"
+    }
+   ],
+   "spells": [
+    {
+     "id": 2,
+     "startYear": 2003,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 33,
+     "startYear": 2006,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 24,
+     "startYear": 2010,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 449,
+     "startYear": 2011,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 167,
+     "startYear": 2013,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 62,
+     "startYear": 2017,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 2,
+     "startYear": 2018,
+     "endYear": 2018,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Wattenscheid 09 (not in database)",
+    "1. FC Kaiserslautern#1. FC Kaiserslautern II squad|1. FC Kaiserslautern II (reserve)"
+   ]
+  },
+  {
+   "id": 4000000115,
+   "name": "Yıldıray Baştürk",
+   "aliases": [],
+   "birthYear": 1978,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Yıldıray Baştürk",
+    "revid": 1383022629
+   },
+   "clubs": [
+    {
+     "id": 80,
+     "name": "VfL Bochum"
+    },
+    {
+     "id": 15,
+     "name": "Bayer 04 Leverkusen"
+    },
+    {
+     "id": 44,
+     "name": "Hertha BSC"
+    },
+    {
+     "id": 79,
+     "name": "VfB Stuttgart"
+    },
+    {
+     "id": 164,
+     "name": "Blackburn Rovers"
+    }
+   ],
+   "spells": [
+    {
+     "id": 80,
+     "startYear": 1997,
+     "endYear": 2001,
+     "loan": false
+    },
+    {
+     "id": 15,
+     "startYear": 2001,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 44,
+     "startYear": 2004,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 79,
+     "startYear": 2007,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 164,
+     "startYear": 2010,
+     "endYear": 2010,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Wattenscheid 09 (not in database)"
+   ]
+  },
+  {
+   "id": 4000000116,
+   "name": "Hasan Şaş",
+   "aliases": [],
+   "birthYear": 1976,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Hasan Şaş",
+    "revid": 1381395060
+   },
+   "clubs": [
+    {
+     "id": 3840,
+     "name": "Adana Demirspor"
+    },
+    {
+     "id": 868,
+     "name": "MKE Ankaragücü"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    }
+   ],
+   "spells": [
+    {
+     "id": 3840,
+     "startYear": 1993,
+     "endYear": 1995,
+     "loan": false
+    },
+    {
+     "id": 868,
+     "startYear": 1995,
+     "endYear": 1998,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 1998,
+     "endYear": 2009,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000117,
+   "name": "Tayfun Korkut",
+   "aliases": [],
+   "birthYear": 1974,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Tayfun Korkut",
+    "revid": 1386384936
+   },
+   "clubs": [
+    {
+     "id": 71,
+     "name": "Stuttgarter Kickers"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 681,
+     "name": "Real Sociedad"
+    },
+    {
+     "id": 714,
+     "name": "RCD Espanyol Barcelona"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    }
+   ],
+   "spells": [
+    {
+     "id": 71,
+     "startYear": 1994,
+     "endYear": 1995,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1995,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 681,
+     "startYear": 2000,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 714,
+     "startYear": 2003,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2004,
+     "endYear": 2005,
+     "loan": false
+    },
+    {
+     "id": 820,
+     "startYear": 2005,
+     "endYear": 2006,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000118,
+   "name": "Ergün Penbe",
+   "aliases": [],
+   "birthYear": 1972,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Ergün Penbe",
+    "revid": 1381392940
+   },
+   "clubs": [
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    }
+   ],
+   "spells": [
+    {
+     "id": 820,
+     "startYear": 1992,
+     "endYear": 1994,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 1994,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 2007,
+     "endYear": 2008,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Kilimli Belediyespor (not in database)"
+   ]
+  },
+  {
+   "id": 4000000119,
+   "name": "Abdullah Ercan",
+   "aliases": [],
+   "birthYear": 1971,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Abdullah Ercan",
+    "revid": 1382791598
+   },
+   "clubs": [
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 924,
+     "name": "Istanbulspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 449,
+     "startYear": 1990,
+     "endYear": 1999,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1999,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2003,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 924,
+     "startYear": 2004,
+     "endYear": 2006,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000120,
+   "name": "Ogün Temizkanoğlu",
+   "aliases": [],
+   "birthYear": 1969,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Ogün Temizkanoğlu",
+    "revid": 1382505959
+   },
+   "clubs": [
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 2293,
+     "name": "Konyaspor"
+    },
+    {
+     "id": 1511,
+     "name": "Akcaabat Sebatspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 449,
+     "startYear": 1989,
+     "endYear": 1999,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1999,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 2293,
+     "startYear": 2003,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 1511,
+     "startYear": 2004,
+     "endYear": 2005,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000121,
+   "name": "Colin Kazim-Richards",
+   "aliases": [
+    "Colin Kazim",
+    "Kazım"
+   ],
+   "birthYear": 1986,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Colin Kazim-Richards",
+    "revid": 1385187155
+   },
+   "clubs": [
+    {
+     "id": 2413,
+     "name": "Bury FC"
+    },
+    {
+     "id": 1237,
+     "name": "Brighton & Hove Albion"
+    },
+    {
+     "id": 350,
+     "name": "Sheffield United"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 415,
+     "name": "FC Toulouse"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 683,
+     "name": "Olympiacos Piraeus"
+    },
+    {
+     "id": 164,
+     "name": "Blackburn Rovers"
+    },
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 234,
+     "name": "Feyenoord Rotterdam"
+    },
+    {
+     "id": 371,
+     "name": "Celtic FC"
+    },
+    {
+     "id": 776,
+     "name": "Coritiba Foot Ball Club"
+    },
+    {
+     "id": 199,
+     "name": "Sport Club Corinthians Paulista"
+    },
+    {
+     "id": 13357,
+     "name": "Lobos BUAP (- 2019)"
+    },
+    {
+     "id": 5138,
+     "name": "Tiburones Rojos de Veracruz"
+    },
+    {
+     "id": 4035,
+     "name": "CF Pachuca"
+    },
+    {
+     "id": 22,
+     "name": "Derby County"
+    },
+    {
+     "id": 6646,
+     "name": "Fatih Karagümrük"
+    }
+   ],
+   "spells": [
+    {
+     "id": 2413,
+     "startYear": 2004,
+     "endYear": 2005,
+     "loan": false
+    },
+    {
+     "id": 1237,
+     "startYear": 2005,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 350,
+     "startYear": 2006,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 2007,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 415,
+     "startYear": 2010,
+     "endYear": 2010,
+     "loan": true
+    },
+    {
+     "id": 141,
+     "startYear": 2011,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 683,
+     "startYear": 2012,
+     "endYear": 2012,
+     "loan": true
+    },
+    {
+     "id": 164,
+     "startYear": 2012,
+     "endYear": 2013,
+     "loan": true
+    },
+    {
+     "id": 20,
+     "startYear": 2013,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 234,
+     "startYear": 2014,
+     "endYear": 2015,
+     "loan": true
+    },
+    {
+     "id": 234,
+     "startYear": 2015,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 371,
+     "startYear": 2016,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 776,
+     "startYear": 2016,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 199,
+     "startYear": 2017,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 13357,
+     "startYear": 2018,
+     "endYear": 2018,
+     "loan": true
+    },
+    {
+     "id": 5138,
+     "startYear": 2019,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 4035,
+     "startYear": 2020,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 22,
+     "startYear": 2020,
+     "endYear": 2022,
+     "loan": false
+    },
+    {
+     "id": 6646,
+     "startYear": 2022,
+     "endYear": 2023,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000122,
+   "name": "Emre Aşık",
+   "aliases": [],
+   "birthYear": 1973,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Emre Aşık",
+    "revid": 1382666338
+   },
+   "clubs": [
+    {
+     "id": 20698,
+     "name": "Balikesirspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 924,
+     "name": "Istanbulspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 2944,
+     "name": "Sincan Belediyesi Ankaraspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 20698,
+     "startYear": 1992,
+     "endYear": 1993,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1993,
+     "endYear": 1996,
+     "loan": false
+    },
+    {
+     "id": 924,
+     "startYear": 1996,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2000,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2003,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2006,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 2944,
+     "startYear": 2007,
+     "endYear": 2008,
+     "loan": true
+    }
+   ],
+   "droppedRows": [
+    "S. Filamentspor (not in database)"
+   ]
+  },
+  {
+   "id": 4000000123,
+   "name": "Servet Çetin",
+   "aliases": [],
+   "birthYear": 1981,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Servet Çetin",
+    "revid": 1382559301
+   },
+   "clubs": [
+    {
+     "id": 1204,
+     "name": "Kartalspor"
+    },
+    {
+     "id": 1467,
+     "name": "Göztepe"
+    },
+    {
+     "id": 833,
+     "name": "Denizlispor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 2381,
+     "name": "Sivasspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    },
+    {
+     "id": 3216,
+     "name": "Mersin Talimyurdu SK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 1204,
+     "startYear": 1997,
+     "endYear": 2001,
+     "loan": false
+    },
+    {
+     "id": 1467,
+     "startYear": 2001,
+     "endYear": 2002,
+     "loan": false
+    },
+    {
+     "id": 833,
+     "startYear": 2002,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 2003,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 2381,
+     "startYear": 2006,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2007,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 825,
+     "startYear": 2012,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 3216,
+     "startYear": 2014,
+     "endYear": 2016,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000124,
+   "name": "Mehmet Topal",
+   "aliases": [],
+   "birthYear": 1986,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Mehmet Topal",
+    "revid": 1385428636
+   },
+   "clubs": [
+    {
+     "id": 1507,
+     "name": "Canakkale Dardanel SK"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 1049,
+     "name": "Valencia CF"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 1507,
+     "startYear": 2005,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2006,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 1049,
+     "startYear": 2010,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 2012,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 6890,
+     "startYear": 2019,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2021,
+     "endYear": 2022,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000125,
+   "name": "Semih Şentürk",
+   "aliases": [],
+   "birthYear": 1983,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Semih Şentürk",
+    "revid": 1382812963
+   },
+   "clubs": [
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 3842,
+     "name": "Izmirspor"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 36,
+     "startYear": 2001,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 3842,
+     "startYear": 2001,
+     "endYear": 2002,
+     "loan": true
+    },
+    {
+     "id": 589,
+     "startYear": 2014,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 6890,
+     "startYear": 2014,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 825,
+     "startYear": 2016,
+     "endYear": 2018,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000126,
+   "name": "Uğur Boral",
+   "aliases": [],
+   "birthYear": 1982,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Uğur Boral",
+    "revid": 1381788014
+   },
+   "clubs": [
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    },
+    {
+     "id": 120,
+     "name": "Kocaelispor"
+    },
+    {
+     "id": 2944,
+     "name": "Sincan Belediyesi Ankaraspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 152,
+     "name": "Samsunspor"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 820,
+     "startYear": 2000,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 120,
+     "startYear": 2001,
+     "endYear": 2002,
+     "loan": true
+    },
+    {
+     "id": 2944,
+     "startYear": 2003,
+     "endYear": 2004,
+     "loan": true
+    },
+    {
+     "id": 36,
+     "startYear": 2006,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 152,
+     "startYear": 2011,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2012,
+     "endYear": 2015,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000127,
+   "name": "Mevlüt Erdinç",
+   "aliases": [],
+   "birthYear": 1987,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Mevlüt Erdinç",
+    "revid": 1386958941
+   },
+   "clubs": [
+    {
+     "id": 750,
+     "name": "FC Sochaux-Montbéliard"
+    },
+    {
+     "id": 1000000583,
+     "name": "PSG"
+    },
+    {
+     "id": 273,
+     "name": "Stade Rennais FC"
+    },
+    {
+     "id": 618,
+     "name": "AS Saint-Étienne"
+    },
+    {
+     "id": 42,
+     "name": "Hannover 96"
+    },
+    {
+     "id": 855,
+     "name": "EA Guingamp"
+    },
+    {
+     "id": 347,
+     "name": "FC Metz"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 6646,
+     "name": "Fatih Karagümrük"
+    },
+    {
+     "id": 120,
+     "name": "Kocaelispor"
+    },
+    {
+     "id": 24245,
+     "name": "Ümraniyespor"
+    },
+    {
+     "id": 2967,
+     "name": "Racing Besançon"
+    }
+   ],
+   "spells": [
+    {
+     "id": 750,
+     "startYear": 2005,
+     "endYear": 2009,
+     "loan": false
+    },
+    {
+     "id": 1000000583,
+     "startYear": 2009,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 273,
+     "startYear": 2012,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 618,
+     "startYear": 2013,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 42,
+     "startYear": 2015,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 855,
+     "startYear": 2016,
+     "endYear": 2016,
+     "loan": true
+    },
+    {
+     "id": 347,
+     "startYear": 2016,
+     "endYear": 2017,
+     "loan": true
+    },
+    {
+     "id": 6890,
+     "startYear": 2017,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 589,
+     "startYear": 2018,
+     "endYear": 2019,
+     "loan": true
+    },
+    {
+     "id": 36,
+     "startYear": 2019,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 6646,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 120,
+     "startYear": 2021,
+     "endYear": 2022,
+     "loan": false
+    },
+    {
+     "id": 24245,
+     "startYear": 2022,
+     "endYear": 2022,
+     "loan": false
+    },
+    {
+     "id": 2967,
+     "startYear": 2022,
+     "endYear": 2022,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000128,
+   "name": "Rıdvan Dilmen",
+   "aliases": [],
+   "birthYear": 1962,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Rıdvan Dilmen",
+    "revid": 1382013011
+   },
+   "clubs": [
+    {
+     "id": 13473,
+     "name": "Nazilli Spor"
+    },
+    {
+     "id": 3207,
+     "name": "Boluspor"
+    },
+    {
+     "id": 518,
+     "name": "Sariyer"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    }
+   ],
+   "spells": [
+    {
+     "id": 13473,
+     "startYear": 1977,
+     "endYear": 1979,
+     "loan": false
+    },
+    {
+     "id": 3207,
+     "startYear": 1980,
+     "endYear": 1983,
+     "loan": false
+    },
+    {
+     "id": 518,
+     "startYear": 1983,
+     "endYear": 1987,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1987,
+     "endYear": 1994,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Muğlaspor (not in database)"
+   ]
+  },
+  {
+   "id": 4000000129,
+   "name": "Tolunay Kafkas",
+   "aliases": [],
+   "birthYear": 1968,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Tolunay Kafkas",
+    "revid": 1385277137
+   },
+   "clubs": [
+    {
+     "id": 1518,
+     "name": "Türk Telekomspor"
+    },
+    {
+     "id": 12388,
+     "name": "Ankara Keciörengücü"
+    },
+    {
+     "id": 845,
+     "name": "Diyarbakirspor"
+    },
+    {
+     "id": 1766,
+     "name": "Erzurumspor"
+    },
+    {
+     "id": 2293,
+     "name": "Konyaspor"
+    },
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 833,
+     "name": "Denizlispor"
+    },
+    {
+     "id": 413,
+     "name": "LASK"
+    },
+    {
+     "id": 503,
+     "name": "Admira Wacker"
+    }
+   ],
+   "spells": [
+    {
+     "id": 1518,
+     "startYear": 1987,
+     "endYear": 1988,
+     "loan": false
+    },
+    {
+     "id": 12388,
+     "startYear": 1988,
+     "endYear": 1989,
+     "loan": false
+    },
+    {
+     "id": 845,
+     "startYear": 1989,
+     "endYear": 1991,
+     "loan": false
+    },
+    {
+     "id": 1766,
+     "startYear": 1991,
+     "endYear": 1992,
+     "loan": false
+    },
+    {
+     "id": 2293,
+     "startYear": 1992,
+     "endYear": 1993,
+     "loan": false
+    },
+    {
+     "id": 449,
+     "startYear": 1993,
+     "endYear": 1997,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 1997,
+     "endYear": 1999,
+     "loan": false
+    },
+    {
+     "id": 20,
+     "startYear": 1999,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 833,
+     "startYear": 2000,
+     "endYear": 2002,
+     "loan": false
+    },
+    {
+     "id": 413,
+     "startYear": 2004,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 503,
+     "startYear": 2004,
+     "endYear": 2005,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "ASKÖ Pasching (not in database)"
+   ]
+  },
+  {
+   "id": 4000000130,
+   "name": "Bülent Uygun",
+   "aliases": [],
+   "birthYear": 1971,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Bülent Uygun",
+    "revid": 1382575026
+   },
+   "clubs": [
+    {
+     "id": 120,
+     "name": "Kocaelispor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 1507,
+     "name": "Canakkale Dardanel SK"
+    },
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 1467,
+     "name": "Göztepe"
+    },
+    {
+     "id": 2381,
+     "name": "Sivasspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 120,
+     "startYear": 1989,
+     "endYear": 1993,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1993,
+     "endYear": 1996,
+     "loan": false
+    },
+    {
+     "id": 120,
+     "startYear": 1996,
+     "endYear": 1998,
+     "loan": false
+    },
+    {
+     "id": 1507,
+     "startYear": 1998,
+     "endYear": 1999,
+     "loan": false
+    },
+    {
+     "id": 449,
+     "startYear": 1999,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 1467,
+     "startYear": 2000,
+     "endYear": 2001,
+     "loan": false
+    },
+    {
+     "id": 2381,
+     "startYear": 2001,
+     "endYear": 2002,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Üsküdar Anadolu (not in database)"
+   ]
+  },
+  {
+   "id": 4000000131,
+   "name": "Arif Erdem",
+   "aliases": [],
+   "birthYear": 1972,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Arif Erdem",
+    "revid": 1381388628
+   },
+   "clubs": [
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 681,
+     "name": "Real Sociedad"
+    }
+   ],
+   "spells": [
+    {
+     "id": 141,
+     "startYear": 1991,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 681,
+     "startYear": 2000,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2000,
+     "endYear": 2005,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000132,
+   "name": "Mehmet Özdilek",
+   "aliases": [],
+   "birthYear": 1966,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Mehmet Özdilek",
+    "revid": 1386162846
+   },
+   "clubs": [
+    {
+     "id": 12452,
+     "name": "Kahramanmaras Spor"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 12452,
+     "startYear": 1984,
+     "endYear": 1988,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 1988,
+     "endYear": 2001,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000133,
+   "name": "Ertuğrul Sağlam",
+   "aliases": [],
+   "birthYear": 1969,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Ertuğrul Sağlam",
+    "revid": 1387019826
+   },
+   "clubs": [
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 152,
+     "name": "Samsunspor"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 524,
+     "startYear": 1986,
+     "endYear": 1988,
+     "loan": false
+    },
+    {
+     "id": 152,
+     "startYear": 1988,
+     "endYear": 1994,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 1994,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 152,
+     "startYear": 2000,
+     "endYear": 2003,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000134,
+   "name": "Ömer Çatkıç",
+   "aliases": [],
+   "birthYear": 1974,
+   "country": "Türkiye",
+   "position": "Goalkeeper",
+   "source": {
+    "title": "Ömer Çatkıç",
+    "revid": 1383004516
+   },
+   "clubs": [
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    },
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    },
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 825,
+     "startYear": 1992,
+     "endYear": 1998,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 1998,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 820,
+     "startYear": 2004,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 20,
+     "startYear": 2006,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 2007,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 589,
+     "startYear": 2008,
+     "endYear": 2012,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000135,
+   "name": "Cüneyt Tanman",
+   "aliases": [],
+   "birthYear": 1956,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Cüneyt Tanman",
+    "revid": 1382833416
+   },
+   "clubs": [
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 11688,
+     "name": "Giresunspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 141,
+     "startYear": 1972,
+     "endYear": 1991,
+     "loan": false
+    },
+    {
+     "id": 11688,
+     "startYear": 1975,
+     "endYear": 1976,
+     "loan": true
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000136,
+   "name": "Saffet Sancaklı",
+   "aliases": [],
+   "birthYear": 1966,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Saffet Sancaklı",
+    "revid": 1382795312
+   },
+   "clubs": [
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    },
+    {
+     "id": 2293,
+     "name": "Konyaspor"
+    },
+    {
+     "id": 518,
+     "name": "Sariyer"
+    },
+    {
+     "id": 120,
+     "name": "Kocaelispor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    }
+   ],
+   "spells": [
+    {
+     "id": 114,
+     "startYear": 1987,
+     "endYear": 1991,
+     "loan": false
+    },
+    {
+     "id": 825,
+     "startYear": 1988,
+     "endYear": 1989,
+     "loan": true
+    },
+    {
+     "id": 2293,
+     "startYear": 1989,
+     "endYear": 1990,
+     "loan": true
+    },
+    {
+     "id": 518,
+     "startYear": 1990,
+     "endYear": 1991,
+     "loan": true
+    },
+    {
+     "id": 120,
+     "startYear": 1991,
+     "endYear": 1994,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 1994,
+     "endYear": 1995,
+     "loan": false
+    },
+    {
+     "id": 120,
+     "startYear": 1996,
+     "endYear": 1996,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 1996,
+     "endYear": 1998,
+     "loan": false
+    },
+    {
+     "id": 2293,
+     "startYear": 1998,
+     "endYear": 1999,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Vefa SK (not in database)"
+   ]
+  },
+  {
+   "id": 4000000137,
+   "name": "Okan Yılmaz",
+   "aliases": [],
+   "birthYear": 1978,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Okan Yılmaz",
+    "revid": 1382811485
+   },
+   "clubs": [
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 1264,
+     "name": "Malatyaspor"
+    },
+    {
+     "id": 2293,
+     "name": "Konyaspor"
+    },
+    {
+     "id": 2463,
+     "name": "Sakaryaspor"
+    },
+    {
+     "id": 845,
+     "name": "Diyarbakirspor"
+    },
+    {
+     "id": 2323,
+     "name": "Orduspor"
+    },
+    {
+     "id": 7185,
+     "name": "Panthrakikos Komotini"
+    },
+    {
+     "id": 40181,
+     "name": "Vanspor"
+    },
+    {
+     "id": 11282,
+     "name": "Alanyaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 20,
+     "startYear": 1998,
+     "endYear": 2005,
+     "loan": false
+    },
+    {
+     "id": 1264,
+     "startYear": 2005,
+     "endYear": 2005,
+     "loan": false
+    },
+    {
+     "id": 2293,
+     "startYear": 2006,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 2463,
+     "startYear": 2006,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 845,
+     "startYear": 2007,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 2323,
+     "startYear": 2008,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 7185,
+     "startYear": 2008,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 40181,
+     "startYear": 2009,
+     "endYear": 2009,
+     "loan": false
+    },
+    {
+     "id": 11282,
+     "startYear": 2010,
+     "endYear": 2010,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "İnegölspor (not in database)",
+    "Tepecikspor (not in database)",
+    "Altınova Belediyespor (not in database)"
+   ]
+  },
+  {
+   "id": 4000000138,
+   "name": "Necati Ateş",
+   "aliases": [],
+   "birthYear": 1980,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Necati Ateş",
+    "revid": 1385588814
+   },
+   "clubs": [
+    {
+     "id": 2375,
+     "name": "Altay SK"
+    },
+    {
+     "id": 45468,
+     "name": "Aydinspor"
+    },
+    {
+     "id": 6,
+     "name": "Adanaspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 2944,
+     "name": "Sincan Belediyesi Ankaraspor"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 681,
+     "name": "Real Sociedad"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    },
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    },
+    {
+     "id": 6894,
+     "name": "Kayseri Erciyesspor"
+    },
+    {
+     "id": 2330,
+     "name": "Karsiyaka"
+    }
+   ],
+   "spells": [
+    {
+     "id": 2375,
+     "startYear": 1997,
+     "endYear": 2001,
+     "loan": false
+    },
+    {
+     "id": 45468,
+     "startYear": 2000,
+     "endYear": 2000,
+     "loan": true
+    },
+    {
+     "id": 6,
+     "startYear": 2002,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2004,
+     "endYear": 2009,
+     "loan": false
+    },
+    {
+     "id": 2944,
+     "startYear": 2007,
+     "endYear": 2007,
+     "loan": true
+    },
+    {
+     "id": 6890,
+     "startYear": 2008,
+     "endYear": 2008,
+     "loan": true
+    },
+    {
+     "id": 681,
+     "startYear": 2008,
+     "endYear": 2009,
+     "loan": true
+    },
+    {
+     "id": 589,
+     "startYear": 2009,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2012,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 825,
+     "startYear": 2012,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 6894,
+     "startYear": 2014,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 2330,
+     "startYear": 2015,
+     "endYear": 2016,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000139,
+   "name": "Gökhan Zan",
+   "aliases": [],
+   "birthYear": 1981,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Gökhan Zan",
+    "revid": 1382365103
+   },
+   "clubs": [
+    {
+     "id": 7775,
+     "name": "Hatayspor"
+    },
+    {
+     "id": 1507,
+     "name": "Canakkale Dardanel SK"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    }
+   ],
+   "spells": [
+    {
+     "id": 7775,
+     "startYear": 1999,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 1507,
+     "startYear": 2000,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2003,
+     "endYear": 2009,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 2004,
+     "endYear": 2005,
+     "loan": true
+    },
+    {
+     "id": 141,
+     "startYear": 2009,
+     "endYear": 2015,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000140,
+   "name": "İbrahim Toraman",
+   "aliases": [],
+   "birthYear": 1981,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "İbrahim Toraman",
+    "revid": 1382849678
+   },
+   "clubs": [
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 2381,
+     "name": "Sivasspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 524,
+     "startYear": 1997,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2004,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 2381,
+     "startYear": 2014,
+     "endYear": 2015,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000141,
+   "name": "Serdar Kulbilge",
+   "aliases": [],
+   "birthYear": 1980,
+   "country": "Türkiye",
+   "position": "Goalkeeper",
+   "source": {
+    "title": "Serdar Kulbilge",
+    "revid": 1385084608
+   },
+   "clubs": [
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 120,
+     "name": "Kocaelispor"
+    },
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    },
+    {
+     "id": 868,
+     "name": "MKE Ankaragücü"
+    },
+    {
+     "id": 3207,
+     "name": "Boluspor"
+    },
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 3840,
+     "name": "Adana Demirspor"
+    },
+    {
+     "id": 3205,
+     "name": "Kayserispor"
+    },
+    {
+     "id": 2292,
+     "name": "Elazigspor"
+    },
+    {
+     "id": 518,
+     "name": "Sariyer"
+    }
+   ],
+   "spells": [
+    {
+     "id": 20,
+     "startYear": 1999,
+     "endYear": 2005,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 2005,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 120,
+     "startYear": 2008,
+     "endYear": 2009,
+     "loan": false
+    },
+    {
+     "id": 820,
+     "startYear": 2009,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 868,
+     "startYear": 2011,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 3207,
+     "startYear": 2012,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 2013,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 3840,
+     "startYear": 2014,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 3205,
+     "startYear": 2015,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 2292,
+     "startYear": 2015,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 518,
+     "startYear": 2017,
+     "endYear": 2018,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000142,
+   "name": "Emre Güngör",
+   "aliases": [],
+   "birthYear": 1984,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Emre Güngör",
+    "revid": 1382685064
+   },
+   "clubs": [
+    {
+     "id": 868,
+     "name": "MKE Ankaragücü"
+    },
+    {
+     "id": 1518,
+     "name": "Türk Telekomspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    },
+    {
+     "id": 1506,
+     "name": "Kardemir Karabükspor"
+    },
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    },
+    {
+     "id": 20760,
+     "name": "Bandirmaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 868,
+     "startYear": 2001,
+     "endYear": 2002,
+     "loan": false
+    },
+    {
+     "id": 1518,
+     "startYear": 2002,
+     "endYear": 2003,
+     "loan": true
+    },
+    {
+     "id": 1518,
+     "startYear": 2003,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 868,
+     "startYear": 2004,
+     "endYear": 2007,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2007,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 2010,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 589,
+     "startYear": 2012,
+     "endYear": 2014,
+     "loan": false
+    },
+    {
+     "id": 1506,
+     "startYear": 2014,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 825,
+     "startYear": 2015,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 20760,
+     "startYear": 2016,
+     "endYear": 2017,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000143,
+   "name": "Egemen Korkmaz",
+   "aliases": [],
+   "birthYear": 1982,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Egemen Korkmaz",
+    "revid": 1385389913
+   },
+   "clubs": [
+    {
+     "id": 20698,
+     "name": "Balikesirspor"
+    },
+    {
+     "id": 1204,
+     "name": "Kartalspor"
+    },
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 850,
+     "name": "FC Wil 1900"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 39722,
+     "name": "Erzurumspor FK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 20698,
+     "startYear": 1999,
+     "endYear": 2000,
+     "loan": false
+    },
+    {
+     "id": 1204,
+     "startYear": 2000,
+     "endYear": 2002,
+     "loan": false
+    },
+    {
+     "id": 20,
+     "startYear": 2002,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 449,
+     "startYear": 2008,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2011,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 2012,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 850,
+     "startYear": 2015,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 6890,
+     "startYear": 2017,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 39722,
+     "startYear": 2018,
+     "endYear": 2019,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000144,
+   "name": "Ersan Gülüm",
+   "aliases": [],
+   "birthYear": 1987,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Ersan Gülüm",
+    "revid": 1385930806
+   },
+   "clubs": [
+    {
+     "id": 1267,
+     "name": "Manisaspor"
+    },
+    {
+     "id": 2292,
+     "name": "Elazigspor"
+    },
+    {
+     "id": 6,
+     "name": "Adanaspor"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 36630,
+     "name": "Hebei FC (2010-2023)"
+    },
+    {
+     "id": 875,
+     "name": "Adelaide United"
+    },
+    {
+     "id": 71084,
+     "name": "Western United FC"
+    },
+    {
+     "id": 589,
+     "name": "Antalyaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 1267,
+     "startYear": 2005,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 2292,
+     "startYear": 2008,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 6,
+     "startYear": 2008,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2010,
+     "endYear": 2011,
+     "loan": true
+    },
+    {
+     "id": 114,
+     "startYear": 2011,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 36630,
+     "startYear": 2016,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2017,
+     "endYear": 2017,
+     "loan": true
+    },
+    {
+     "id": 875,
+     "startYear": 2017,
+     "endYear": 2018,
+     "loan": true
+    },
+    {
+     "id": 71084,
+     "startYear": 2019,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 589,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "North Coburg (not in database)",
+    "Whittlesea United (not in database)",
+    "Preston Lions (not in database)"
+   ]
+  },
+  {
+   "id": 4000000145,
+   "name": "Emre Çolak",
+   "aliases": [],
+   "birthYear": 1991,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Emre Çolak",
+    "revid": 1382915033
+   },
+   "clubs": [
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 897,
+     "name": "Deportivo de La Coruña"
+    },
+    {
+     "id": 17209,
+     "name": "Al-Wehda FC"
+    },
+    {
+     "id": 6646,
+     "name": "Fatih Karagümrük"
+    },
+    {
+     "id": 7775,
+     "name": "Hatayspor"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 1467,
+     "name": "Göztepe"
+    },
+    {
+     "id": 67212,
+     "name": "CF Intercity"
+    }
+   ],
+   "spells": [
+    {
+     "id": 141,
+     "startYear": 2010,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 897,
+     "startYear": 2016,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 17209,
+     "startYear": 2018,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 897,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 6646,
+     "startYear": 2021,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 7775,
+     "startYear": 2021,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 6890,
+     "startYear": 2022,
+     "endYear": 2022,
+     "loan": false
+    },
+    {
+     "id": 1467,
+     "startYear": 2022,
+     "endYear": 2023,
+     "loan": false
+    },
+    {
+     "id": 67212,
+     "startYear": 2023,
+     "endYear": 2023,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000146,
+   "name": "Olcay Şahan",
+   "aliases": [],
+   "birthYear": 1987,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Olcay Şahan",
+    "revid": 1385071602
+   },
+   "clubs": [
+    {
+     "id": 52,
+     "name": "MSV Duisburg"
+    },
+    {
+     "id": 2,
+     "name": "1.FC Kaiserslautern"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 833,
+     "name": "Denizlispor"
+    },
+    {
+     "id": 19789,
+     "name": "Yeni Malatyaspor"
+    },
+    {
+     "id": 49078,
+     "name": "Afyonspor"
+    },
+    {
+     "id": 2944,
+     "name": "Sincan Belediyesi Ankaraspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 52,
+     "startYear": 2008,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 2,
+     "startYear": 2011,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2012,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 449,
+     "startYear": 2017,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 833,
+     "startYear": 2019,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 19789,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 49078,
+     "startYear": 2022,
+     "endYear": 2023,
+     "loan": false
+    },
+    {
+     "id": 2944,
+     "startYear": 2023,
+     "endYear": 2024,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Borussia M'gladbach II (reserve)",
+    "MSV Duisburg II (reserve)"
+   ]
+  },
+  {
+   "id": 4000000147,
+   "name": "Bilal Kısa",
+   "aliases": [],
+   "birthYear": 1983,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Bilal Kısa",
+    "revid": 1384434275
+   },
+   "clubs": [
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 3842,
+     "name": "Izmirspor"
+    },
+    {
+     "id": 1264,
+     "name": "Malatyaspor"
+    },
+    {
+     "id": 2944,
+     "name": "Sincan Belediyesi Ankaraspor"
+    },
+    {
+     "id": 868,
+     "name": "MKE Ankaragücü"
+    },
+    {
+     "id": 2330,
+     "name": "Karsiyaka"
+    },
+    {
+     "id": 1506,
+     "name": "Kardemir Karabükspor"
+    },
+    {
+     "id": 19771,
+     "name": "Akhisarspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 20,
+     "name": "Bursaspor"
+    },
+    {
+     "id": 3207,
+     "name": "Boluspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 36,
+     "startYear": 2000,
+     "endYear": 2003,
+     "loan": false
+    },
+    {
+     "id": 3842,
+     "startYear": 2003,
+     "endYear": 2004,
+     "loan": false
+    },
+    {
+     "id": 1264,
+     "startYear": 2004,
+     "endYear": 2006,
+     "loan": false
+    },
+    {
+     "id": 2944,
+     "startYear": 2006,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 868,
+     "startYear": 2009,
+     "endYear": 2010,
+     "loan": true
+    },
+    {
+     "id": 2330,
+     "startYear": 2010,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 1506,
+     "startYear": 2011,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 19771,
+     "startYear": 2013,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2015,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 20,
+     "startYear": 2016,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 19771,
+     "startYear": 2018,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 3207,
+     "startYear": 2019,
+     "endYear": 2020,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000148,
+   "name": "Ahmet Çalık",
+   "aliases": [
+    "Ahmet Yılmaz Çalık"
+   ],
+   "birthYear": 1994,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Ahmet Yılmaz Çalık",
+    "revid": 1385546182
+   },
+   "clubs": [
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 2293,
+     "name": "Konyaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 820,
+     "startYear": 2011,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2017,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 2293,
+     "startYear": 2020,
+     "endYear": 2022,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000149,
+   "name": "Cenk Gönen",
+   "aliases": [],
+   "birthYear": 1988,
+   "country": "Türkiye",
+   "position": "Goalkeeper",
+   "source": {
+    "title": "Cenk Gönen",
+    "revid": 1384585607
+   },
+   "clubs": [
+    {
+     "id": 833,
+     "name": "Denizlispor"
+    },
+    {
+     "id": 2375,
+     "name": "Altay SK"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 1084,
+     "name": "Málaga CF"
+    },
+    {
+     "id": 11282,
+     "name": "Alanyaspor"
+    },
+    {
+     "id": 3205,
+     "name": "Kayserispor"
+    },
+    {
+     "id": 45269,
+     "name": "Esenler Erokspor"
+    },
+    {
+     "id": 20707,
+     "name": "Corluspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 833,
+     "startYear": 2006,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 2375,
+     "startYear": 2008,
+     "endYear": 2008,
+     "loan": true
+    },
+    {
+     "id": 114,
+     "startYear": 2010,
+     "endYear": 2015,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2015,
+     "endYear": 2017,
+     "loan": false
+    },
+    {
+     "id": 1084,
+     "startYear": 2017,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 11282,
+     "startYear": 2020,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 833,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 3205,
+     "startYear": 2021,
+     "endYear": 2023,
+     "loan": false
+    },
+    {
+     "id": 45269,
+     "startYear": 2023,
+     "endYear": 2024,
+     "loan": false
+    },
+    {
+     "id": 20707,
+     "startYear": 2024,
+     "endYear": 2025,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000150,
+   "name": "Mahmut Tekdemir",
+   "aliases": [],
+   "birthYear": 1988,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Mahmut Tekdemir",
+    "revid": 1384607549
+   },
+   "clubs": [
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 868,
+     "name": "MKE Ankaragücü"
+    }
+   ],
+   "spells": [
+    {
+     "id": 6890,
+     "startYear": 2006,
+     "endYear": 2024,
+     "loan": false
+    },
+    {
+     "id": 868,
+     "startYear": 2024,
+     "endYear": null,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000151,
+   "name": "Efecan Karaca",
+   "aliases": [],
+   "birthYear": 1989,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Efecan Karaca",
+    "revid": 1385785004
+   },
+   "clubs": [
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 524,
+     "name": "Gaziantepspor (-2020)"
+    },
+    {
+     "id": 1204,
+     "name": "Kartalspor"
+    },
+    {
+     "id": 6,
+     "name": "Adanaspor"
+    },
+    {
+     "id": 3840,
+     "name": "Adana Demirspor"
+    },
+    {
+     "id": 518,
+     "name": "Sariyer"
+    },
+    {
+     "id": 11282,
+     "name": "Alanyaspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 141,
+     "startYear": 2007,
+     "endYear": 2009,
+     "loan": false
+    },
+    {
+     "id": 524,
+     "startYear": 2008,
+     "endYear": 2009,
+     "loan": true
+    },
+    {
+     "id": 1204,
+     "startYear": 2009,
+     "endYear": 2010,
+     "loan": false
+    },
+    {
+     "id": 6,
+     "startYear": 2010,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 3840,
+     "startYear": 2011,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 518,
+     "startYear": 2011,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 1204,
+     "startYear": 2012,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 11282,
+     "startYear": 2013,
+     "endYear": 2026,
+     "loan": false
+    },
+    {
+     "id": 518,
+     "startYear": 2026,
+     "endYear": null,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000152,
+   "name": "Necip Uysal",
+   "aliases": [],
+   "birthYear": 1991,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Necip Uysal",
+    "revid": 1382811159
+   },
+   "clubs": [
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 114,
+     "startYear": 2009,
+     "endYear": 2026,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000153,
+   "name": "Mustafa Pektemek",
+   "aliases": [],
+   "birthYear": 1988,
+   "country": "Türkiye",
+   "position": "Attack",
+   "source": {
+    "title": "Mustafa Pektemek",
+    "revid": 1384925522
+   },
+   "clubs": [
+    {
+     "id": 2463,
+     "name": "Sakaryaspor"
+    },
+    {
+     "id": 518,
+     "name": "Sariyer"
+    },
+    {
+     "id": 820,
+     "name": "Genclerbirligi Ankara"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    },
+    {
+     "id": 6890,
+     "name": "Basaksehir FK"
+    },
+    {
+     "id": 10484,
+     "name": "Kasimpasa"
+    },
+    {
+     "id": 11282,
+     "name": "Alanyaspor"
+    },
+    {
+     "id": 3205,
+     "name": "Kayserispor"
+    },
+    {
+     "id": 7160,
+     "name": "Eyüpspor"
+    },
+    {
+     "id": 45269,
+     "name": "Esenler Erokspor"
+    },
+    {
+     "id": 3209,
+     "name": "Pendikspor"
+    }
+   ],
+   "spells": [
+    {
+     "id": 2463,
+     "startYear": 2006,
+     "endYear": 2008,
+     "loan": false
+    },
+    {
+     "id": 518,
+     "startYear": 2006,
+     "endYear": 2007,
+     "loan": true
+    },
+    {
+     "id": 820,
+     "startYear": 2008,
+     "endYear": 2011,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2011,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 6890,
+     "startYear": 2016,
+     "endYear": 2017,
+     "loan": true
+    },
+    {
+     "id": 10484,
+     "startYear": 2019,
+     "endYear": 2019,
+     "loan": false
+    },
+    {
+     "id": 11282,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 3205,
+     "startYear": 2021,
+     "endYear": 2023,
+     "loan": false
+    },
+    {
+     "id": 7160,
+     "startYear": 2023,
+     "endYear": 2024,
+     "loan": false
+    },
+    {
+     "id": 45269,
+     "startYear": 2024,
+     "endYear": 2024,
+     "loan": false
+    },
+    {
+     "id": 2463,
+     "startYear": 2024,
+     "endYear": 2025,
+     "loan": false
+    },
+    {
+     "id": 3209,
+     "startYear": 2025,
+     "endYear": 2025,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Güzide Gebzespor (not in database)"
+   ]
+  },
+  {
+   "id": 4000000154,
+   "name": "Tolga Zengin",
+   "aliases": [],
+   "birthYear": 1983,
+   "country": "Türkiye",
+   "position": "Goalkeeper",
+   "source": {
+    "title": "Tolga Zengin",
+    "revid": 1382813825
+   },
+   "clubs": [
+    {
+     "id": 449,
+     "name": "Trabzonspor"
+    },
+    {
+     "id": 114,
+     "name": "Besiktas JK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 449,
+     "startYear": 2003,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 114,
+     "startYear": 2013,
+     "endYear": 2019,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  },
+  {
+   "id": 4000000155,
+   "name": "Alper Potuk",
+   "aliases": [],
+   "birthYear": 1991,
+   "country": "Türkiye",
+   "position": "Midfield",
+   "source": {
+    "title": "Alper Potuk",
+    "revid": 1381530165
+   },
+   "clubs": [
+    {
+     "id": 825,
+     "name": "Eskisehirspor"
+    },
+    {
+     "id": 36,
+     "name": "Fenerbahce"
+    },
+    {
+     "id": 868,
+     "name": "MKE Ankaragücü"
+    },
+    {
+     "id": 126,
+     "name": "Caykur Rizespor"
+    },
+    {
+     "id": 12388,
+     "name": "Ankara Keciörengücü"
+    },
+    {
+     "id": 44006,
+     "name": "Bodrum FK"
+    }
+   ],
+   "spells": [
+    {
+     "id": 825,
+     "startYear": 2009,
+     "endYear": 2013,
+     "loan": false
+    },
+    {
+     "id": 36,
+     "startYear": 2013,
+     "endYear": 2020,
+     "loan": false
+    },
+    {
+     "id": 868,
+     "startYear": 2020,
+     "endYear": 2021,
+     "loan": false
+    },
+    {
+     "id": 126,
+     "startYear": 2021,
+     "endYear": 2023,
+     "loan": false
+    },
+    {
+     "id": 12388,
+     "startYear": 2025,
+     "endYear": 2025,
+     "loan": false
+    },
+    {
+     "id": 44006,
+     "startYear": 2026,
+     "endYear": 2026,
+     "loan": false
+    }
+   ],
+   "droppedRows": [
+    "Gostivar (not in database)"
+   ]
+  },
+  {
+   "id": 4000000156,
+   "name": "Ömer Bayram",
+   "aliases": [],
+   "birthYear": 1991,
+   "country": "Türkiye",
+   "position": "Defender",
+   "source": {
+    "title": "Ömer Bayram",
+    "revid": 1382640139
+   },
+   "clubs": [
+    {
+     "id": 132,
+     "name": "NAC Breda"
+    },
+    {
+     "id": 3205,
+     "name": "Kayserispor"
+    },
+    {
+     "id": 19771,
+     "name": "Akhisarspor"
+    },
+    {
+     "id": 141,
+     "name": "Galatasaray"
+    },
+    {
+     "id": 7160,
+     "name": "Eyüpspor"
+    },
+    {
+     "id": 12382,
+     "name": "Amed SK"
+    },
+    {
+     "id": 518,
+     "name": "Sariyer"
+    },
+    {
+     "id": 10484,
+     "name": "Kasimpasa"
+    }
+   ],
+   "spells": [
+    {
+     "id": 132,
+     "startYear": 2009,
+     "endYear": 2012,
+     "loan": false
+    },
+    {
+     "id": 3205,
+     "startYear": 2012,
+     "endYear": 2016,
+     "loan": false
+    },
+    {
+     "id": 19771,
+     "startYear": 2016,
+     "endYear": 2018,
+     "loan": false
+    },
+    {
+     "id": 141,
+     "startYear": 2018,
+     "endYear": 2022,
+     "loan": false
+    },
+    {
+     "id": 7160,
+     "startYear": 2022,
+     "endYear": 2024,
+     "loan": false
+    },
+    {
+     "id": 12382,
+     "startYear": 2024,
+     "endYear": 2025,
+     "loan": false
+    },
+    {
+     "id": 518,
+     "startYear": 2025,
+     "endYear": 2026,
+     "loan": false
+    },
+    {
+     "id": 10484,
+     "startYear": 2026,
+     "endYear": null,
+     "loan": false
+    }
+   ],
+   "droppedRows": []
+  }
+ ],
+ "skipped": [
+  {
+   "name": "Taner Savut",
+   "reason": "No English Wikipedia football infobox found"
+  },
+  {
+   "name": "Erdinç Yavuz",
+   "reason": "No English Wikipedia football infobox found"
+  },
+  {
+   "name": "Okay Yokuşlu",
+   "reason": "Already in the database (id 137616)"
+  }
+ ]
+}

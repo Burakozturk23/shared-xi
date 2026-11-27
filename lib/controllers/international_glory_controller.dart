@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../app/app_feedback.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../models/international_match.dart';
@@ -133,6 +134,7 @@ class InternationalGloryController extends ChangeNotifier {
       await _save();
       final response = await gateway.call('submit', {'version': catalog.version, 'matchId': id, 'answers': pending[id]});
       if (_disposed) return;
+      AppFeedback.answer(correct: response['correct'] == true);
       if (response['correct'] == true) {
         _merge(response); phase = 'result';
         message = 'Hatıra kaydedildi. Tekrar oynamak ikinci bir ödül vermez.';

@@ -8,6 +8,8 @@ from apply_legend_portrait_players import ROOT, REVIEW, SOURCE, REVISION, apply
 from apply_roster_expansion import norm
 
 DB = ROOT/'assets/runtime/linkball_game_data_v4.sqlite'
+from apply_club_twins import canonical
+TWIN = canonical(DB)  # Merged club rows (v4-2026-11-23.3, v4-2026-11-26.1) live on the kept row.
 MANIFEST = ROOT/'assets/runtime/linkball_game_data_v4_manifest.json'
 
 class LegendPortraitPlayersTests(unittest.TestCase):
@@ -22,7 +24,7 @@ class LegendPortraitPlayersTests(unittest.TestCase):
                 self.assertEqual(c.execute('SELECT name FROM players WHERE id=?',(r['id'],)).fetchone(), (r['name'],))
                 for club in r['clubs']:
                     self.assertTrue(c.execute('SELECT 1 FROM player_clubs WHERE player_id=? AND club_id=?',
-                                              (r['id'],club['id'])).fetchone())
+                                              (r['id'],TWIN.get(club['id'],club['id']))).fetchone())
                 rows = c.execute('''SELECT DISTINCT p.id FROM players p JOIN player_search_terms s ON s.player_id=p.id
                     WHERE (p.selection_rank BETWEEN 1 AND 30000 OR
                     (p.source IN ('reviewed-player','worldcup26-roster') AND p.answer_eligible=1))

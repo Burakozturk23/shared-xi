@@ -20,6 +20,7 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
   const tree = stored(initial) || {};
   let time = Date.parse("2026-09-20T10:00:00Z");
   let remote = clone(configModule.defaults);
+  let prices = null; // linkball_prices_v1; null = the parameter's default value
   let queue = Promise.resolve();
   let failPath = null;
   const linkedUsers = {};
@@ -41,7 +42,11 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
       throw new Error("Simulated interrupted write: " + key);
     }
   }
+  let pushed = 0;
   const db = {ref: (key = "") => ({
+    key: key.split("/").filter(Boolean).at(-1) || null,
+    // RTDB push(): a new child with a unique, time-ordered key.
+    push: () => db.ref(key + "/-push" + String(++pushed).padStart(8, "0")),
     get: async () => snap(get(key)),
     set: async (v) => {
       maybeFail(key);
@@ -76,9 +81,11 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
       this.code = code;
     }
   }
-  const registration = (opts, fn) => fn;
+  // Keep the options on the handler so contract tests can check them (App Check, region…).
+  const registration = (opts, fn) => typeof fn === "function" ? Object.assign(fn, {options: opts}) : opts;
   const modules = {
     "firebase-functions": {setGlobalOptions: () => {}},
+    "firebase-functions/v2/options": {setGlobalOptions: () => {}},
     "firebase-functions/v2/scheduler": {onSchedule: registration},
     "firebase-functions/params": {defineSecret: () => ({value: () => "unused"})},
     "firebase-functions/logger": {warn: () => {}, info: () => {}, error: () => {}},
@@ -88,9 +95,12 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     "firebase-admin/database": {getDatabase: () => db},
     "firebase-admin/auth": {getAuth: () => ({getUser: async (uid) => ({
       providerData: linkedUsers[uid] === false ? [] : [{providerId: "google.com"}],
-    })})},
-    "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async () => ({
-      evaluate: () => ({getString: () => JSON.stringify(remote)}),
+    }), deleteUser: async (uid) => {
+      linkedUsers[uid] = false;
+    }})},
+    "firebase-admin/remote-config": {getRemoteConfig: () => ({getServerTemplate: async ({defaultConfig} = {}) => ({
+      evaluate: () => ({getString: (key) => key === "linkball_prices_v1" ?
+        (prices ? JSON.stringify(prices) : defaultConfig[key]) : JSON.stringify(remote)}),
     })})},
     "./economy_config": {...configModule,
       createProvider: (opts) => configModule.createProvider({...opts, now: () => time})},
@@ -115,6 +125,11 @@ function harness(initial = {}, {omitEmptyObjects = false} = {}) {
     setConfig: (edit) => {
       remote = clone(configModule.defaults);
       edit(remote);
+      time += 300001;
+    },
+    setPrices: (edit) => {
+      prices = clone(require("../../config/linkball_prices.defaults.json"));
+      edit(prices);
       time += 300001;
     },
   };

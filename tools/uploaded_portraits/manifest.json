@@ -3,7 +3,7 @@
   "origin": "User-supplied labelled portrait sheets, 2026-10-05. Originals retained without pixel edits.",
   "sources": {
     "zip0_00": {
-      "asset": "assets/uploaded_portraits/zip0_00.png",
+      "asset": "assets/uploaded_portraits/zip0_00.webp",
       "size": [
         1122,
         1402
@@ -11,7 +11,7 @@
       "sha256": "d68c759d3b35986775a56587f33175ed6e2283a90a9249df267db94b7a2b0c0f"
     },
     "zip0_01": {
-      "asset": "assets/uploaded_portraits/zip0_01.png",
+      "asset": "assets/uploaded_portraits/zip0_01.webp",
       "size": [
         1122,
         1402
@@ -19,7 +19,7 @@
       "sha256": "5bfcae1d534869d1f7b7e7471fa860c32af963eb02a27a8bed01e2f1275b1e43"
     },
     "zip0_02": {
-      "asset": "assets/uploaded_portraits/zip0_02.png",
+      "asset": "assets/uploaded_portraits/zip0_02.webp",
       "size": [
         1122,
         1402
@@ -27,7 +27,7 @@
       "sha256": "d12e4acd48aac93983c56e258ffabe6ebd185b98163f52adb016e7033cb6ca07"
     },
     "zip0_03": {
-      "asset": "assets/uploaded_portraits/zip0_03.png",
+      "asset": "assets/uploaded_portraits/zip0_03.webp",
       "size": [
         1122,
         1402
@@ -35,7 +35,7 @@
       "sha256": "032cbc778ca65557c78de580df627cf5f528e6a39cd1108af9cc2e68a17eb8e2"
     },
     "zip0_04": {
-      "asset": "assets/uploaded_portraits/zip0_04.png",
+      "asset": "assets/uploaded_portraits/zip0_04.webp",
       "size": [
         1122,
         1402
@@ -43,7 +43,7 @@
       "sha256": "a64da0fdca9542156f61e5a193fab6db0b1964e8061d03626a27bd4f02cc0fbc"
     },
     "zip1_00": {
-      "asset": "assets/uploaded_portraits/zip1_00.png",
+      "asset": "assets/uploaded_portraits/zip1_00.webp",
       "size": [
         1122,
         1402
@@ -51,7 +51,7 @@
       "sha256": "ed0d8cdfd750965abcc8222a63dd1169c125ade0200e473d549c2454bbffe3a1"
     },
     "zip1_01": {
-      "asset": "assets/uploaded_portraits/zip1_01.png",
+      "asset": "assets/uploaded_portraits/zip1_01.webp",
       "size": [
         1122,
         1402
@@ -59,7 +59,7 @@
       "sha256": "bb7d4b38533db3c2001078427e489d0e03eafdb96fbe3b362758bc2a0bb78819"
     },
     "zip1_02": {
-      "asset": "assets/uploaded_portraits/zip1_02.png",
+      "asset": "assets/uploaded_portraits/zip1_02.webp",
       "size": [
         1122,
         1402
@@ -67,7 +67,7 @@
       "sha256": "061170a0445b4d69a3e82bbbdec0d1e2b1d1be651156843d1ff76aa3e23582af"
     },
     "zip1_03": {
-      "asset": "assets/uploaded_portraits/zip1_03.png",
+      "asset": "assets/uploaded_portraits/zip1_03.webp",
       "size": [
         1122,
         1402
@@ -75,7 +75,7 @@
       "sha256": "9858d5a7f6c39f96183131e5175e7e2e5e225eb82022faa4d2727593a59a933d"
     },
     "zip1_04": {
-      "asset": "assets/uploaded_portraits/zip1_04.png",
+      "asset": "assets/uploaded_portraits/zip1_04.webp",
       "size": [
         1122,
         1402
@@ -83,7 +83,7 @@
       "sha256": "3a9905585f885c60d20d2592f8681e1a4805262e3cedb13b90b45434b6ecfc3a"
     },
     "zip1_05": {
-      "asset": "assets/uploaded_portraits/zip1_05.png",
+      "asset": "assets/uploaded_portraits/zip1_05.webp",
       "size": [
         1122,
         1402
@@ -91,7 +91,7 @@
       "sha256": "a877c012d05f8d13968e83584e92e42f6b8d4f42ca5a18e0c76712ae6dcf0106"
     },
     "zip1_06": {
-      "asset": "assets/uploaded_portraits/zip1_06.png",
+      "asset": "assets/uploaded_portraits/zip1_06.webp",
       "size": [
         1122,
         1402
@@ -99,7 +99,7 @@
       "sha256": "ff813d43d6eecf1ee26dab61cb04f726792408c2f83c6991ba47414aaec53ebe"
     },
     "zip1_07": {
-      "asset": "assets/uploaded_portraits/zip1_07.png",
+      "asset": "assets/uploaded_portraits/zip1_07.webp",
       "size": [
         1122,
         1402
@@ -107,7 +107,7 @@
       "sha256": "603a638174183ce64ae21e9f640fe27aafce6e87453cfdfb64483fee33af370f"
     },
     "zip1_08": {
-      "asset": "assets/uploaded_portraits/zip1_08.png",
+      "asset": "assets/uploaded_portraits/zip1_08.webp",
       "size": [
         1122,
         1402
@@ -115,7 +115,7 @@
       "sha256": "543bf13843886d74f168157a6eafc74dca0f7b7538a52fd88e8a89249559f863"
     },
     "zip1_09": {
-      "asset": "assets/uploaded_portraits/zip1_09.png",
+      "asset": "assets/uploaded_portraits/zip1_09.webp",
       "size": [
         1122,
         1402
@@ -123,7 +123,7 @@
       "sha256": "c6c346cb5fc4d2e9d52ecc84d1c76f90e5215f84ec6a47089baefe6e83b460bf"
     },
     "zip1_10": {
-      "asset": "assets/uploaded_portraits/zip1_10.png",
+      "asset": "assets/uploaded_portraits/zip1_10.webp",
       "size": [
         1122,
         1402
@@ -131,7 +131,7 @@
       "sha256": "f180599cb8beb4601be84908c04a2459ccc5a062d4713e30fd9b01ac55f2fd52"
     },
     "zip1_11": {
-      "asset": "assets/uploaded_portraits/zip1_11.png",
+      "asset": "assets/uploaded_portraits/zip1_11.webp",
       "size": [
         1122,
         1402
@@ -139,7 +139,7 @@
       "sha256": "dc9880c9905850d21eaf4dc6bd892e95de35f0137a3d5b062c333cca09783919"
     },
     "zip1_12": {
-      "asset": "assets/uploaded_portraits/zip1_12.png",
+      "asset": "assets/uploaded_portraits/zip1_12.webp",
       "size": [
         1122,
         1402
@@ -147,7 +147,7 @@
       "sha256": "40e8a60822a0029f93fb58124b95a0bb9c23bc13b7af32ef8cff238c43a32757"
     },
     "zip1_13": {
-      "asset": "assets/uploaded_portraits/zip1_13.png",
+      "asset": "assets/uploaded_portraits/zip1_13.webp",
       "size": [
         1122,
         1402
@@ -155,7 +155,7 @@
       "sha256": "7988bf44c465459114cbe5a000dc83582c63004f1c004ef4b1372d6b346022b7"
     },
     "zip1_14": {
-      "asset": "assets/uploaded_portraits/zip1_14.png",
+      "asset": "assets/uploaded_portraits/zip1_14.webp",
       "size": [
         1122,
         1402
@@ -163,7 +163,7 @@
       "sha256": "af135729148f861a6e1df2876662b7c819bfd862671139c58cd40ccb05a14bee"
     },
     "zip1_15": {
-      "asset": "assets/uploaded_portraits/zip1_15.png",
+      "asset": "assets/uploaded_portraits/zip1_15.webp",
       "size": [
         1122,
         1402
@@ -171,7 +171,7 @@
       "sha256": "063a4604221d0b3a5cc71c9431775fc7004f6a40dae39b990f7aa670df743ee2"
     },
     "zip1_19": {
-      "asset": "assets/uploaded_portraits/zip1_19.png",
+      "asset": "assets/uploaded_portraits/zip1_19.webp",
       "size": [
         1842,
         854
@@ -179,7 +179,7 @@
       "sha256": "415b6fc2f2828ef4decdbaf694b730ef2e341fb448a5b28d74f4c1f10746a045"
     },
     "creators": {
-      "asset": "assets/uploaded_portraits/creators.png",
+      "asset": "assets/uploaded_portraits/creators.webp",
       "size": [
         1448,
         1086
@@ -187,7 +187,7 @@
       "sha256": "a6df5b8e0359b3d22a568c47dff0a71083e8b8436fd4da849c04bd5e0ea4b6b4"
     },
     "dual_role_00": {
-      "asset": "assets/uploaded_portraits/dual_role_00.png",
+      "asset": "assets/uploaded_portraits/dual_role_00.webp",
       "size": [
         1122,
         1402
@@ -195,7 +195,7 @@
       "sha256": "9d5cf893427626e6f61ecb2ef9378df3d00eca06fc3c735b99bc8456270cea53"
     },
     "dual_role_01": {
-      "asset": "assets/uploaded_portraits/dual_role_01.png",
+      "asset": "assets/uploaded_portraits/dual_role_01.webp",
       "size": [
         1122,
         1402
@@ -203,7 +203,7 @@
       "sha256": "3de4de43c3d98ddbfbe0475ab46bbb0d8de0da47bbab989cac4ce871303ef184"
     },
     "dual_role_02": {
-      "asset": "assets/uploaded_portraits/dual_role_02.png",
+      "asset": "assets/uploaded_portraits/dual_role_02.webp",
       "size": [
         1122,
         1402
@@ -211,7 +211,7 @@
       "sha256": "eeb163a0edfe8a7db4ad5b066725bee3fe11578a93c43b1a8e82719d415af24a"
     },
     "dual_role_03": {
-      "asset": "assets/uploaded_portraits/dual_role_03.png",
+      "asset": "assets/uploaded_portraits/dual_role_03.webp",
       "size": [
         1122,
         1402
@@ -219,7 +219,7 @@
       "sha256": "26d4ad102297e3198ce9f3def8282568089ac4a7224496b3e874428d76615308"
     },
     "dual_role_04": {
-      "asset": "assets/uploaded_portraits/dual_role_04.png",
+      "asset": "assets/uploaded_portraits/dual_role_04.webp",
       "size": [
         1122,
         1402
@@ -227,7 +227,7 @@
       "sha256": "4fdafadef44f144265a9daab5a07577f2cddf37d66ae5362e01b679a7b1d2ac0"
     },
     "dual_role_05": {
-      "asset": "assets/uploaded_portraits/dual_role_05.png",
+      "asset": "assets/uploaded_portraits/dual_role_05.webp",
       "size": [
         1122,
         1402
@@ -235,7 +235,7 @@
       "sha256": "ebf4228f3b920cc48e05aedcf7b4664b565c56722add625bf06b78c65170b08f"
     },
     "custom_kaan": {
-      "asset": "assets/uploaded_portraits/custom_kaan.png",
+      "asset": "assets/uploaded_portraits/custom_kaan.webp",
       "size": [
         1254,
         1254
@@ -243,7 +243,7 @@
       "sha256": "2422f41eb7fed5b184e5d4712c3316a26cf49b7f532e697a1e0b0fb6e8634498"
     },
     "custom_omer": {
-      "asset": "assets/uploaded_portraits/custom_omer.png",
+      "asset": "assets/uploaded_portraits/custom_omer.webp",
       "size": [
         1254,
         1254
@@ -251,7 +251,7 @@
       "sha256": "b63fe653a0efab966700b1c7fd82b4729ad2d07c28ababafa401c9889cad060d"
     },
     "custom_berat": {
-      "asset": "assets/uploaded_portraits/custom_berat.png",
+      "asset": "assets/uploaded_portraits/custom_berat.webp",
       "size": [
         1254,
         1254
@@ -259,7 +259,7 @@
       "sha256": "06408e9acd6a5feee111eb01cfce9efc211c971a456ecc72d31663a8487254de"
     },
     "custom_burak": {
-      "asset": "assets/uploaded_portraits/custom_burak.png",
+      "asset": "assets/uploaded_portraits/custom_burak.webp",
       "size": [
         1254,
         1254
@@ -267,7 +267,7 @@
       "sha256": "1cc8688864b65c891cc020f5ed3cb949155ff3c7423a3afb1b3793a06b33c4de"
     },
     "custom_ege": {
-      "asset": "assets/uploaded_portraits/custom_ege.png",
+      "asset": "assets/uploaded_portraits/custom_ege.webp",
       "size": [
         1254,
         1254
@@ -275,7 +275,7 @@
       "sha256": "cf9a5b5858cb6aabc78d87133d4d7850b8bf36a7386be3eb182b75010b885a97"
     },
     "journey_sheet_19": {
-      "asset": "assets/uploaded_portraits/journey_sheet_19.png",
+      "asset": "assets/uploaded_portraits/journey_sheet_19.webp",
       "size": [
         1122,
         1402
@@ -283,7 +283,7 @@
       "sha256": "593b2c0cf06acaf47832a5906f4458424b15fefa8ee779c54ce44ab9f8cc24bd"
     },
     "journey_sheet_20": {
-      "asset": "assets/uploaded_portraits/journey_sheet_20.png",
+      "asset": "assets/uploaded_portraits/journey_sheet_20.webp",
       "size": [
         1122,
         1402

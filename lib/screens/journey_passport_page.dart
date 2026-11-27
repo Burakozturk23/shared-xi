@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/story_rewards.dart';
 import '../controllers/journey_rewards_controller.dart';
 import '../models/achievement_catalog.dart';
 import '../models/journey_task.dart';
@@ -90,13 +91,15 @@ class _JourneyPassportPageState extends State<JourneyPassportPage> {
           const SizedBox(height:16),
           Text(_rewards.legend ? 'Linkball Kariyer Efsanesi' : 'Her kariyer bir iz bırakır.',style:Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height:12),
-          Text('$count / 40 kariyer damgası',style:Theme.of(context).textTheme.titleMedium),
+          Text('$count / $journeyCareerCount kariyer damgası',style:Theme.of(context).textTheme.titleMedium),
           const SizedBox(height:10),
-          LinearProgressIndicator(value:count/40,borderRadius:BorderRadius.circular(8),minHeight:6),
+          LinearProgressIndicator(value:count/journeyCareerCount,borderRadius:BorderRadius.circular(8),minHeight:6),
           const SizedBox(height:12),
           const Text('Dört görevi çöz, oyuncunun damgasını kazan. Üç favorini profil vitrinine taşı.'),
           const SizedBox(height:12),
-          const Text('Her kariyer: 20 Coin + 40 XP\nHer bölüm: 80 Coin + 120 XP\nÖdüller ilk tamamlamada bir kez verilir.',style:TextStyle(fontWeight:FontWeight.w600)),
+          Text('Her kariyer: 20 Coin + 40 XP\nHer bölüm: 80 Coin + 120 XP\n'
+            'Tüm $journeyCareerCount kariyer: ${storyFinals['player_journey']!.coins} Coin + ${storyFinals['player_journey']!.xp} XP\n'
+            'Ödüller ilk tamamlamada bir kez verilir.',style:const TextStyle(fontWeight:FontWeight.w600)),
         ])),
         if(_rewards.busy) const Padding(padding:EdgeInsets.symmetric(vertical:12),child:LinearProgressIndicator()),
         if(_rewards.message!=null) Padding(padding:const EdgeInsets.symmetric(vertical:12),child:Text(_rewards.message!)),

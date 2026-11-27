@@ -61,6 +61,7 @@ class ProgressionService {
       profile: ProgressionProfile.fromMap(
         Map<String, dynamic>.from(rawProfile),
       ),
+      support: SupportReward.from(data['support']),
     );
   }
 

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "revision": "prices-launch-1",
+  "enabled": false,
+  "boosts": {
+    "boost_basic": {"single": 25, "pack": 65},
+    "boost_eliminate": {"single": 35, "pack": 90},
+    "boost_connection": {"single": 40, "pack": 105},
+    "boost_strong": {"single": 60, "pack": 150}
+  }
+}

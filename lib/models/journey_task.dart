@@ -16,7 +16,7 @@ class JourneyOption {
 class JourneyTask {
   JourneyTask({required this.id, required this.type, required this.title,
     required this.prompt, required this.hint, required this.explanation,
-    this.introNarrative = '', this.serverValidated = false,
+    this.introNarrative = '', this.serverValidated = false, this.legacyHints = false,
     required List<JourneyOption> options, required List<String> answerKeys,
     required this.requiredCount}) : options = List.unmodifiable(options), answerKeys = List.unmodifiable(answerKeys) {
     final keys = options.map((o) => o.key).toSet();
@@ -32,6 +32,8 @@ class JourneyTask {
   final String id, title, prompt, hint, explanation, introNarrative;
   final JourneyTaskType type;
   final bool serverValidated;
+  /// Server-validated task that keeps the coin/ad hints; the server computes them.
+  final bool legacyHints;
   final List<JourneyOption> options;
   final List<String> answerKeys;
   final int requiredCount;
@@ -73,7 +75,8 @@ class JourneyTask {
   factory JourneyTask.fromJson(Map<String, dynamic> j) => JourneyTask(
     id: j['id'] as String, type: JourneyTaskType.values.byName(j['type'] as String),
     title: j['title'] as String, prompt: j['prompt'] as String, hint: j['hint'] as String,
-    explanation: j['explanation'] as String? ?? '', serverValidated: j['serverValidated'] == true, requiredCount: j['requiredCount'] as int,
+    explanation: j['explanation'] as String? ?? '', serverValidated: j['serverValidated'] == true,
+    legacyHints: j['legacyHints'] == true, requiredCount: j['requiredCount'] as int,
     introNarrative: j['introNarrative'] as String? ?? '',
     options: (j['options'] as List).map((o) => JourneyOption.fromJson(Map<String,dynamic>.from(o as Map))).toList(),
     answerKeys: List<String>.from(j['answerKeys'] as List? ?? []),

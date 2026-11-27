@@ -100,3 +100,6 @@ tools/data_platform_v4/input/*.sqlite
 
 # Local API collection cache and reports (no credentials)
 reports/api_football*/
+
+# Superpowers brainstorm/plan scratch
+.superpowers/

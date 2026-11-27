@@ -1,0 +1,24 @@
+{
+  "head": {"vars": ["club", "clubLabel", "countryLabel", "start", "end"]},
+  "results": {"bindings": [
+    {"club": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1119"},
+     "clubLabel": {"type": "literal", "value": "Galatasaray S.K."},
+     "countryLabel": {"type": "literal", "value": "Turkey"},
+     "start": {"type": "literal", "value": "1996-07-01T00:00:00Z"},
+     "end": {"type": "literal", "value": "2000-06-30T00:00:00Z"}},
+    {"club": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1119"},
+     "clubLabel": {"type": "literal", "value": "Galatasaray S.K."},
+     "countryLabel": {"type": "literal", "value": "Turkey"},
+     "start": {"type": "literal", "value": "2011-06-08T00:00:00Z"},
+     "end": {"type": "literal", "value": "2013-09-24T00:00:00Z"}},
+    {"club": {"type": "uri", "value": "http://www.wikidata.org/entity/Q2052"},
+     "clubLabel": {"type": "literal", "value": "ACF Fiorentina"},
+     "countryLabel": {"type": "literal", "value": "Italy"},
+     "end": {"type": "literal", "value": "2001-02-26T00:00:00Z"}},
+    {"club": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1543"},
+     "clubLabel": {"type": "literal", "value": "AC Milan"},
+     "countryLabel": {"type": "literal", "value": "Italy"},
+     "start": {"type": "literal", "value": "2001-06-01T00:00:00Z"},
+     "end": {"type": "literal", "value": "2001-11-05T00:00:00Z"}}
+  ]}
+}

@@ -348,24 +348,6 @@ class VsBotRandomGridController extends ChangeNotifier {
     return false;
   }
 
-  bool _wouldCompleteLine(int index, int owner) {
-    for (final line in _lines) {
-      if (!line.contains(index)) continue;
-      var count = 0;
-      for (final i in line) {
-        if (i == index) continue;
-        if (owners[i] == owner) {
-          count++;
-        } else if (owners[i] != 0) {
-          count = -99;
-          break;
-        }
-      }
-      if (count == 2) return true;
-    }
-    return false;
-  }
-
   bool _boardFull() => owners.every((o) => o != 0) || puzzle.isFinished;
 
   void _setFeedback(String msg, bool ok) {

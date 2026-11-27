@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../models/manager_rating.dart';
+import '../online/online_mode_catalog.dart';
 import '../services/manager_career_store.dart';
 import '../services/manager_roster_service.dart';
 import '../theme/ortak_saha_theme.dart';
+import '../widgets/friend_room_section.dart';
 import '../widgets/manager_ui.dart';
 import '../widgets/pitch_ui.dart';
 import 'club_manager_season_page.dart';
@@ -140,6 +142,18 @@ class _ClubManagerHubPageState extends State<ClubManagerHubPage> {
                   _career(d),
                   const SizedBox(height: 14),
                 ],
+                const SizedBox(height: 10),
+                const FriendRoomSection(
+                  modes: [
+                    (
+                      OnlinePlayMode.clubManager,
+                      'Kafa kafaya kadro',
+                      'Aynı 25 kişilik havuz ve 120 bütçe · 3 dk · '
+                          'sunucu maçı oynatır',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
                 const PitchSectionTitle('Sezon nasıl işler?'),
                 const Text(
                   'Her rakiple bir iç saha, bir deplasman maçı oynarsın. '

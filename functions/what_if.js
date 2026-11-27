@@ -1,5 +1,7 @@
 "use strict";
 const {RewardError} = require("./rewarded_ads");
+// Per scenario route and per complete chapter (8 scenarios); the ad double is optional.
+const REWARDS = Object.freeze({scenario: {coins: 10, xp: 25}, chapter: {coins: 60, xp: 100}});
 const catalog = require("./config/what_if_catalog.json");
 const scenarios = Object.fromEntries(catalog.scenarios.map((s) => [s.id, s]));
 const fail = (code, message) => {
@@ -19,8 +21,9 @@ function accepts(task, answers) {
   return task.type === "timeline" ? answers.every((a, i) => a === task.answerKeys[i]) :
     answers.every((a) => task.answerKeys.includes(a));
 }
-function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
-  const ref = (uid) => db.ref("whatIfState/" + uid);
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("whatIfState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
     let error;
@@ -58,19 +61,28 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   async function status(uid) {
     await settle(uid);
     const s = await get(uid);
+    // The app asset has no answers: explanations and endings of finished routes come from here.
+    const results = Object.fromEntries(catalog.scenarios.flatMap((j) => j.routes
+        .filter((r) => ends(s, j.id).includes(r.id))
+        .map((r) => [r.task.id, {story: r.task.explanation, ending: r.ending}])));
     return {ok: true, version: catalog.version, progress: s.progress, hints: s.hints,
-      rewards: s.rewards, favorites: s.favorites, chapterCounts: counts(s), hintPrice: 10};
+      rewards: s.rewards, favorites: s.favorites, chapterCounts: counts(s), hintPrice: 10, results};
   }
   async function submit(uid, input) {
     if (input.version !== catalog.version) fail("failed-precondition", "What If içeriğini güncelle.");
     const {scenario, route, task} = routeOf(input);
-    if (!accepts(task, input.answers)) fail("invalid-argument", "Cevap doğrulanamadı.");
+    await attempts.before(uid, "what_if", task.id);
+    if (!accepts(task, input.answers)) {
+      await attempts.wrong(uid, "what_if", task.id, input.answers);
+      fail("invalid-argument", "Cevap doğrulanamadı.");
+    }
+    await attempts.solved(uid, "what_if", task.id);
     await change(uid, (s) => {
       const p = s.progress[scenario.id] ||= {ends: {}};
       p.ends[route.id] ||= now();
-      earned(s, "scenario__" + scenario.id, 10, 25);
+      earned(s, "scenario__" + scenario.id, REWARDS.scenario.coins, REWARDS.scenario.xp);
       counts(s).forEach((n, i) => {
-        if (n === 8) earned(s, "chapter__" + (i + 1), 60, 100);
+        if (n === 8) earned(s, "chapter__" + (i + 1), REWARDS.chapter.coins, REWARDS.chapter.xp);
       });
     });
     return status(uid);
@@ -89,6 +101,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   }
   async function hint(uid, input) {
     const {task, scenario, route} = routeOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     const s = await get(uid);
     if (s.hints[task.id]?.coin || s.hints[task.id]?.ad) return status(uid);
     if (ends(s, scenario.id).includes(route.id)) fail("failed-precondition", "Bu son zaten açık.");
@@ -110,6 +123,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     }
     if (placement !== "what_if_hint") fail("invalid-argument", "Geçersiz yardım.");
     const {scenario, route, task} = routeOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (ends(s, scenario.id).includes(route.id) || s.hints[task.id]?.coin || s.hints[task.id]?.ad) {
       fail("failed-precondition", "Yardım zaten açık veya bu son keşfedildi.");
     }
@@ -133,4 +147,4 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   }
   return {status, submit, favorites, hint, prepareReward, settleReward};
 }
-module.exports = {createService, catalog, scenarios, accepts};
+module.exports = {createService, catalog, scenarios, accepts, REWARDS};

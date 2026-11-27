@@ -1,0 +1,794 @@
+[
+  {
+    "id": "M-A01",
+    "criterion": "Katalogda 5 uygun günlük görev bulunur; sunucu atama kaydı kalıcıdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A02",
+    "criterion": "Bir günde aynı görev seti yenileme, oturum açma ve cihaz değişimiyle değişmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A03",
+    "criterion": "5 görevden en az 3'ü online erişim olmadan yapılabilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A04",
+    "criterion": "Kapalı veya doğrulanmayan solo mod günlük görev olarak atanmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A05",
+    "criterion": "Online servis hazır değilken ranked görev solo alternatife dönüşür.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A06",
+    "criterion": "Günlük 3 claim sınırı farklı görevlerden de aşılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A07",
+    "criterion": "Dört ve beşinci görevler oynanabilir kalır, fakat ek ödül kazanılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A08",
+    "criterion": "Bir önceki günün 5 görevi aynen tekrar atanmaz (havuz yeterliyse).",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A09",
+    "criterion": "Aynı mod üst üste uygunsuz biçimde atanmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A10",
+    "criterion": "Günlük zaten bitmiş tek-seferlik içerik erişilemez görev olarak kalmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A11",
+    "criterion": "Günlük yenileme Europe/Istanbul 00.00 ile gerçekleşir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-A12",
+    "criterion": "Günlük resetten sonra eski claim yeni günün claim kotasına geçmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B01",
+    "criterion": "Bir Matching tahtası kapanmadan tamamlanma sayılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B02",
+    "criterion": "Pyramid yanlış/yarım puzzle olarak biterse tamamlama görevini artırmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B03",
+    "criterion": "Lingo günlük içerik aynı günde tekrar sayılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B04",
+    "criterion": "Anagram / Passaparola günlük içerik kimliği kontrol edilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B05",
+    "criterion": "Hoca 11 ve Kadro Kasası yalnız doğrulanmış terminal durumda sayılır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B06",
+    "criterion": "This or That şampiyon belirlenmeden tamamlanmış sayılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B07",
+    "criterion": "Blind Ranking 5/10 slot dolmadan bitiş görevi kazanılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B08",
+    "criterion": "Higher or Lower seri eşiği hesaplanmış sonuçtan gelir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B09",
+    "criterion": "Farklı mod görevi aynı modeId tekrarıyla ilerlemez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B10",
+    "criterion": "Sadece oyun ekranını açmak görev ilerletmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B11",
+    "criterion": "Bir görevde uygunsuz veri havuzu sistematik fallback / hata gösterir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-B12",
+    "criterion": "Solo oturum tekrar gönderilse ilerleme yalnız bir kez artar.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C01",
+    "criterion": "Ranked oynama için serverValidated settled match şarttır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C02",
+    "criterion": "Ranked galibiyet yalnız gerçekten kazanan uid için artar.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C03",
+    "criterion": "Beraberlik ranked kazanmayı artırmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C04",
+    "criterion": "Arkadaş maçı ranked görevini artırmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C05",
+    "criterion": "Bot maçı ranked görevini artırmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C06",
+    "criterion": "İptal/kaçış/yarım kalan PvP tamamlanmış sayılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C07",
+    "criterion": "13 modun wireName eşlemesi hatasız ve izinli olur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C08",
+    "criterion": "Aynı settlement iki kez gelirse duplicate kayıt artış yapmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C09",
+    "criterion": "Başkasının uid / matchId kombinasyonu kabul edilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C10",
+    "criterion": "Çevrimiçi servis kapalıysa göreve gidince boş/bozuk ekrana düşülmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C11",
+    "criterion": "Eski ranked görevler geçişte çalışmaya devam eder.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-C12",
+    "criterion": "İki gerçek hesapla ranked maç sonuç görevi doğrulanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D01",
+    "criterion": "Günlük her claim 20 Coin öder; 3 claim=60 Coin.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D02",
+    "criterion": "Günlük claim her biri 30 SP üretir; max günlük görev SP=90.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D03",
+    "criterion": "Mevcut toplam günlük sezon puanı tavanı 150 olarak korunur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D04",
+    "criterion": "Görev claim hiçbir ek XP üretmez; UI da XP yazmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D05",
+    "criterion": "İstemci gönderdiği amount veya progress ile ödülü değiştiremez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D06",
+    "criterion": "Hızlı çift tıklama veya ağ retry ikinci Coin üretmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D07",
+    "criterion": "Pending reward reconciliation eksik ödemeyi kurtarır, çift ödeme yapmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D08",
+    "criterion": "Eski v2 görev claims ve wallet ledger sürüm yükseltmede korunur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D09",
+    "criterion": "Haftalık max 2 claim ve toplam 50 Coin bütçesi uygulanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D10",
+    "criterion": "weekly__ ödülü Sezon Rotası tarafından günlük +30 SP sayılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D11",
+    "criterion": "Yeni kariyer Coin ödülleri onaylanmadan kapalıdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-D12",
+    "criterion": "Daily login ve mod sonu normal ödülleri ayrı ledger kimlikleriyle işler.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E01",
+    "criterion": "Günlük, Haftalık, Kariyer sekmeleri doğru filtre gösterir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E02",
+    "criterion": "\"Ödülü hazır\" filtreli boş durumda çıkış yolu vardır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E03",
+    "criterion": "Ödülü alınan görev kompakt ve doğru durum ikonuyla görünür.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E04",
+    "criterion": "Ödül ekranından doğru modeId üzerinden gerçek oyuna geçilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E05",
+    "criterion": "Görevden döndükten sonra ilerleme güncellenir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E06",
+    "criterion": "Hata/çevrimdışı halinde son veri yeni gibi gösterilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E07",
+    "criterion": "320 px ekran ve %180 yazı ölçeğinde taşma olmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E08",
+    "criterion": "Ekran okuyucu için görev durumu ve eylemler erişilebilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E09",
+    "criterion": "Anonim hesaba bağlı kazanım gösterilmez ve açık gerekçe sunulur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E10",
+    "criterion": "Türkiye saatine göre haftalık sıfırlama pazartesi 00.00'dır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E11",
+    "criterion": "Hesap silmede missionState / profile / haftalık kayıtlar temizlenir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "M-E12",
+    "criterion": "Emülatör, Firebase emulator ve gerçek cihazda kritik akış PASS.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B001",
+    "category": "Kapsam ve politika",
+    "criterion": "Tüm ana solo kategorileri envanterde vardır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B002",
+    "category": "Kapsam ve politika",
+    "criterion": "Grid solo üç varyantı ayrı modId taşır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B003",
+    "category": "Kapsam ve politika",
+    "criterion": "Passaparola haftalık/günlük ayrılır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B004",
+    "category": "Kapsam ve politika",
+    "criterion": "Sahte Kulüp sonsuz/hız ve Zincir sprint ayrılır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B005",
+    "category": "Kapsam ve politika",
+    "criterion": "Burst hız/dayanıklılık iki ayrı yardım kuralına sahiptir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B006",
+    "category": "Kapsam ve politika",
+    "criterion": "Hikâye kataloğundaki sekiz bölümün tamamı kapsanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B007",
+    "category": "Kapsam ve politika",
+    "criterion": "Bot katalogundaki yedi modun tamamı kapsanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B008",
+    "category": "Kapsam ve politika",
+    "criterion": "Online katalogdaki 13 wireName listede tamdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B009",
+    "category": "Kapsam ve politika",
+    "criterion": "Planlı Kriter Kadro Kurma canlı moda yanlışlıkla aktif yazılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B010",
+    "category": "Kapsam ve politika",
+    "criterion": "Bütün modlarda bedelsiz isteğe bağlı ipucu artık bulunmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B011",
+    "category": "Kapsam ve politika",
+    "criterion": "Zorunlu başlangıç bilgi ve kuralları bedelsiz kalır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B012",
+    "category": "Kapsam ve politika",
+    "criterion": "Normal sil / pas / yalnız karıştır davranışı yanlışlıkla para istemez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B013",
+    "category": "Store / satın alma",
+    "criterion": "Eski üç boost SKU ve envanter miktarı korunur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B014",
+    "category": "Store / satın alma",
+    "criterion": "Yalnız etkin ve moda uygun SKU satın alınabilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B015",
+    "category": "Store / satın alma",
+    "criterion": "Sunucu fiyatı ve beklenen fiyat eşleşmedikçe Coin düşmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B016",
+    "category": "Store / satın alma",
+    "criterion": "Bütçe yetersizse bakiye ve stok değişmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B017",
+    "category": "Store / satın alma",
+    "criterion": "Paket fiyatı × adet ve stok sınırı tutarlıdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B018",
+    "category": "Store / satın alma",
+    "criterion": "Aynı purchase requestId ikinci kez Coin kesmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B019",
+    "category": "Store / satın alma",
+    "criterion": "İki cihazdan eş zamanlı satın alım bakiyeyi eksiye düşürmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B020",
+    "category": "Store / satın alma",
+    "criterion": "Boş/iptal/expired öğenin tüketimine izin verilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B021",
+    "category": "Store / satın alma",
+    "criterion": "Satın alma sonrası UI envanteri sunucuya uygun günceller.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B022",
+    "category": "Store / satın alma",
+    "criterion": "Geçersiz modeId ile boost tüketimi reddedilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B023",
+    "category": "Store / satın alma",
+    "criterion": "Satın alınmış stok başka hesaba sızmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B024",
+    "category": "Store / satın alma",
+    "criterion": "Boost disabled flag sırasında satış ve kullanım politikası açıktır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B025",
+    "category": "Reklam ve SSV",
+    "criterion": "Reklam öncesi ödül ve opt-in net gösterilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B026",
+    "category": "Reklam ve SSV",
+    "criterion": "Yalnız desteklenen mod, geçerli session ve sku için bilet verilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B027",
+    "category": "Reklam ve SSV",
+    "criterion": "Bir ticket yalnız tek modeId/runId/skuId içerir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B028",
+    "category": "Reklam ve SSV",
+    "criterion": "Sunucu ad unit eşlemesi doğrulanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B029",
+    "category": "Reklam ve SSV",
+    "criterion": "Transaction id replay ikinci hak vermez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B030",
+    "category": "Reklam ve SSV",
+    "criterion": "Expired/iptal reklam biletleri hak vermez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B031",
+    "category": "Reklam ve SSV",
+    "criterion": "SSV yokken istemci kendi beyanıyla hak alamaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B032",
+    "category": "Reklam ve SSV",
+    "criterion": "Başarıyla tamamlanan reklam hak üretir; bekleme durumunda korunur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B033",
+    "category": "Reklam ve SSV",
+    "criterion": "Reklam yüklenmezse oyun kilitlenmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B034",
+    "category": "Reklam ve SSV",
+    "criterion": "Günlük 4 reklamlı destek sınırı tüm modlarda ortaktır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B035",
+    "category": "Reklam ve SSV",
+    "criterion": "Bir oturumda 2 reklamlı destekten fazlası verilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B036",
+    "category": "Reklam ve SSV",
+    "criterion": "Günlük sabit bulmacada 1 sınırı çalışır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B037",
+    "category": "Reklam ve SSV",
+    "criterion": "Reklamı iki kez başlatıp eşzamanlı rezervasyon kotası aşılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B038",
+    "category": "Reklam ve SSV",
+    "criterion": "AdMob test ID ile üretim ID birbirine karışmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B039",
+    "category": "Reklam ve SSV",
+    "criterion": "Consent reddi sonrası yanlışlıkla reklam başlatılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B040",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Boost anlamlı ve doğrulanmış bir ipucu döndürür.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B041",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "İstemci önceden tam cevap metnini almaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B042",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "İpucu zaten açılmışsa ikinci stok eksilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B043",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "İpucunun hedefi aktif puzzle ID ile eşleşir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B044",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "İpucu kaynak kayıt / versiyon değişiminde bozulmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B045",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Gizli alternatif doğru cevaplar haksız kaybettirmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B046",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Pyramid çözümü doğrulanmadan bilgi açılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B047",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Matching gerçek tarihsel çiftler arasında tutarlıdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B048",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Higher/Lower yardımlı antrenman saf rekora yazılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B049",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Blind Ranking öznel sıralamaya ücretli yön verme sunulmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B050",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "This or That öznel tercihte kazanma hilesi satılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B051",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Günlük sabit oyun, gün değişince eski bilet hakkıyla açılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B052",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Yardım ile otomatik açılan zorunlu ipuçları ayrılır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B053",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Yardımlı bot sonucu saf bot ödülünü tetiklemez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B054",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Anagram ücretsiz ilk-harf/ülke yardım yolu kapanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B055",
+    "category": "İpucu ve oyun mantığı",
+    "criterion": "Story Pro ve eski yardım hakları kayıp olmadan göç eder.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B056",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "13 ranked modunun tamamında avantaj SKU whitelist dışıdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B057",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "13 ranked modunun hiçbirinde reward ad hint açılamaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B058",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Normal arkadaş maçında hint SKU kapalıdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B059",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Online kozmetik oyun sonucunu değiştiremez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B060",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Yardımlı seri yardımsız liderlik tablosuna girmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B061",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Yardımsız ustalık, yardım kullanılmış oturumda verilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B062",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Tek run için Coin/XP ödülü tekrar üretilmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B063",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Boost satın alma XP veya SP otomatik üretmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B064",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Daily mission Coin ödülü ile boost kullanımı ayrı ledger’da görünür.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B065",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Enerji rollout kapalıyken boost geliştirimi enerji açmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B066",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Link Coin maliyeti/ödül tavanları maliyet analizine uyar.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B067",
+    "category": "PVP, skor ve ekonomi",
+    "criterion": "Profil ve görevler assisted bayrağını doğru okur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B068",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "İnternet yokken normal oyun modu oynanabilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B069",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Uygulama arka plana geçince bilet/run yanlış kaybolmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B070",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Store ve oyun aynı kullanıcı için stokları senkron görür.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B071",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Google oturum değişiminde eski stok cache’i temizlenir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B072",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Geri tuşu / döndürme sırasında double-submit oluşmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B073",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Küçük ekran ve yüksek yazı ölçeğinde CTA kullanılabilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B074",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "TalkBack yardımın maliyetini ve sonucunu okur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B075",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Satın alma iptal edilince tahsilat yapılmaz.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B076",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Yetersiz Coin ve reklam yok mesajları anlaşılırdır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B077",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Pro üyelik geçişi kullanıcıya bildirilir; eski vaat kayıtları korunur.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B078",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Geri alma (roll-back) stok ve satın alma geçmişini silmez.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B079",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Android gerçek cihaz SSV callback ile test edilir.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B080",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Firebase Emulator ve rules izinlerindeki negatif testler geçer.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B081",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Flutter analiz + widget/smoke testleri PASS raporlanır.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "B082",
+    "category": "Yaşam döngüsü ve arayüz",
+    "criterion": "Ve son olarak özellik flag kapatıldığında oyunlar çökmemelidir.",
+    "status": "NOT_RUN"
+  }
+]

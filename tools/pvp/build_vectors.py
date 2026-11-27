@@ -40,11 +40,11 @@ for i in sorted(ids,key=int):
     club_ids.update(clubs);club_ids.update(x['clubId'] for x in timeline)
 clubs=[{'id':i,'name':catalog['clubs'][str(i)]['name'],'league':catalog['clubs'][str(i)]['league'],
   'country':catalog['clubs'][str(i)]['country']} for i in sorted(club_ids) if str(i) in catalog['clubs']]
-block=(ROOT/'lib/utils/country_names.dart').read_text().split('_aliases = {',1)[1].split('};',1)[0]
+block=(ROOT/'lib/utils/country_names.dart').read_text(encoding='utf-8').split('_aliases = {',1)[1].split('};',1)[0]
 aliases=[m.group(2) for m in re.finditer(r"(['\"])(.*?)\1\s*:",block)]
 body=json.dumps({'year':catalog['ratingYear'],'version':catalog['version'],'clubs':clubs,'players':players,
   'cases':cases,'countryAliases':[{'raw':x,'expected':country(x)} for x in aliases]},ensure_ascii=False,indent=2)+'\n'
 output=ROOT/'tools/pvp/fixtures/parity.json'
-if '--check' in sys.argv: assert output.read_text()==body,'PvP cross-runtime vector drift'
-else: output.parent.mkdir(exist_ok=True);output.write_text(body)
+if '--check' in sys.argv: assert output.read_text(encoding='utf-8')==body,'PvP cross-runtime vector drift'
+else: output.parent.mkdir(exist_ok=True);output.write_text(body,encoding='utf-8',newline='\n')
 print(f'{len(players)} real V4 players, {len(cases)} team powers, {len(aliases)} country aliases')

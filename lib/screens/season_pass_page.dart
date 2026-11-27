@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import '../app/app_feedback.dart';
+import '../app/game_audio.dart';
 import '../app/app_copy.dart';
 import '../app/route_appearance.dart';
 import '../models/season_pass.dart';
 import '../services/experience/season_gateway.dart';
+import '../theme/ortak_saha_theme.dart';
+import '../widgets/hub_ui.dart';
 import '../widgets/pitch_ui.dart';
 import '../widgets/social_ui.dart';
 import 'premium_page.dart';
@@ -60,13 +64,38 @@ class _SeasonPassPageState extends State<SeasonPassPage>
       final data = await widget.gateway.claim(_data!.id, t.step, lane);
       if (!mounted) return;
       setState(() => _data = data);
+      final after = data.tiers.firstWhere(
+        (x) => x.step == t.step,
+        orElse: () => t,
+      );
+      final avatar = lane == 'pro' && t.proAvatar ? after.proRewardTitle : '';
+      final supports = lane == 'pro' && t.proSupports.isNotEmpty
+          ? seasonSupportLine(
+              after.proRewardSupports.isNotEmpty
+                  ? after.proRewardSupports
+                  : t.proSupports,
+            )
+          : '';
+      AppFeedback.reward(avatar.isNotEmpty ? Sfx.levelUp : Sfx.coinReward);
+      if (supports.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              c('$supports destek çantanda.', '$supports added to your bag.'),
+            ),
+          ),
+        );
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            c(
-              'Sezon ödülün cüzdanında.',
-              'Your season reward is in your wallet.',
-            ),
+            avatar.isNotEmpty
+                ? c('Yeni avatarın: $avatar', 'Your new avatar: $avatar')
+                : c(
+                    'Sezon ödülün cüzdanında.',
+                    'Your season reward is in your wallet.',
+                  ),
           ),
         ),
       );
@@ -85,6 +114,98 @@ class _SeasonPassPageState extends State<SeasonPassPage>
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Every reward the player can take right now, free lane first.
+  List<(SeasonTier, String)> _readyRewards(SeasonPass s) => [
+    for (final t in s.tiers)
+      if (t.unlocked) ...[
+        if (!t.freeClaimed) (t, 'free'),
+        if (s.pro && !t.proClaimed) (t, 'pro'),
+      ],
+  ];
+
+  /// Claims ready rewards one by one; stops at the first failure so the
+  /// player can retry the rest.
+  Future<void> _claimAll() async {
+    if (_busy || _data == null) return;
+    setState(() => _busy = true);
+    var claimed = 0;
+    try {
+      for (final (t, lane) in _readyRewards(_data!)) {
+        final data = await widget.gateway.claim(_data!.id, t.step, lane);
+        if (!mounted) return;
+        setState(() => _data = data);
+        claimed++;
+      }
+    } catch (_) {
+      // Reported below together with the partial count.
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted) return;
+    if (claimed > 0) AppFeedback.reward(Sfx.coinReward);
+    final left = _readyRewards(_data!).length;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          left == 0
+              ? c(
+                  '$claimed sezon ödülü cüzdanında.',
+                  '$claimed season rewards are in your wallet.',
+                )
+              : c(
+                  '$claimed ödül alındı, $left ödül alınamadı. Tekrar dene.',
+                  '$claimed claimed, $left could not be claimed. Retry.',
+                ),
+        ),
+      ),
+    );
+  }
+
+  /// Last month's rewards still open during the grace days.
+  List<(SeasonTier, String)> _previousRewards(SeasonPass s) => [
+    for (final t in s.previous?.tiers ?? const <SeasonTier>[])
+      if (t.unlocked) ...[
+        if (!t.freeClaimed) (t, 'free'),
+        if (s.pro && !t.proClaimed) (t, 'pro'),
+      ],
+  ];
+
+  Future<void> _claimPrevious() async {
+    final previous = _data?.previous;
+    if (_busy || previous == null) return;
+    setState(() => _busy = true);
+    var claimed = 0;
+    try {
+      for (final (t, lane) in _previousRewards(_data!)) {
+        final data = await widget.gateway.claim(previous.id, t.step, lane);
+        if (!mounted) return;
+        setState(() => _data = data);
+        claimed++;
+      }
+    } catch (_) {
+      // Reported below.
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted) return;
+    if (claimed > 0) AppFeedback.reward(Sfx.coinReward);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _previousRewards(_data!).isEmpty
+              ? c(
+                  'Geçen ayın $claimed ödülü cüzdanında.',
+                  "$claimed rewards from last month are in your wallet.",
+                )
+              : c(
+                  '$claimed ödül alındı; kalanlar için tekrar dene.',
+                  '$claimed claimed; retry for the rest.',
+                ),
+        ),
+      ),
+    );
   }
 
   Future<void> _pro() async {
@@ -135,11 +256,15 @@ class _SeasonPassPageState extends State<SeasonPassPage>
   );
   Widget _content() {
     final s = _data!;
+    final pc = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final ready = _readyRewards(s).length;
     final tiers = s.tiers.where(
       (t) =>
           !_readyOnly ||
           t.unlocked && (!t.freeClaimed || s.pro && !t.proClaimed),
     );
+    final done = s.level >= s.maxLevel;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -154,109 +279,242 @@ class _SeasonPassPageState extends State<SeasonPassPage>
             ),
             onAction: _load,
           ),
-        SocialHero(
-          icon: Icons.route_rounded,
-          eyebrow: '${s.id} · LINKBALL',
-          title: c('Her oyun bir adım.', 'Every game, one step.'),
-          message: c(
-            '${s.daysLeft} gün kaldı · ${s.level}/${s.maxLevel} durak tamamlandı',
-            '${s.daysLeft} days left · ${s.level}/${s.maxLevel} stops complete',
-          ),
-          footer: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        HubHeroCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              LinearProgressIndicator(value: s.ratio, minHeight: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  HubPill(
+                    c('SEZON ${s.id}', 'SEASON ${s.id}'),
+                    icon: Icons.route_rounded,
+                    color: pc.accent,
+                    background: pc.background.withValues(alpha: .4),
+                  ),
+                  HubPill(
+                    c('${s.daysLeft} GÜN KALDI', '${s.daysLeft} DAYS LEFT'),
+                    icon: Icons.schedule_rounded,
+                    color: pc.muted,
+                    background: pc.background.withValues(alpha: .4),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                c('Mevcut ilerleme', 'Current progress'),
+                style: hubCaps(context),
+              ),
+              const SizedBox(height: 4),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: c('Kademe ${s.level}', 'Tier ${s.level}'),
+                      style: text.headlineMedium,
+                    ),
+                    TextSpan(
+                      text: ' / ${s.maxLevel}',
+                      style: text.titleMedium?.copyWith(color: pc.muted),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              LinearProgressIndicator(
+                value: s.ratio,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+                color: pc.limeInk,
+                backgroundColor: pc.raised,
+              ),
               const SizedBox(height: 10),
               Text(
-                s.level >= s.maxLevel
+                done
                     ? c('Rota tamamlandı!', 'Route completed!')
                     : c(
                         '${s.stepSp - s.sp % s.stepSp} SP sonra sıradaki ödül',
                         '${s.stepSp - s.sp % s.stepSp} SP to your next reward',
                       ),
+                style: text.labelLarge?.copyWith(color: pc.accent),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
-                '${s.sp} SP · ${c('Bugün', 'Today')} ${s.todaySp}/${s.dailyCap} SP',
+                '${groupedNumber(s.sp)} SP · ${c('Bugün', 'Today')} ${s.todaySp}/${s.dailyCap} SP',
+                style: text.bodySmall?.copyWith(color: pc.muted),
               ),
+              if (!done) ...[
+                const SizedBox(height: 4),
+                Text(
+                  s.neededPerDay > s.dailyCap
+                      ? c(
+                          'Bu tempoyla ay sonunda Kademe ${s.projectedLevel}. Kalan günlerde rotanın tamamı yetişmez (günde en çok ${s.dailyCap} SP).',
+                          'At this pace: tier ${s.projectedLevel} by month end. The full route no longer fits (max ${s.dailyCap} SP a day).',
+                        )
+                      : c(
+                          'Bu tempoyla ay sonunda Kademe ${s.projectedLevel} · Rotayı bitirmek için günde ${s.neededPerDay} SP.',
+                          'At this pace: tier ${s.projectedLevel} by month end · ${s.neededPerDay} SP a day finishes the route.',
+                        ),
+                  style: text.bodySmall?.copyWith(color: pc.muted),
+                ),
+              ],
+              const SizedBox(height: 14),
+              _proBanner(s),
+              if (ready > 0) ...[
+                const SizedBox(height: 14),
+                PitchAction(
+                  label: c(
+                    'Tümünü al ($ready hazır)',
+                    'Claim all ($ready ready)',
+                  ),
+                  icon: Icons.redeem_rounded,
+                  busy: _busy,
+                  onPressed: _busy ? null : _claimAll,
+                ),
+              ],
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        PitchPanel(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                s.pro
-                    ? c('Pro rotan açık', 'Your Pro route is open')
-                    : c(
-                        'Tek sezon, iki ödül yolu',
-                        'One season, two reward tracks',
-                      ),
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                c(
-                  'Ücretsiz yolda toplam 560 Link Coin. Mevcut Pro üyeliğinle ek 1.040 Link Coin. İlerleme hızı herkes için aynı.',
-                  '560 Link Coin on the free track. Another 1,040 with your existing Pro membership. Everyone progresses at the same speed.',
+        if (s.avatarSteps.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          PitchPanel(
+            key: const ValueKey('season-avatar-odds'),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.face_retouching_natural_rounded,
+                  color: hubAmber(context),
                 ),
-              ),
-              if (!s.pro) ...[
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: _busy ? null : _pro,
-                  icon: const Icon(Icons.workspace_premium_outlined),
-                  label: Text(
-                    c('Linkball Pro’yu keşfet', 'Explore Linkball Pro'),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        c(
+                          'Pro yolu: ${s.proLaneSummary}',
+                          'Pro lane: ${s.proLaneSummary}',
+                        ),
+                        key: const ValueKey('season-pro-summary'),
+                        style: text.titleSmall,
+                      ),
+                      const SizedBox(height: 4),
+                      for (final pool in s.avatarPools) ...[
+                        Text(
+                          pool.count > 0
+                              ? c(
+                                  "${pool.step}. basamak: ${pool.tier} coin'lik havuzdan rastgele avatar "
+                                      '(sende olmayan ${pool.count} avatar)',
+                                  'Step ${pool.step}: a random avatar from the ${pool.tier}-coin pool '
+                                      '(${pool.count} you do not own)',
+                                )
+                              : c(
+                                  "${pool.step}. basamak: ${pool.tier} coin'lik avatarların hepsi sende; "
+                                      'diğer havuzdan, o da bittiyse forma ya da 300 Link Coin gelir.',
+                                  'Step ${pool.step}: you own every ${pool.tier}-coin avatar; the other pool, '
+                                      'then a kit or 300 Link Coin.',
+                                ),
+                          style: text.bodySmall,
+                        ),
+                        // Few left: say it before the pool runs out.
+                        if (pool.count > 0 && pool.count <= 5)
+                          Text(
+                            c(
+                              "Az kaldı: ${pool.tier} coin'lik havuzda sende olmayan yalnız ${pool.count} avatar var.",
+                              'Running low: only ${pool.count} ${pool.tier}-coin avatars left for you.',
+                            ),
+                            key: ValueKey('season-pool-low-${pool.step}'),
+                            style: text.bodySmall?.copyWith(
+                              color: hubAmber(context),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                      ],
+                      Text(
+                        c(
+                          'Sahip olduğun avatarlar çıkmaz.',
+                          'Avatars you own never come out.',
+                        ),
+                        style: text.bodySmall?.copyWith(color: pc.muted),
+                      ),
+                    ],
                   ),
                 ),
               ],
-              const SizedBox(height: 8),
-              Text(
-                c(
-                  'Sezon içinde Pro olursan ulaştığın durakların Pro ödüllerini de alabilirsin.',
-                  'Join Pro during the season to claim Pro rewards at every stop you have reached.',
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        PitchPanel(
-          child: ExpansionTile(
-            tilePadding: EdgeInsets.zero,
-            title: Text(
-              c('Sezon puanı nasıl kazanılır?', 'How do I earn season points?'),
             ),
-            children: [
-              Text(
-                c(
-                  'Günlük buluşma ödülünü al: +10 SP\nGünlük görev ödülünü al: +30 SP (en fazla 3)\nKariyer görevi ödülünü al: +50 SP\nGünün Maçları’nda günün ilk galibiyet ödülü: +50 SP\n\nToplam günlük sınır 150 SP. Her 100 SP bir durak açar. SP harcanmaz; ay sonunda yenilenir. Rozetlerin ve aldığın coinler kalır. Ödüllerini sezon bitmeden al.\n\nCoin satın almak veya reklam izlemek SP kazandırmaz.',
-                  'Claim daily check-in: +10 SP\nClaim a daily mission: +30 SP (up to 3)\nClaim a career mission: +50 SP\nFirst Daily Matches win reward: +50 SP\n\nDaily cap: 150 SP. Every 100 SP unlocks a stop. SP resets monthly; badges and claimed coins remain. Claim rewards before the season ends.\n\nPurchases and ads do not earn SP.',
-                ),
-              ),
-            ],
           ),
-        ),
-        const SizedBox(height: 20),
-        Text(
+        ],
+        if (s.previous != null && _previousRewards(s).isNotEmpty) ...[
+          const SizedBox(height: 16),
+          PitchPanel(
+            key: const ValueKey('season-previous'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  c(
+                    'Geçen ayın ${_previousRewards(s).length} ödülü seni bekliyor',
+                    '${_previousRewards(s).length} rewards from last month are waiting',
+                  ),
+                  style: text.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  c(
+                    '${s.previous!.id} rotasında Kademe ${s.previous!.level}’e ulaştın. Açılmış ödülleri ${s.previous!.claimDaysLeft} gün daha alabilirsin.',
+                    'You reached tier ${s.previous!.level} in ${s.previous!.id}. Unlocked rewards stay claimable for ${s.previous!.claimDaysLeft} more days.',
+                  ),
+                  style: text.bodySmall?.copyWith(color: pc.muted),
+                ),
+                const SizedBox(height: 12),
+                PitchAction(
+                  label: c(
+                    'Geçen ayın ödüllerini al',
+                    "Claim last month's rewards",
+                  ),
+                  icon: Icons.history_rounded,
+                  busy: _busy,
+                  onPressed: _busy ? null : _claimPrevious,
+                ),
+              ],
+            ),
+          ),
+        ],
+        if (s.daysLeft <= s.graceDays && ready > 0) ...[
+          const SizedBox(height: 16),
+          PitchPanel(
+            key: const ValueKey('season-ending'),
+            child: Row(
+              children: [
+                Icon(Icons.hourglass_bottom_rounded, color: hubAmber(context)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    c(
+                      'Ay bitiyor: $ready ödülün alınmadı. Ay bitince ${s.graceDays} gün daha alabilirsin.',
+                      'The month is ending: $ready rewards unclaimed. They stay claimable ${s.graceDays} days after.',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        HubSectionHeader(
           c('Ödül durakları', 'Reward stops'),
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        Wrap(
-          spacing: 8,
-          children: [
-            FilterChip(
-              label: Text(
-                c('Hazır ödüller (${s.ready})', 'Ready rewards (${s.ready})'),
-              ),
-              selected: _readyOnly,
-              onSelected: (v) => setState(() => _readyOnly = v),
+          icon: Icons.flag_outlined,
+          trailing: FilterChip(
+            label: Text(
+              c('Hazır ödüller (${s.ready})', 'Ready rewards (${s.ready})'),
             ),
-          ],
+            selected: _readyOnly,
+            onSelected: (v) => setState(() => _readyOnly = v),
+          ),
         ),
+        _laneHeader(),
         if (tiers.isEmpty)
           Padding(
             padding: const EdgeInsets.all(16),
@@ -267,99 +525,371 @@ class _SeasonPassPageState extends State<SeasonPassPage>
               ),
             ),
           ),
-        for (final t in tiers)
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: PitchPanel(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    c(
-                      '${t.step}. durak · ${t.requiredSp} SP',
-                      'Stop ${t.step} · ${t.requiredSp} SP',
-                    ),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  if (t.step % 5 == 0)
-                    Text(
-                      c('KİLOMETRE TAŞI', 'MILESTONE'),
-                      style: TextStyle(color: socialAccent(context)),
-                    ),
-                  const SizedBox(height: 12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: _reward(t, 'free')),
-                      const SizedBox(width: 10),
-                      Expanded(child: _reward(t, 'pro')),
-                    ],
-                  ),
-                ],
-              ),
+        for (final t in tiers) ...[
+          if (t.step % 5 == 0) _milestone(),
+          _stop(s, t),
+        ],
+        const SizedBox(height: 16),
+        PitchPanel(
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            title: Text(
+              c('Sezon puanı nasıl kazanılır?', 'How do I earn season points?'),
             ),
+            children: [
+              Text(
+                c(
+                  'Günlük buluşma ödülünü al: +10 SP\nGünlük görev ödülünü al: +30 SP (en fazla 3)\nKariyer görevi ödülünü al: +50 SP\nGünün Maçları’nda günün ilk galibiyet ödülü: +50 SP\n\nToplam günlük sınır 150 SP. Her 100 SP bir durak açar. SP harcanmaz; ay sonunda yenilenir. Rozetlerin ve aldığın coinler kalır. Açtığın ama almadığın ödüller ay bitince 3 gün daha alınabilir.\n\nCoin satın almak veya reklam izlemek SP kazandırmaz.',
+                  'Claim daily check-in: +10 SP\nClaim a daily mission: +30 SP (up to 3)\nClaim a career mission: +50 SP\nFirst Daily Matches win reward: +50 SP\n\nDaily cap: 150 SP. Every 100 SP unlocks a stop. SP resets monthly; badges and claimed coins remain. Unlocked rewards stay claimable 3 days after the month ends.\n\nPurchases and ads do not earn SP.',
+                ),
+              ),
+            ],
           ),
+        ),
         const SizedBox(height: 16),
         Text(
           c(
             'Sezon bitişi: ${s.endsOn} · Türkiye saatiyle ayın son günü',
             'Season ends: ${s.endsOn} · End of month, Türkiye time',
           ),
+          style: text.bodySmall?.copyWith(color: pc.muted),
         ),
       ],
     );
   }
 
-  Widget _reward(SeasonTier t, String lane) {
-    final pro = lane == 'pro', claimed = pro ? t.proClaimed : t.freeClaimed;
-    final available = t.unlocked && (!pro || _data!.pro);
+  /// Pro state: open second lane, or what the free lane alone pays.
+  Widget _proBanner(SeasonPass s) {
+    final pc = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final gold = hubAmber(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
+        color: pc.background.withValues(alpha: .4),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: pro
-              ? socialAccent(context).withValues(alpha: .5)
-              : Colors.transparent,
+          color: s.pro ? gold.withValues(alpha: .5) : pc.border,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(
-            pro ? Icons.workspace_premium : Icons.sports_soccer,
-            color: socialAccent(context),
+          Row(
+            children: [
+              HubIconBox(
+                Icons.workspace_premium_outlined,
+                size: 40,
+                color: gold,
+                background: gold.withValues(alpha: .12),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      s.pro
+                          ? c('Pro rotan açık', 'Your Pro route is open')
+                          : c(
+                              'Tek sezon, iki ödül yolu',
+                              'One season, two reward tracks',
+                            ),
+                      style: text.titleSmall?.copyWith(
+                        color: s.pro ? gold : null,
+                      ),
+                    ),
+                    Text(
+                      c(
+                        'Ücretsiz yolda toplam 560 Link Coin. Pro yolunda ek ${s.proLaneSummary}. İlerleme hızı herkes için aynı.',
+                        '560 Link Coin on the free track. The Pro lane adds ${s.proLaneSummary}. Everyone progresses at the same speed.',
+                      ),
+                      style: text.bodySmall?.copyWith(color: pc.muted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            pro ? 'PRO' : c('ÜCRETSİZ', 'FREE'),
-            textAlign: TextAlign.center,
-          ),
-          Text(
-            '+${pro ? t.proCoins : t.freeCoins}',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const Text('Link Coin', textAlign: TextAlign.center),
-          const SizedBox(height: 10),
-          FilledButton(
-            key: ValueKey('season-${t.step}-$lane'),
-            onPressed: _busy || claimed || !available
-                ? null
-                : () => _claim(t, lane),
-            child: Text(
-              claimed
-                  ? c('Alındı', 'Claimed')
-                  : available
-                  ? c('Ödülü al', 'Claim')
-                  : pro && !_data!.pro
-                  ? 'Pro'
-                  : c('Kilitli', 'Locked'),
+          if (!s.pro) ...[
+            const SizedBox(height: 10),
+            Text(
+              c(
+                'Sezon içinde Pro olursan ulaştığın durakların Pro ödüllerini de alabilirsin.',
+                'Join Pro during the season to claim Pro rewards at every stop you have reached.',
+              ),
+              style: text.bodySmall?.copyWith(color: pc.muted),
             ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _busy ? null : _pro,
+              icon: const Icon(Icons.workspace_premium_outlined),
+              label: Text(c('Linkball Pro’yu keşfet', 'Explore Linkball Pro')),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _laneHeader() {
+    final pc = PitchColors.of(context);
+    final gold = hubAmber(context);
+    Widget lane(String label, String hint, Color color) => Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: .4)),
+        ),
+        child: Column(
+          children: [
+            Text(label, style: hubCaps(context, color: color)),
+            Text(hint, style: Theme.of(context).textTheme.labelSmall),
+          ],
+        ),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          lane(
+            c('ÜCRETSİZ YOL', 'FREE TRACK'),
+            c('Herkes için', 'Everyone'),
+            pc.accent,
+          ),
+          SizedBox(
+            width: 56,
+            child: Text(
+              c('DURAK', 'STOP'),
+              textAlign: TextAlign.center,
+              style: hubCaps(context),
+            ),
+          ),
+          lane(
+            c('PRO YOL', 'PRO TRACK'),
+            c('Pro üyelere', 'Pro members'),
+            gold,
           ),
         ],
       ),
     );
   }
+
+  Widget _milestone() {
+    final gold = hubAmber(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 4),
+      child: Row(
+        children: [
+          Expanded(child: Divider(color: gold.withValues(alpha: .4))),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.military_tech_outlined, size: 16, color: gold),
+                const SizedBox(width: 4),
+                Text(
+                  c('KİLOMETRE TAŞI', 'MILESTONE'),
+                  style: hubCaps(context, color: gold),
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: Divider(color: gold.withValues(alpha: .4))),
+        ],
+      ),
+    );
+  }
+
+  /// One stop: free reward, the numbered node on the route line, Pro reward.
+  Widget _stop(SeasonPass s, SeasonTier t) {
+    final pc = PitchColors.of(context);
+    final current = !t.unlocked && t.step == s.level + 1;
+    final reached = t.unlocked;
+    final milestone = t.step % 5 == 0;
+    final nodeColor = reached
+        ? pc.limeInk
+        : current
+        ? pc.accent
+        : pc.muted;
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: _reward(t, 'free')),
+          SizedBox(
+            width: 56,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: Center(
+                    child: Container(
+                      width: 3,
+                      color: (reached ? pc.limeInk : pc.border).withValues(
+                        alpha: reached ? .6 : 1,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: milestone ? 42 : 36,
+                  height: milestone ? 42 : 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: reached || current ? pc.background : pc.surface,
+                    border: Border.all(
+                      color: milestone ? hubAmber(context) : nodeColor,
+                      width: reached || current ? 2 : 1,
+                    ),
+                  ),
+                  child: Text(
+                    '${t.step}',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: milestone ? hubAmber(context) : nodeColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: _reward(t, 'pro')),
+        ],
+      ),
+    );
+  }
+
+  Widget _reward(SeasonTier t, String lane) {
+    final s = _data!;
+    final pc = PitchColors.of(context);
+    final text = Theme.of(context).textTheme;
+    final gold = hubAmber(context);
+    final pro = lane == 'pro', claimed = pro ? t.proClaimed : t.freeClaimed;
+    final available = t.unlocked && (!pro || s.pro);
+    final ready = available && !claimed;
+    final color = pro ? gold : pc.accent;
+    final missing = t.requiredSp - s.sp;
+    final next = !t.unlocked && t.step == s.level + 1;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: ready ? color.withValues(alpha: .1) : pc.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: ready ? color : pc.border,
+            width: ready ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    ready
+                        ? c('HAZIR', 'READY')
+                        : pro
+                        ? 'PRO'
+                        : c('ÜCRETSİZ', 'FREE'),
+                    style: hubCaps(context, color: ready ? color : pc.muted),
+                  ),
+                ),
+                Icon(
+                  pro
+                      ? Icons.workspace_premium_outlined
+                      : Icons.monetization_on_outlined,
+                  size: 16,
+                  color: color,
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            if (pro && t.avatarStep) ...[
+              Icon(
+                Icons.face_retouching_natural_rounded,
+                key: ValueKey('season-avatar-${t.step}'),
+                size: 28,
+                color: reachedColor(t, color, pc.muted),
+              ),
+              Text(
+                t.proRewardTitle.isNotEmpty
+                    ? t.proRewardTitle
+                    : t.proAvatarTier > 0
+                    ? c(
+                        "${t.proAvatarTier}'lük havuz",
+                        '${t.proAvatarTier} pool',
+                      )
+                    : c('Rastgele avatar', 'Random avatar'),
+                style: text.labelSmall,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ] else if (pro && t.supportStep) ...[
+              Icon(
+                Icons.inventory_2_outlined,
+                key: ValueKey('season-support-${t.step}'),
+                size: 26,
+                color: reachedColor(t, color, pc.muted),
+              ),
+              Text(
+                seasonSupportLine(
+                  t.proRewardSupports.isNotEmpty
+                      ? t.proRewardSupports
+                      : t.proSupports,
+                ),
+                style: text.labelSmall,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ] else ...[
+              Text(
+                '+${pro ? t.proCoins : t.freeCoins}',
+                style: text.titleLarge?.copyWith(
+                  color: reachedColor(t, color, pc.muted),
+                ),
+              ),
+              Text('Link Coin', style: text.labelSmall),
+            ],
+            const SizedBox(height: 10),
+            FilledButton(
+              key: ValueKey('season-${t.step}-$lane'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(48, 40),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                backgroundColor: pro ? gold : null,
+              ),
+              onPressed: _busy || claimed || !available
+                  ? null
+                  : () => _claim(t, lane),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  claimed
+                      ? c('Alındı', 'Claimed')
+                      : available
+                      ? c('Ödülü al', 'Claim')
+                      : next && missing > 0
+                      ? c('$missing SP kaldı', '$missing SP left')
+                      : pro && !s.pro && t.unlocked
+                      ? 'Pro'
+                      : c('Kilitli', 'Locked'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Color reachedColor(SeasonTier t, Color on, Color off) =>
+      t.unlocked ? on : off;
 }

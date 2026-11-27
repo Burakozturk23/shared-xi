@@ -50,32 +50,35 @@ void main() {
       await wallets.close();
     },
   );
-  test('errors preserve last data but flag it as stale; retry restores the numbers', () async {
-    final wallets = StreamController<EconomyWallet>();
-    var fail = false;
-    final c = HomeResourcesController(
-      prepare: () async {},
-      accounts: () => const Stream.empty(),
-      currentAccount: () => (uid: 'alice', linked: true),
-      watchWallet: () => wallets.stream,
-      readEnergy: () async {
-        if (fail) throw StateError('offline');
-        return {'available': 4, 'capacity': 6};
-      },
-    );
-    await c.start();
-    await flush();
-    expect(c.energy!['available'], 4);
-    fail = true;
-    await c.refreshEnergy();
-    expect(c.energyFailed, true);
-    expect(c.energy!['available'], 4);
-    fail = false;
-    await c.refreshEnergy();
-    expect(c.energyFailed, false);
-    c.dispose();
-    await wallets.close();
-  });
+  test(
+    'errors preserve last data but flag it as stale; retry restores the numbers',
+    () async {
+      final wallets = StreamController<EconomyWallet>();
+      var fail = false;
+      final c = HomeResourcesController(
+        prepare: () async {},
+        accounts: () => const Stream.empty(),
+        currentAccount: () => (uid: 'alice', linked: true),
+        watchWallet: () => wallets.stream,
+        readEnergy: () async {
+          if (fail) throw StateError('offline');
+          return {'available': 4, 'capacity': 6};
+        },
+      );
+      await c.start();
+      await flush();
+      expect(c.energy!['available'], 4);
+      fail = true;
+      await c.refreshEnergy();
+      expect(c.energyFailed, true);
+      expect(c.energy!['available'], 4);
+      fail = false;
+      await c.refreshEnergy();
+      expect(c.energyFailed, false);
+      c.dispose();
+      await wallets.close();
+    },
+  );
   test(
     'late completion after disposal does not notify or start a refill timer',
     () async {

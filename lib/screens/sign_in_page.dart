@@ -39,8 +39,8 @@ class _LinkballSignInPageState extends State<LinkballSignInPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              c('Mevcut Google hesabın açıldı. Bu cihazdaki geçici misafir hesabı otomatik olarak birleştirilmedi.',
-                'Your existing Google account is now active. The guest account on this device was not automatically merged.'),
+              c('Mevcut Linkball hesabın açıldı. Bu cihazda misafir olarak oynadıkların ona eklenmedi.',
+                'Your existing Linkball account is open. Guest play on this device was not added to it.'),
             ),
           ),
         );
@@ -114,6 +114,22 @@ class _LinkballSignInPageState extends State<LinkballSignInPage> {
                       borderRadius: BorderRadius.circular(16)),
                     child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer)),
                   )),
+                  const SizedBox(height: 16),
+                ],
+                if (!connected && AuthService.isGuest) ...[
+                  // A Google account that already exists elsewhere opens as it is;
+                  // say so before the player chooses, not only afterwards.
+                  Container(
+                    key: const ValueKey('sign-in-merge-note'),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(color: colors.tint, borderRadius: BorderRadius.circular(14)),
+                    child: Text(c('Yeni bir Google hesabıyla bağlarsan bu cihazdaki misafir ilerlemen korunur. '
+                        'Daha önce başka bir cihazda kullandığın bir hesabı seçersen o hesap açılır; '
+                        'bu cihazdaki misafir ilerlemesi ona eklenmez.',
+                      'Link a new Google account and your guest progress here is kept. Pick an account you used '
+                        'on another device and that account opens; guest progress here is not added to it.'),
+                      style: Theme.of(context).textTheme.bodySmall),
+                  ),
                   const SizedBox(height: 16),
                 ],
                 if (!connected) ...[

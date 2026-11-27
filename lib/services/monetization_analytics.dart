@@ -80,6 +80,19 @@ class MonetizationAnalytics {
         },
       );
 
+  /// A game route opened (no user id): the session count behind energy decisions.
+  Future<void> gameSessionStarted({
+    required String game,
+    required String category,
+  }) =>
+      _log(
+        'game_session_start',
+        <String, Object>{
+          'game': _clean(game),
+          'category': _clean(category.isEmpty ? 'other' : category),
+        },
+      );
+
   Future<void> premiumCancelled(String productId) => _log(
         'premium_cancelled',
         <String, Object>{

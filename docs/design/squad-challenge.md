@@ -14,7 +14,7 @@ Squad Challenge, kadro kurma ve ortak kulüp bağı bulma oyununu korur. Yıldı
 | Görev koşulları | 135/120/105 kredi, 4/6/8 bağ, 3/4/5 ülke | Aynı |
 | Antrenman | 32 tema, 7 diziliş, sınırsız ve çevrimdışı | Aynı |
 
-Ödüllü görevler 4-3-3 kullanır. Antrenman 160 kadro kredisiyle oynanır ve coin kazandırmaz. Günlük temalar 31 uygun tema arasında döner; farklı ülke kısıtlı Pasaportsuzlar yalnızca antrenmandadır. Görev başlatmak hak tüketir; kadroyu değiştirmek tüketmez. Başarısız sonuç, ödül vermez. Hedefi karşılamayan kadroyu bitirmeden önce kullanıcıya düzenleme seçeneği sunulur.
+Ödüllü görevler 4-3-3 kullanır. Antrenman 160 kadro kredisiyle oynanır ve coin kazandırmaz. Günlük temalar 31 uygun tema arasında döner; farklı ülke kısıtlı Pasaportsuzlar yalnızca antrenmandadır. 14 Kasım 2026'dan itibaren her cumartesi ve pazar (Türkiye saati) Büyük görev "Derbi günü" olur: altı Türk derbisi (GS–FB, BJK–GS, BJK–FB, TS–GS, TS–FB, TS–BJK) sırayla gelir, üç hafta sonunda hepsi oynanır. Diğer iki görev aynı temaya denk gelirse sıradaki temaya kayar. Önceki günlerin görevleri değişmez; başlanmış ya da ödülü alınmış görev kimlikleri korunur. Görev başlatmak hak tüketir; kadroyu değiştirmek tüketmez. Başarısız sonuç, ödül vermez. Hedefi karşılamayan kadroyu bitirmeden önce kullanıcıya düzenleme seçeneği sunulur.
 
 Süre baskısı yoktur. Açık göreve geri dönmek ücretsizdir; açık görev varken başka görev başlatılamaz. Bırakma onayı denemeyi kapatır, kullanılan hakkı veya coini iade etmez. Tamamlanan günlük görevin ödülü tekrar alınamaz.
 
@@ -44,7 +44,20 @@ Premium, özel `premiumState/{uid}` kaydındaki doğrulanmış plan ve bitiş ta
 
 ## Oyuncu kataloğu
 
-2.810 oyunculuk küçük katalog, ana 30 bin oyunculuk Repository yüklenmeden modu açar. Kaynak, depodaki V4 SQLite, mevcut tema/diziliş kuralları ve ülke adlarıdır. Flutter ve Functions aynı JSON baytlarını kullanır. Katalog sürümü içerik özetini içerir; eski istemci ve yeni sunucu farklı kurallarla coin hesaplayamaz.
+1.854 oyunculuk küçük katalog, ana 30 bin oyunculuk Repository yüklenmeden modu açar.
+
+Katalog yalnızca bilinen futbolculardan kurulur (12 Kasım 2026, `squad-v3`):
+
+- Sıra, online modların oyun puanıdır (`tools/pvp/build_catalog.py`, Loto 75 üstünü gösterir). Veritabanının `selection_rank` sırası kullanılmaz: Son, Elmas, Kim Min-jae gibi yıldızları ve emekli efsanelerin çoğunu en sona koyuyordu, bu yüzden Son 3 krediye satılıyordu.
+- Her tema önce puanı 72 ve üstü olan en bilinen 120 oyuncuyu alır. Her mevkide 12 seçenek tamamlanır; 72 altına yalnızca bir mevkide 6 seçenek kalmıyorsa inilir, 65 altına hiç inilmez. Bölge temaları her ülkenin en bilinen iki oyuncusunu da ekler.
+- Kredi aynı sırayla verilir: en bilinenler 18, en az bilinenler 3 kredi. Ucuz uçta bilinen efsaneler (Okocha, Ljungberg, van Hooijdonk) bulunur.
+- Bağlar yalnızca A takımı kulüplerinden sayılır. Altyapı ve yedek takımları (Chelsea U18, Paris SG B) çıkarılır. Aynı kulübün ofsetli ikinci kimliği (PSG 583 / 1000000583) tek kimliğe indirilir; gözden geçirilmiş farklı kulüpler (`club_offset_mismatch.json`) ayrı kalır.
+- Arama kutusu yalnızca isim gösterdiği için her isimden bir oyuncu, en bilineni tutulur.
+- Kulüp adları (`clubNames`) bağın hangi kulüpten geldiğini göstermek için katalogda taşınır.
+
+Kulüp kimliği çakışmaları (`v4-2026-11-12.2`, `tools/data_platform_v4/apply_club_collision_fix.py`): 35 Transfermarkt kulübünün düz kimliği başka, eski bir kulübe ait (`club_offset_mismatch.json`; TM 208 CSKA Sofya, satır 208 Haras El Hodood). V3 içe aktarımı bu kulüplerin oyuncularını eski kulübe bağlamıştı: Berbatov Haras El Hodood'da, Kvaratskhelia Chaves'te, Begović Antwerp'te görünüyordu. Bu içe aktarılmış bağlar güven 1 taşır; kulübün kendi oyuncuları güven 2 (Luuk de Jong De Graafschap'ta, Stuani Albacete'de). Güven 1 olan 809 bağ TM kulübüne taşındı; veritabanından üretilen bütün kataloglar yeniden üretildi.
+
+Firebase RTDB, küçük tamsayı anahtarlı nesneleri diziye çevirir: kayıtlı görevdeki `starBonus` {2: 5, 3: 10} geri [null, null, 5, 10] olarak okunur. Sunucu açık ve dönen denemelerde nesneyi yeniden yazar (`publicRun`), uygulama iki biçimi de okur (`squadIntMap`). Bu düzeltmeden önce açık görevi olan hesap görev tahtasını açamıyordu. Okunamayan bir sunucu cevabı artık "Görev bilgisi okunamadı. Uygulamanı güncelleyip yeniden dene." der ve Crashlytics'e ölümcül olmayan hata olarak yazılır (`TelemetryService.recordNonFatal`); `managerError`'ın genel mesaja çevirdiği beklenmeyen hatalar da aynı şekilde kaydedilir. Kaynak, depodaki V4 SQLite, mevcut tema/diziliş kuralları ve ülke adlarıdır. Flutter ve Functions aynı JSON baytlarını kullanır. Katalog sürümü içerik özetini içerir; eski istemci ve yeni sunucu farklı kurallarla coin hesaplayamaz.
 
 Yeniden üretme:
 

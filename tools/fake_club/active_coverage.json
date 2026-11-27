@@ -1,0 +1,4206 @@
+{
+ "schema": 1,
+ "policy": "active careers: a real club is in both the database career and the Wikipedia infobox; infobox clubs the database lacks are never the fake",
+ "evidence": "tools/fake_club/wikipedia-active-2026-11-12.json",
+ "fetchedUtc": "2026-11-12T03:05:05+00:00",
+ "counts": {
+  "players": 160,
+  "rejected": {
+   "no_infobox_or_rank": 9,
+   "fewer_than_three_confirmed_clubs": 2
+  }
+ },
+ "players": [
+  {
+   "playerId": 38253,
+   "name": "Robert Lewandowski",
+   "rank": 1,
+   "seniorClubIds": [
+    16,
+    27,
+    131,
+    238,
+    432
+   ],
+   "unlinkedClubNames": [
+    "Delta Warsaw",
+    "Legia Warsaw",
+    "Znicz Pruszków"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Robert_Lewandowski"
+   ],
+   "wiki": {
+    "title": "Robert Lewandowski",
+    "revid": 1384373740
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 148455,
+   "name": "Mohamed Salah",
+   "rank": 2,
+   "seniorClubIds": [
+    12,
+    26,
+    31,
+    430,
+    449,
+    631,
+    55378
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mohamed_Salah"
+   ],
+   "wiki": {
+    "title": "Mohamed Salah",
+    "revid": 1384687880
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 28396,
+   "name": "Edin Dzeko",
+   "rank": 6,
+   "seniorClubIds": [
+    12,
+    33,
+    36,
+    46,
+    82,
+    281,
+    430,
+    814,
+    6377
+   ],
+   "unlinkedClubNames": [
+    "FK Željezničar Sarajevo"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Edin_Džeko"
+   ],
+   "wiki": {
+    "title": "Edin Džeko",
+    "revid": 1384548460
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 88755,
+   "name": "Kevin De Bruyne",
+   "rank": 9,
+   "seniorClubIds": [
+    82,
+    86,
+    281,
+    631,
+    1184,
+    6195,
+    15795
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kevin_De_Bruyne"
+   ],
+   "wiki": {
+    "title": "Kevin De Bruyne",
+    "revid": 1384494052
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 40433,
+   "name": "Alexis Sánchez",
+   "rank": 10,
+   "seniorClubIds": [
+    11,
+    46,
+    131,
+    209,
+    244,
+    368,
+    410,
+    985,
+    4078,
+    1000002433
+   ],
+   "unlinkedClubNames": [
+    "C.D. Cobreloa"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Alexis_Sánchez"
+   ],
+   "wiki": {
+    "title": "Alexis Sánchez",
+    "revid": 1384754988
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 96341,
+   "name": "Romelu Lukaku",
+   "rank": 13,
+   "seniorClubIds": [
+    12,
+    29,
+    36,
+    46,
+    58,
+    631,
+    984,
+    985,
+    6195,
+    15795
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Romelu_Lukaku"
+   ],
+   "wiki": {
+    "title": "Romelu Lukaku",
+    "revid": 1384495677
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 82442,
+   "name": "Olivier Giroud",
+   "rank": 14,
+   "seniorClubIds": [
+    5,
+    11,
+    631,
+    969,
+    1082,
+    1290,
+    2580,
+    3161,
+    51828
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Olivier_Giroud"
+   ],
+   "wiki": {
+    "title": "Olivier Giroud",
+    "revid": 1384507893
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 44352,
+   "name": "Luis Suárez",
+   "rank": 15,
+   "seniorClubIds": [
+    13,
+    31,
+    131,
+    202,
+    210,
+    610,
+    42814,
+    69261,
+    1000000866
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Luis_Suárez_(Uruguayan_footballer)"
+   ],
+   "wiki": {
+    "title": "Luis Suárez (Uruguayan footballer)",
+    "revid": 1384601146
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 128223,
+   "name": "Álvaro Morata",
+   "rank": 16,
+   "seniorClubIds": [
+    5,
+    13,
+    141,
+    418,
+    506,
+    631,
+    1047,
+    1244
+   ],
+   "unlinkedClubNames": [
+    "Real Madrid",
+    "Real Madrid Castilla"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Álvaro_Morata"
+   ],
+   "wiki": {
+    "title": "Álvaro Morata",
+    "revid": 1384580711
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 32467,
+   "name": "Ivan Rakitic",
+   "rank": 17,
+   "seniorClubIds": [
+    26,
+    33,
+    131,
+    368,
+    447,
+    9840
+   ],
+   "unlinkedClubNames": [
+    "FC Basel"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ivan_Rakitić"
+   ],
+   "wiki": {
+    "title": "Ivan Rakitić",
+    "revid": 1382915653
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 134425,
+   "name": "Raheem Sterling",
+   "rank": 18,
+   "seniorClubIds": [
+    11,
+    31,
+    234,
+    281,
+    631
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Raheem_Sterling"
+   ],
+   "wiki": {
+    "title": "Raheem Sterling",
+    "revid": 1383883292
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 36139,
+   "name": "Dušan Tadić",
+   "rank": 20,
+   "seniorClubIds": [
+    36,
+    180,
+    202,
+    317,
+    448,
+    467,
+    610,
+    1000000161
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Dušan_Tadić"
+   ],
+   "wiki": {
+    "title": "Dušan Tadić",
+    "revid": 1384903974
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 58864,
+   "name": "Pierre-Emerick Aubameyang",
+   "rank": 22,
+   "seniorClubIds": [
+    5,
+    11,
+    16,
+    131,
+    162,
+    244,
+    618,
+    631,
+    897,
+    1082,
+    2969,
+    26069,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "AS Saint-Étienne",
+    "Saint-Étienne"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Pierre-Emerick_Aubameyang"
+   ],
+   "wiki": {
+    "title": "Pierre-Emerick Aubameyang",
+    "revid": 1384941987
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 53622,
+   "name": "İlkay Gündoğan",
+   "rank": 27,
+   "seniorClubIds": [
+    16,
+    131,
+    141,
+    281
+   ],
+   "unlinkedClubNames": [
+    "1. FC Nürnberg",
+    "Borussia Dortmund",
+    "VfL Bochum"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/İlkay_Gündoğan"
+   ],
+   "wiki": {
+    "title": "İlkay Gündoğan",
+    "revid": 1383826490
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 37666,
+   "name": "Arturo Vidal",
+   "rank": 29,
+   "seniorClubIds": [
+    15,
+    27,
+    46,
+    131,
+    506,
+    614,
+    679,
+    1000000679,
+    1000002433
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Arturo_Vidal"
+   ],
+   "wiki": {
+    "title": "Arturo Vidal",
+    "revid": 1385016737
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 91970,
+   "name": "Juan Cuadrado",
+   "rank": 30,
+   "seniorClubIds": [
+    46,
+    410,
+    430,
+    506,
+    631,
+    800,
+    1005,
+    4172,
+    10093
+   ],
+   "unlinkedClubNames": [
+    "Millonarios F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Juan_Cuadrado"
+   ],
+   "wiki": {
+    "title": "Juan Cuadrado",
+    "revid": 1384915173
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 59016,
+   "name": "David Alaba",
+   "rank": 41,
+   "seniorClubIds": [
+    27,
+    410,
+    418,
+    533
+   ],
+   "unlinkedClubNames": [
+    "Austria Wien",
+    "Bayern Munich",
+    "FC Bayern Munich",
+    "FK Austria Wien"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/David_Alaba"
+   ],
+   "wiki": {
+    "title": "David Alaba",
+    "revid": 1384587853
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 200512,
+   "name": "Sadio Mané",
+   "rank": 46,
+   "seniorClubIds": [
+    27,
+    31,
+    180,
+    347,
+    409,
+    18544
+   ],
+   "unlinkedClubNames": [
+    "FC Metz#Youth academy|Metz"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Sadio_Mané"
+   ],
+   "wiki": {
+    "title": "Sadio Mané",
+    "revid": 1384616552
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 192565,
+   "name": "Leroy Sané",
+   "rank": 50,
+   "seniorClubIds": [
+    27,
+    33,
+    141,
+    281
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Leroy_Sané"
+   ],
+   "wiki": {
+    "title": "Leroy Sané",
+    "revid": 1384900882
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 111455,
+   "name": "Granit Xhaka",
+   "rank": 52,
+   "seniorClubIds": [
+    11,
+    15,
+    18,
+    26,
+    289
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Granit_Xhaka"
+   ],
+   "wiki": {
+    "title": "Granit Xhaka",
+    "revid": 1384594804
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 29241,
+   "name": "Thiago Silva",
+   "rank": 60,
+   "seniorClubIds": [
+    5,
+    121,
+    583,
+    631,
+    720,
+    2462,
+    10492,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "FC Porto",
+    "Pedrabranca Futebol Clube",
+    "Porto"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Thiago_Silva"
+   ],
+   "wiki": {
+    "title": "Thiago Silva",
+    "revid": 1384619655
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 12282,
+   "name": "Daley Blind",
+   "rank": 61,
+   "seniorClubIds": [
+    27,
+    202,
+    610,
+    985,
+    12321
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Daley_Blind"
+   ],
+   "wiki": {
+    "title": "Daley Blind",
+    "revid": 1383818764
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 61651,
+   "name": "Jordan Henderson",
+   "rank": 62,
+   "seniorClubIds": [
+    31,
+    289,
+    610,
+    631,
+    990,
+    1148,
+    7732
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jordan_Henderson"
+   ],
+   "wiki": {
+    "title": "Jordan Henderson",
+    "revid": 1384507092
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 105521,
+   "name": "Ciro Immobile",
+   "rank": 63,
+   "seniorClubIds": [
+    16,
+    114,
+    252,
+    368,
+    398,
+    416,
+    506,
+    1025,
+    1387,
+    2921,
+    4333,
+    10004
+   ],
+   "unlinkedClubNames": [
+    "Sorrento Calcio"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ciro_Immobile"
+   ],
+   "wiki": {
+    "title": "Ciro Immobile",
+    "revid": 1383865615
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 95424,
+   "name": "Kyle Walker",
+   "rank": 64,
+   "seniorClubIds": [
+    5,
+    148,
+    281,
+    350,
+    405,
+    1039,
+    1132,
+    1302
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kyle_Walker"
+   ],
+   "wiki": {
+    "title": "Kyle Walker",
+    "revid": 1384718074
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 72522,
+   "name": "Luuk de Jong",
+   "rank": 69,
+   "seniorClubIds": [
+    18,
+    131,
+    317,
+    368,
+    383,
+    642,
+    720,
+    762,
+    6105
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Luuk_de_Jong"
+   ],
+   "wiki": {
+    "title": "Luuk de Jong",
+    "revid": 1385054551
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 26485,
+   "name": "Jérôme Boateng",
+   "rank": 70,
+   "seniorClubIds": [
+    27,
+    41,
+    44,
+    281,
+    380,
+    413,
+    1041
+   ],
+   "unlinkedClubNames": [
+    "Hertha BSC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jérôme_Boateng"
+   ],
+   "wiki": {
+    "title": "Jérôme Boateng",
+    "revid": 1384438970
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 234803,
+   "name": "Andrew Robertson",
+   "rank": 72,
+   "seniorClubIds": [
+    31,
+    148,
+    1519,
+    3008
+   ],
+   "unlinkedClubNames": [
+    "Queen's Park F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Andy_Robertson"
+   ],
+   "wiki": {
+    "title": "Andy Robertson",
+    "revid": 1383115116
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 153084,
+   "name": "Leon Goretzka",
+   "rank": 85,
+   "seniorClubIds": [
+    27,
+    33,
+    80,
+    405
+   ],
+   "unlinkedClubNames": [
+    "FC Schalke 04",
+    "Schalke 04"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Leon_Goretzka"
+   ],
+   "wiki": {
+    "title": "Leon Goretzka",
+    "revid": 1384835054
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 182913,
+   "name": "Adrien Rabiot",
+   "rank": 88,
+   "seniorClubIds": [
+    5,
+    244,
+    415,
+    506,
+    583,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "Paris Saint-Germain",
+    "Paris Saint-Germain Academy",
+    "Toulouse",
+    "Toulouse FC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Adrien_Rabiot"
+   ],
+   "wiki": {
+    "title": "Adrien Rabiot",
+    "revid": 1384510148
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 57500,
+   "name": "César Azpilicueta",
+   "rank": 92,
+   "seniorClubIds": [
+    13,
+    244,
+    331,
+    368,
+    631,
+    8516
+   ],
+   "unlinkedClubNames": [
+    "CA Osasuna",
+    "Osasuna"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/César_Azpilicueta"
+   ],
+   "wiki": {
+    "title": "César Azpilicueta",
+    "revid": 1385020437
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 88103,
+   "name": "James Rodríguez",
+   "rank": 93,
+   "seniorClubIds": [
+    27,
+    29,
+    162,
+    367,
+    418,
+    585,
+    683,
+    720,
+    830,
+    3229,
+    4941,
+    7136,
+    56089,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "Atlético Nacional"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/James_Rodríguez"
+   ],
+   "wiki": {
+    "title": "James Rodríguez",
+    "revid": 1385040780
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 217111,
+   "name": "Hakim Ziyech",
+   "rank": 97,
+   "seniorClubIds": [
+    141,
+    306,
+    317,
+    610,
+    631,
+    9030,
+    26091,
+    1000006603
+   ],
+   "unlinkedClubNames": [
+    "Heerenveen",
+    "SC Heerenveen"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Hakim_Ziyech"
+   ],
+   "wiki": {
+    "title": "Hakim Ziyech",
+    "revid": 1385035243
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 61253,
+   "name": "José Callejón",
+   "rank": 101,
+   "seniorClubIds": [
+    418,
+    430,
+    714,
+    6195,
+    12361,
+    15795,
+    16795
+   ],
+   "unlinkedClubNames": [
+    "Real Madrid",
+    "Real Madrid Castilla"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/José_Callejón"
+   ],
+   "wiki": {
+    "title": "José Callejón",
+    "revid": 1382858023
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 102017,
+   "name": "Jorginho",
+   "rank": 118,
+   "seniorClubIds": [
+    11,
+    276,
+    614,
+    631,
+    6195,
+    15795
+   ],
+   "unlinkedClubNames": [
+    "AC Sambonifacese"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jorginho_(footballer,_born_December_1991)"
+   ],
+   "wiki": {
+    "title": "Jorginho (footballer, born December 1991)",
+    "revid": 1385044662
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 255901,
+   "name": "Rodrigo De Paul",
+   "rank": 121,
+   "seniorClubIds": [
+    13,
+    410,
+    1049,
+    1444,
+    42814,
+    69261
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Rodrigo_De_Paul"
+   ],
+   "wiki": {
+    "title": "Rodrigo De Paul",
+    "revid": 1384931402
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 161011,
+   "name": "Filip Kostić",
+   "rank": 123,
+   "seniorClubIds": [
+    24,
+    36,
+    41,
+    79,
+    202,
+    383,
+    506,
+    4645
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Filip_Kostić"
+   ],
+   "wiki": {
+    "title": "Filip Kostić",
+    "revid": 1384568726
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 296622,
+   "name": "Marco Asensio",
+   "rank": 127,
+   "seniorClubIds": [
+    36,
+    237,
+    405,
+    418,
+    583,
+    714,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "Mallorca",
+    "RCD Mallorca"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Marco_Asensio"
+   ],
+   "wiki": {
+    "title": "Marco Asensio",
+    "revid": 1385056269
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 182712,
+   "name": "João Cancelo",
+   "rank": 129,
+   "seniorClubIds": [
+    27,
+    46,
+    131,
+    281,
+    294,
+    506,
+    1049,
+    1114
+   ],
+   "unlinkedClubNames": [
+    "Benfica",
+    "S.L. Benfica"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/João_Cancelo"
+   ],
+   "wiki": {
+    "title": "João Cancelo",
+    "revid": 1384574712
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 80444,
+   "name": "Philippe Coutinho",
+   "rank": 137,
+   "seniorClubIds": [
+    27,
+    31,
+    46,
+    131,
+    221,
+    405,
+    714,
+    978,
+    26091
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Philippe_Coutinho"
+   ],
+   "wiki": {
+    "title": "Philippe Coutinho",
+    "revid": 1384819326
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 145707,
+   "name": "Danilo",
+   "rank": 140,
+   "seniorClubIds": [
+    221,
+    281,
+    418,
+    506,
+    614,
+    720,
+    2863,
+    1000002863
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Danilo_(footballer,_born_July_1991)"
+   ],
+   "wiki": {
+    "title": "Danilo (footballer, born July 1991)",
+    "revid": 1385058875
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 148368,
+   "name": "Divock Origi",
+   "rank": 142,
+   "seniorClubIds": [
+    5,
+    1082,
+    41107
+   ],
+   "unlinkedClubNames": [
+    "AS Monaco FC",
+    "FC Metz",
+    "Fulham F.C.",
+    "Le Havre AC",
+    "Paris Saint-Germain",
+    "Paris Saint-Germain Academy"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Fodé_Ballo-Touré"
+   ],
+   "wiki": {
+    "title": "Fodé Ballo-Touré",
+    "revid": 1384593022
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 42205,
+   "name": "Yann Sommer",
+   "rank": 145,
+   "seniorClubIds": [
+    18,
+    26,
+    27,
+    46,
+    163,
+    504,
+    2282
+   ],
+   "unlinkedClubNames": [
+    "FC Basel"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Yann_Sommer"
+   ],
+   "wiki": {
+    "title": "Yann Sommer",
+    "revid": 1384445653
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 39152,
+   "name": "Radamel Falcao",
+   "rank": 161,
+   "seniorClubIds": [
+    13,
+    141,
+    162,
+    209,
+    367,
+    631,
+    720,
+    985,
+    2350,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "Lanceros Boyacá"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Radamel_Falcao"
+   ],
+   "wiki": {
+    "title": "Radamel Falcao",
+    "revid": 1385076761
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 41384,
+   "name": "Marko Arnautovic",
+   "rank": 163,
+   "seniorClubIds": [
+    46,
+    86,
+    159,
+    317,
+    379,
+    512,
+    1025,
+    27190
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Marko_Arnautović"
+   ],
+   "wiki": {
+    "title": "Marko Arnautović",
+    "revid": 1384544509
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 118022,
+   "name": "Younès Belhanda",
+   "rank": 169,
+   "seniorClubIds": [
+    33,
+    141,
+    338,
+    417,
+    969,
+    3840,
+    10775
+   ],
+   "unlinkedClubNames": [
+    "Al-Sailiya SC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Younès_Belhanda"
+   ],
+   "wiki": {
+    "title": "Younès Belhanda",
+    "revid": 1383565829
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 167799,
+   "name": "Pierre-Emile Højbjerg",
+   "rank": 171,
+   "seniorClubIds": [
+    27,
+    33,
+    148,
+    167,
+    180,
+    244
+   ],
+   "unlinkedClubNames": [
+    "Bayern Munich",
+    "FC Bayern Munich"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Pierre-Emile_Højbjerg"
+   ],
+   "wiki": {
+    "title": "Pierre-Emile Højbjerg",
+    "revid": 1384929577
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 179184,
+   "name": "Michy Batshuayi",
+   "rank": 174,
+   "seniorClubIds": [
+    16,
+    24,
+    36,
+    114,
+    141,
+    244,
+    631,
+    873,
+    1049,
+    3057,
+    24394,
+    1000040039
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Michy_Batshuayi"
+   ],
+   "wiki": {
+    "title": "Michy Batshuayi",
+    "revid": 1382181963
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 126664,
+   "name": "Lucas Digne",
+   "rank": 175,
+   "seniorClubIds": [
+    12,
+    29,
+    131,
+    405,
+    583,
+    1082,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "Lille",
+    "Lille OSC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Lucas_Digne"
+   ],
+   "wiki": {
+    "title": "Lucas Digne",
+    "revid": 1382877709
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 148928,
+   "name": "Saúl Ñíguez",
+   "rank": 178,
+   "seniorClubIds": [
+    13,
+    367,
+    368,
+    614,
+    631,
+    3679
+   ],
+   "unlinkedClubNames": [
+    "Atlético Madrid"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Saúl_(footballer,_born_1994)"
+   ],
+   "wiki": {
+    "title": "Saúl (footballer, born 1994)",
+    "revid": 1383913009
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 119228,
+   "name": "Luis Muriel",
+   "rank": 180,
+   "seniorClubIds": [
+    368,
+    410,
+    430,
+    800,
+    1005,
+    1038,
+    9961,
+    11854,
+    16795,
+    45604
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Luis_Muriel"
+   ],
+   "wiki": {
+    "title": "Luis Muriel",
+    "revid": 1384920118
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 45660,
+   "name": "Eric-Maxim Choupo-Moting",
+   "rank": 181,
+   "seniorClubIds": [
+    27,
+    33,
+    39,
+    41,
+    512,
+    583,
+    623,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "1. FC Nürnberg",
+    "1. FSV Mainz 05",
+    "Hamburger SV",
+    "Mainz 05"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Eric_Maxim_Choupo-Moting"
+   ],
+   "wiki": {
+    "title": "Eric Maxim Choupo-Moting",
+    "revid": 1383821590
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 307058,
+   "name": "Mehdi Taremi",
+   "rank": 184,
+   "seniorClubIds": [
+    46,
+    683,
+    720,
+    2425,
+    6297
+   ],
+   "unlinkedClubNames": [
+    "Al Wasl F.C.",
+    "F.C. Iranjavan Bushehr",
+    "Persepolis F.C.",
+    "Shahin Bushehr F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mehdi_Taremi"
+   ],
+   "wiki": {
+    "title": "Mehdi Taremi",
+    "revid": 1383559160
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 64339,
+   "name": "Pizzi",
+   "rank": 185,
+   "seniorClubIds": [
+    13,
+    294,
+    714,
+    897,
+    1075,
+    1465,
+    2995,
+    6890,
+    10140,
+    1000002784
+   ],
+   "unlinkedClubNames": [
+    "Al Wahda FC",
+    "G.D. Bragança",
+    "G.D. Ribeirão"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Pizzi_(Portuguese_footballer)"
+   ],
+   "wiki": {
+    "title": "Pizzi (Portuguese footballer)",
+    "revid": 1384819444
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 230784,
+   "name": "Thomas Partey",
+   "rank": 187,
+   "seniorClubIds": [
+    11,
+    13,
+    237,
+    1050,
+    3302,
+    3679,
+    9840
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Thomas_Partey"
+   ],
+   "wiki": {
+    "title": "Thomas Partey",
+    "revid": 1383418099
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 46001,
+   "name": "Moussa Sissoko",
+   "rank": 188,
+   "seniorClubIds": [
+    148,
+    265,
+    415,
+    762,
+    995,
+    1010
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Moussa_Sissoko"
+   ],
+   "wiki": {
+    "title": "Moussa Sissoko",
+    "revid": 1384862934
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 433049,
+   "name": "Youssef En-Nesyri",
+   "rank": 190,
+   "seniorClubIds": [
+    36,
+    368,
+    1084,
+    1244,
+    8023
+   ],
+   "unlinkedClubNames": [
+    "Atlético Malagueño",
+    "Málaga"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Youssef_En-Nesyri"
+   ],
+   "wiki": {
+    "title": "Youssef En-Nesyri",
+    "revid": 1383846481
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 74294,
+   "name": "Nemanja Gudelj",
+   "rank": 191,
+   "seniorClubIds": [
+    132,
+    336,
+    368,
+    610,
+    1090,
+    3187,
+    3709,
+    10948
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Nemanja_Gudelj"
+   ],
+   "wiki": {
+    "title": "Nemanja Gudelj",
+    "revid": 1385068366
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 144028,
+   "name": "Leandro Trossard",
+   "rank": 194,
+   "seniorClubIds": [
+    11,
+    114,
+    968,
+    1184,
+    1237,
+    2727,
+    5026
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Leandro_Trossard"
+   ],
+   "wiki": {
+    "title": "Leandro Trossard",
+    "revid": 1385078603
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 198008,
+   "name": "André Silva",
+   "rank": 196,
+   "seniorClubIds": [
+    5,
+    24,
+    86,
+    368,
+    681,
+    720,
+    1531,
+    23826
+   ],
+   "unlinkedClubNames": [
+    "FC Porto",
+    "Porto"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/André_Silva_(footballer,_born_1995)"
+   ],
+   "wiki": {
+    "title": "André Silva (footballer, born 1995)",
+    "revid": 1384543847
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 480692,
+   "name": "Luis Díaz",
+   "rank": 214,
+   "seniorClubIds": [
+    27,
+    31,
+    720,
+    11854
+   ],
+   "unlinkedClubNames": [
+    "Barranquilla F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Luis_Díaz_(footballer,_born_1997)"
+   ],
+   "wiki": {
+    "title": "Luis Díaz (footballer, born 1997)",
+    "revid": 1385053795
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 15452,
+   "name": "Raúl Albiol",
+   "rank": 215,
+   "seniorClubIds": [
+    418,
+    1049,
+    1050,
+    3709,
+    4172,
+    6195,
+    15795,
+    1000016200
+   ],
+   "unlinkedClubNames": [
+    "Valencia",
+    "Valencia CF Mestalla"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Raúl_Albiol"
+   ],
+   "wiki": {
+    "title": "Raúl Albiol",
+    "revid": 1384443129
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 131996,
+   "name": "Bertrand Traoré",
+   "rank": 222,
+   "seniorClubIds": [
+    289,
+    405,
+    499,
+    610,
+    631,
+    1041,
+    1050,
+    6890
+   ],
+   "unlinkedClubNames": [
+    "Wolverhampton Wanderers F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Bertrand_Traoré"
+   ],
+   "wiki": {
+    "title": "Bertrand Traoré",
+    "revid": 1382241682
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 81999,
+   "name": "Joselu",
+   "rank": 225,
+   "seniorClubIds": [
+    24,
+    42,
+    418,
+    512,
+    533,
+    714,
+    762,
+    897,
+    940,
+    1108,
+    6297,
+    8733
+   ],
+   "unlinkedClubNames": [
+    "Al-Sailiya SC",
+    "Celta",
+    "Celta de Vigo",
+    "Real Madrid",
+    "Real Madrid Castilla"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Joselu"
+   ],
+   "wiki": {
+    "title": "Joselu",
+    "revid": 1384071318
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 79422,
+   "name": "Keylor Navas",
+   "rank": 233,
+   "seniorClubIds": [
+    418,
+    583,
+    703,
+    1286,
+    1532,
+    3368,
+    7633,
+    24971,
+    1000000583,
+    1000004720
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Keylor_Navas"
+   ],
+   "wiki": {
+    "title": "Keylor Navas",
+    "revid": 1384753584
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 125165,
+   "name": "Jesús Corona",
+   "rank": 240,
+   "seniorClubIds": [
+    317,
+    368,
+    720,
+    2407
+   ],
+   "unlinkedClubNames": [
+    "Jong FC Twente",
+    "Jong Twente"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jesús_Manuel_Corona"
+   ],
+   "wiki": {
+    "title": "Jesús Manuel Corona",
+    "revid": 1384913421
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 182877,
+   "name": "Anthony Martial",
+   "rank": 245,
+   "seniorClubIds": [
+    162,
+    368,
+    985,
+    1041,
+    2407,
+    2441,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "AS Monaco FC#Reserves|Monaco",
+    "Lyon",
+    "Olympique Lyonnais Reserves and Academy"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Anthony_Martial"
+   ],
+   "wiki": {
+    "title": "Anthony Martial",
+    "revid": 1381691053
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 215118,
+   "name": "Calum Chambers",
+   "rank": 267,
+   "seniorClubIds": [
+    11,
+    180,
+    405,
+    603,
+    641,
+    931,
+    12019
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Calum_Chambers"
+   ],
+   "wiki": {
+    "title": "Calum Chambers",
+    "revid": 1382821293
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 143812,
+   "name": "Matías Vecino",
+   "rank": 270,
+   "seniorClubIds": [
+    46,
+    398,
+    430,
+    749,
+    940,
+    1390,
+    1000000866
+   ],
+   "unlinkedClubNames": [
+    "Central Español"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Matías_Vecino"
+   ],
+   "wiki": {
+    "title": "Matías Vecino",
+    "revid": 1385060184
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 44068,
+   "name": "Juan Mata",
+   "rank": 271,
+   "seniorClubIds": [
+    141,
+    631,
+    985,
+    1049,
+    3958,
+    7006,
+    36100
+   ],
+   "unlinkedClubNames": [
+    "Real Madrid Castilla"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Juan_Mata"
+   ],
+   "wiki": {
+    "title": "Juan Mata",
+    "revid": 1383829543
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 166237,
+   "name": "Leandro Paredes",
+   "rank": 286,
+   "seniorClubIds": [
+    12,
+    189,
+    506,
+    583,
+    749,
+    862,
+    964,
+    1000000583,
+    1000000964
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Leandro_Paredes"
+   ],
+   "wiki": {
+    "title": "Leandro Paredes",
+    "revid": 1385107024
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 67063,
+   "name": "Danny Welbeck",
+   "rank": 287,
+   "seniorClubIds": [
+    11,
+    289,
+    466,
+    631,
+    985,
+    1010,
+    1237
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Danny_Welbeck"
+   ],
+   "wiki": {
+    "title": "Danny Welbeck",
+    "revid": 1384512424
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 130765,
+   "name": "Stuart Armstrong",
+   "rank": 288,
+   "seniorClubIds": [
+    180,
+    370,
+    371,
+    1035,
+    1519,
+    6321,
+    1000006321
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Stuart_Armstrong"
+   ],
+   "wiki": {
+    "title": "Stuart Armstrong",
+    "revid": 1384485772
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 174915,
+   "name": "Islam Slimani",
+   "rank": 292,
+   "seniorClubIds": [
+    36,
+    58,
+    162,
+    336,
+    354,
+    762,
+    776,
+    968,
+    1003,
+    1041,
+    3911,
+    7769,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "CR Belouizdad",
+    "JSM Chéraga",
+    "Sporting CP"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Islam_Slimani"
+   ],
+   "wiki": {
+    "title": "Islam Slimani",
+    "revid": 1385038678
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 237662,
+   "name": "Breel Embolo",
+   "rank": 297,
+   "seniorClubIds": [
+    18,
+    26,
+    33,
+    162,
+    273,
+    51663,
+    1000000162
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Breel_Embolo"
+   ],
+   "wiki": {
+    "title": "Breel Embolo",
+    "revid": 1384584604
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 46552,
+   "name": "Kamil Glik",
+   "rank": 301,
+   "seniorClubIds": [
+    162,
+    332,
+    416,
+    458,
+    4171,
+    5689,
+    6112,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "Cracovia",
+    "KS Cracovia",
+    "Real Madrid C",
+    "Silesia Lubomia (loan)",
+    "UD Horadada"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kamil_Glik"
+   ],
+   "wiki": {
+    "title": "Kamil Glik",
+    "revid": 1384915968
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 75942,
+   "name": "Tomás Rincón",
+   "rank": 319,
+   "seniorClubIds": [
+    41,
+    221,
+    252,
+    416,
+    506,
+    1038,
+    10907
+   ],
+   "unlinkedClubNames": [
+    "Deportivo Táchira F.C.",
+    "Maracaibo",
+    "Unión Atlético Maracaibo"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tomás_Rincón"
+   ],
+   "wiki": {
+    "title": "Tomás Rincón",
+    "revid": 1383396794
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 122043,
+   "name": "Héctor Herrera",
+   "rank": 320,
+   "seniorClubIds": [
+    13,
+    720,
+    1804,
+    4035,
+    9168
+   ],
+   "unlinkedClubNames": [
+    "FC Porto",
+    "Porto"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Héctor_Herrera"
+   ],
+   "wiki": {
+    "title": "Héctor Herrera",
+    "revid": 1382737420
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 80197,
+   "name": "Salomón Rondón",
+   "rank": 321,
+   "seniorClubIds": [
+    29,
+    209,
+    472,
+    762,
+    964,
+    984,
+    1084,
+    2410,
+    2497,
+    2698,
+    4035,
+    33304,
+    1000000964
+   ],
+   "unlinkedClubNames": [
+    "Aragua FC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Salomón_Rondón"
+   ],
+   "wiki": {
+    "title": "Salomón Rondón",
+    "revid": 1381524827
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 167727,
+   "name": "Andrea Belotti",
+   "rank": 339,
+   "seniorClubIds": [
+    12,
+    294,
+    416,
+    430,
+    458,
+    1047,
+    1390,
+    4541
+   ],
+   "unlinkedClubNames": [
+    "Modena FC 2018"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Andrea_Belotti"
+   ],
+   "wiki": {
+    "title": "Andrea Belotti",
+    "revid": 1383814655
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 181375,
+   "name": "Sébastien Haller",
+   "rank": 344,
+   "seniorClubIds": [
+    16,
+    24,
+    200,
+    290,
+    379,
+    610,
+    1244,
+    2697
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Sébastien_Haller"
+   ],
+   "wiki": {
+    "title": "Sébastien Haller",
+    "revid": 1384822761
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 225083,
+   "name": "N'Golo Kanté",
+   "rank": 345,
+   "seniorClubIds": [
+    36,
+    631,
+    1003,
+    1162,
+    7042,
+    8023
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/N'Golo_Kanté"
+   ],
+   "wiki": {
+    "title": "N'Golo Kanté",
+    "revid": 1384498838
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 45403,
+   "name": "André Ayew",
+   "rank": 346,
+   "seniorClubIds": [
+    36,
+    132,
+    244,
+    379,
+    656,
+    703,
+    738,
+    1158,
+    2288,
+    1000002288
+   ],
+   "unlinkedClubNames": [
+    "AC Arles-Avignon"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/André_Ayew"
+   ],
+   "wiki": {
+    "title": "André Ayew",
+    "revid": 1384581309
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 143424,
+   "name": "Alex Oxlade-Chamberlain",
+   "rank": 351,
+   "seniorClubIds": [
+    11,
+    31,
+    114,
+    180,
+    371
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Alex_Oxlade-Chamberlain"
+   ],
+   "wiki": {
+    "title": "Alex Oxlade-Chamberlain",
+    "revid": 1384534346
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 14086,
+   "name": "Ashley Young",
+   "rank": 352,
+   "seniorClubIds": [
+    29,
+    46,
+    405,
+    677,
+    985,
+    1010
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ashley_Young"
+   ],
+   "wiki": {
+    "title": "Ashley Young",
+    "revid": 1384418471
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 339808,
+   "name": "Theo Hernández",
+   "rank": 356,
+   "seniorClubIds": [
+    5,
+    13,
+    418,
+    681,
+    1108,
+    1114
+   ],
+   "unlinkedClubNames": [
+    "Atlético Madrid"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Théo_Hernandez"
+   ],
+   "wiki": {
+    "title": "Théo Hernandez",
+    "revid": 1385091002
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 225122,
+   "name": "Gonçalo Guedes",
+   "rank": 360,
+   "seniorClubIds": [
+    294,
+    543,
+    583,
+    681,
+    1049,
+    1050,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "Benfica",
+    "S.L. Benfica"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Gonçalo_Guedes"
+   ],
+   "wiki": {
+    "title": "Gonçalo Guedes",
+    "revid": 1384520399
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 274862,
+   "name": "Moses Simon",
+   "rank": 365,
+   "seniorClubIds": [
+    157,
+    995,
+    3368,
+    7918,
+    10004
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Moses_Simon"
+   ],
+   "wiki": {
+    "title": "Moses Simon",
+    "revid": 1382730272
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 401923,
+   "name": "Victor Osimhen",
+   "rank": 383,
+   "seniorClubIds": [
+    82,
+    141,
+    172,
+    1082,
+    6195,
+    15795,
+    1000000172
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Victor_Osimhen"
+   ],
+   "wiki": {
+    "title": "Victor Osimhen",
+    "revid": 1383845575
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 462250,
+   "name": "João Félix",
+   "rank": 389,
+   "seniorClubIds": [
+    5,
+    13,
+    131,
+    294,
+    631,
+    18544
+   ],
+   "unlinkedClubNames": [
+    "Benfica",
+    "S.L. Benfica"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/João_Félix"
+   ],
+   "wiki": {
+    "title": "João Félix",
+    "revid": 1384801198
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 39333,
+   "name": "Caner Erkin",
+   "rank": 397,
+   "seniorClubIds": [
+    36,
+    46,
+    114,
+    141,
+    1267,
+    2410,
+    2463,
+    6646,
+    6890,
+    7160
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Caner_Erkin"
+   ],
+   "wiki": {
+    "title": "Caner Erkin",
+    "revid": 1385019727
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 213268,
+   "name": "Alireza Jahanbakhsh",
+   "rank": 407,
+   "seniorClubIds": [
+    234,
+    306,
+    467,
+    798,
+    1090,
+    1237,
+    9010
+   ],
+   "unlinkedClubNames": [
+    "Damash Tehran F.C.",
+    "S.C. Damash Gilan"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Alireza_Jahanbakhsh"
+   ],
+   "wiki": {
+    "title": "Alireza Jahanbakhsh",
+    "revid": 1384580587
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 316889,
+   "name": "Hirving Lozano",
+   "rank": 408,
+   "seniorClubIds": [
+    383,
+    4035,
+    6195,
+    15795,
+    114977,
+    1000001061
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Hirving_Lozano"
+   ],
+   "wiki": {
+    "title": "Hirving Lozano",
+    "revid": 1383741369
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 170934,
+   "name": "Mario Lemina",
+   "rank": 437,
+   "seniorClubIds": [
+    141,
+    180,
+    244,
+    417,
+    506,
+    543,
+    931,
+    1158
+   ],
+   "unlinkedClubNames": [
+    "FC Lorient",
+    "Lorient",
+    "Marseille",
+    "Olympique de Marseille"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mario_Lemina"
+   ],
+   "wiki": {
+    "title": "Mario Lemina",
+    "revid": 1384332877
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 221958,
+   "name": "Roman Yaremchuk",
+   "rank": 443,
+   "seniorClubIds": [
+    157,
+    294,
+    338,
+    683,
+    1041,
+    1049,
+    2282,
+    18303
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Roman_Yaremchuk"
+   ],
+   "wiki": {
+    "title": "Roman Yaremchuk",
+    "revid": 1383046763
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 182201,
+   "name": "Ally Samatta",
+   "rank": 447,
+   "seniorClubIds": [
+    36,
+    405,
+    738,
+    1091,
+    1096,
+    1184,
+    4131
+   ],
+   "unlinkedClubNames": [
+    "TP Mazembe"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mbwana_Samatta"
+   ],
+   "wiki": {
+    "title": "Mbwana Samatta",
+    "revid": 1384610020
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 177476,
+   "name": "Nathan Aké",
+   "rank": 449,
+   "seniorClubIds": [
+    36,
+    281,
+    631,
+    989,
+    1010,
+    1032
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Nathan_Aké"
+   ],
+   "wiki": {
+    "title": "Nathan Aké",
+    "revid": 1385067924
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 216603,
+   "name": "İrfan Can Kahveci",
+   "rank": 535,
+   "seniorClubIds": [
+    36,
+    820,
+    6890,
+    10483,
+    10484
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/İrfan_Can_Kahveci"
+   ],
+   "wiki": {
+    "title": "İrfan Can Kahveci",
+    "revid": 1384508422
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 273132,
+   "name": "Robin Gosens",
+   "rank": 540,
+   "seniorClubIds": [
+    33,
+    46,
+    89,
+    430,
+    800,
+    1304,
+    1455
+   ],
+   "unlinkedClubNames": [
+    "SBV Vitesse"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Robin_Gosens"
+   ],
+   "wiki": {
+    "title": "Robin Gosens",
+    "revid": 1385135371
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 294808,
+   "name": "Franck Kessié",
+   "rank": 545,
+   "seniorClubIds": [
+    5,
+    131,
+    800,
+    1429,
+    18487
+   ],
+   "unlinkedClubNames": [
+    "Stella Club d'Adjamé"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Franck_Kessié"
+   ],
+   "wiki": {
+    "title": "Franck Kessié",
+    "revid": 1384511592
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 297070,
+   "name": "Hamari Traoré",
+   "rank": 549,
+   "seniorClubIds": [
+    204,
+    273,
+    681,
+    1421,
+    10004
+   ],
+   "unlinkedClubNames": [
+    "Paris FC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Hamari_Traoré"
+   ],
+   "wiki": {
+    "title": "Hamari Traoré",
+    "revid": 1382774222
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 184892,
+   "name": "Florian Thauvin",
+   "rank": 551,
+   "seniorClubIds": [
+    244,
+    410,
+    595,
+    762,
+    826,
+    1082,
+    7055
+   ],
+   "unlinkedClubNames": [
+    "Grenoble Foot 38"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Florian_Thauvin"
+   ],
+   "wiki": {
+    "title": "Florian Thauvin",
+    "revid": 1384561836
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 214775,
+   "name": "Óliver Torres",
+   "rank": 616,
+   "seniorClubIds": [
+    13,
+    368,
+    720,
+    1050,
+    2407,
+    3679
+   ],
+   "unlinkedClubNames": [
+    "Atlético Madrid"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Óliver_Torres"
+   ],
+   "wiki": {
+    "title": "Óliver Torres",
+    "revid": 1381785676
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 197300,
+   "name": "Federico Bernardeschi",
+   "rank": 627,
+   "seniorClubIds": [
+    430,
+    506,
+    1025,
+    4083,
+    11141,
+    1000011141
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Federico_Bernardeschi"
+   ],
+   "wiki": {
+    "title": "Federico Bernardeschi",
+    "revid": 1384985595
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 349066,
+   "name": "Alexander Isak",
+   "rank": 631,
+   "seniorClubIds": [
+    16,
+    31,
+    272,
+    681,
+    762
+   ],
+   "unlinkedClubNames": [
+    "Borussia Dortmund",
+    "Willem",
+    "Willem II (football club)"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Alexander_Isak"
+   ],
+   "wiki": {
+    "title": "Alexander Isak",
+    "revid": 1384941626
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 131102,
+   "name": "Jeison Murillo",
+   "rank": 646,
+   "seniorClubIds": [
+    46,
+    131,
+    472,
+    940,
+    1038,
+    1049,
+    2687,
+    10775,
+    16795
+   ],
+   "unlinkedClubNames": [
+    "Club Recreativo Granada",
+    "Granada",
+    "Udinese Calcio"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jeison_Murillo"
+   ],
+   "wiki": {
+    "title": "Jeison Murillo",
+    "revid": 1384210892
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 96533,
+   "name": "Youssef El Arabi",
+   "rank": 653,
+   "seniorClubIds": [
+    683,
+    995,
+    1114,
+    1162,
+    16795,
+    26091,
+    1000002784
+   ],
+   "unlinkedClubNames": [
+    "Caen",
+    "Marko 1927 F.C.",
+    "Stade Malherbe Caen"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Youssef_El-Arabi"
+   ],
+   "wiki": {
+    "title": "Youssef El-Arabi",
+    "revid": 1383419957
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 300716,
+   "name": "Kieran Tierney",
+   "rank": 657,
+   "seniorClubIds": [
+    11,
+    371,
+    681
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kieran_Tierney"
+   ],
+   "wiki": {
+    "title": "Kieran Tierney",
+    "revid": 1384533565
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 131248,
+   "name": "Joel Campbell",
+   "rank": 756,
+   "seniorClubIds": [
+    11,
+    150,
+    336,
+    683,
+    1050,
+    1158,
+    2407,
+    4941,
+    8970,
+    15172,
+    1000004720,
+    1000006478,
+    1000015172
+   ],
+   "unlinkedClubNames": [
+    "FC Lorient#Reserve squad|Lorient II (loan)",
+    "Inter de San Carlos",
+    "Puntarenas F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Joel_Campbell"
+   ],
+   "wiki": {
+    "title": "Joel Campbell",
+    "revid": 1385043383
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 10471,
+   "name": "Luiz Gustavo",
+   "rank": 759,
+   "seniorClubIds": [
+    27,
+    36,
+    82,
+    244,
+    533,
+    585,
+    679,
+    11449,
+    18544,
+    1000000679
+   ],
+   "unlinkedClubNames": [
+    "",
+    "Ipanema Atlético Clube",
+    "Sport Club Corinthians Alagoano"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Luiz_Gustavo"
+   ],
+   "wiki": {
+    "title": "Luiz Gustavo",
+    "revid": 1384881260
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 358504,
+   "name": "Ritsu Doan",
+   "rank": 770,
+   "seniorClubIds": [
+    10,
+    24,
+    60,
+    202,
+    383,
+    596
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ritsu_Dōan"
+   ],
+   "wiki": {
+    "title": "Ritsu Dōan",
+    "revid": 1385079305
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 79522,
+   "name": "Yuto Nagatomo",
+   "rank": 772,
+   "seniorClubIds": [
+    46,
+    141,
+    244,
+    1429,
+    6631
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Yūto_Nagatomo"
+   ],
+   "wiki": {
+    "title": "Yūto Nagatomo",
+    "revid": 1382734895
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 139396,
+   "name": "Bruma",
+   "rank": 780,
+   "seniorClubIds": [
+    36,
+    141,
+    294,
+    336,
+    383,
+    524,
+    681,
+    683,
+    1075,
+    23826
+   ],
+   "unlinkedClubNames": [
+    "Aris Thessaloniki F.C.",
+    "Sporting CP"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Bruma_(footballer)"
+   ],
+   "wiki": {
+    "title": "Bruma (footballer)",
+    "revid": 1382751437
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 128220,
+   "name": "Luis Alberto",
+   "rank": 785,
+   "seniorClubIds": [
+    31,
+    368,
+    398,
+    897,
+    1084,
+    8519,
+    26091,
+    1000008519
+   ],
+   "unlinkedClubNames": [
+    "Al-Wakrah SC",
+    "Barcelona",
+    "FC Barcelona Atlètic",
+    "Sevilla",
+    "Sevilla Atlético"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Luis_Alberto_(footballer,_born_1992)"
+   ],
+   "wiki": {
+    "title": "Luis Alberto (footballer, born 1992)",
+    "revid": 1383833765
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 145988,
+   "name": "Wilfried Zaha",
+   "rank": 786,
+   "seniorClubIds": [
+    141,
+    603,
+    873,
+    985,
+    1041,
+    12019,
+    78435
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Wilfried_Zaha"
+   ],
+   "wiki": {
+    "title": "Wilfried Zaha",
+    "revid": 1382659779
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 182904,
+   "name": "Clément Lenglet",
+   "rank": 789,
+   "seniorClubIds": [
+    13,
+    131,
+    148,
+    294,
+    368,
+    405,
+    1159
+   ],
+   "unlinkedClubNames": [
+    "AS Nancy Lorraine",
+    "Nancy"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Clément_Lenglet"
+   ],
+   "wiki": {
+    "title": "Clément Lenglet",
+    "revid": 1384900725
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 55619,
+   "name": "Nordin Amrabat",
+   "rank": 790,
+   "seniorClubIds": [
+    141,
+    200,
+    383,
+    723,
+    1010,
+    1084,
+    1244,
+    1426,
+    2441,
+    3008,
+    3205,
+    18544,
+    1000006603
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Nordin_Amrabat"
+   ],
+   "wiki": {
+    "title": "Nordin Amrabat",
+    "revid": 1383170727
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 343463,
+   "name": "Cyle Larin",
+   "rank": 793,
+   "seniorClubIds": [
+    114,
+    180,
+    234,
+    237,
+    366,
+    2282,
+    3508,
+    45604
+   ],
+   "unlinkedClubNames": [
+    "Sigma FC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Cyle_Larin"
+   ],
+   "wiki": {
+    "title": "Cyle Larin",
+    "revid": 1384901224
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 163568,
+   "name": "Alfred Gomis",
+   "rank": 906,
+   "seniorClubIds": [
+    273,
+    380,
+    416,
+    458,
+    1025,
+    1047,
+    1158,
+    1429,
+    2331,
+    2722,
+    2969,
+    4083
+   ],
+   "unlinkedClubNames": [
+    "Rennes",
+    "Stade Rennais F.C.",
+    "Vis Pesaro dal 1898"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Alfred_Gomis"
+   ],
+   "wiki": {
+    "title": "Alfred Gomis",
+    "revid": 1382761422
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 272855,
+   "name": "Paul Onuachu",
+   "rank": 913,
+   "seniorClubIds": [
+    180,
+    443,
+    449,
+    865,
+    1184
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Paul_Onuachu"
+   ],
+   "wiki": {
+    "title": "Paul Onuachu",
+    "revid": 1382587981
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 401922,
+   "name": "Samuel Chukwueze",
+   "rank": 925,
+   "seniorClubIds": [
+    5,
+    931,
+    1050
+   ],
+   "unlinkedClubNames": [
+    "Villarreal",
+    "Villarreal CF"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Samuel_Chukwueze"
+   ],
+   "wiki": {
+    "title": "Samuel Chukwueze",
+    "revid": 1385082752
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 127048,
+   "name": "Cédric Bakambu",
+   "rank": 929,
+   "seniorClubIds": [
+    20,
+    141,
+    150,
+    244,
+    683,
+    750,
+    1050,
+    3176,
+    114977
+   ],
+   "unlinkedClubNames": [
+    "Al-Nasr SC (Dubai)",
+    "FC Sochaux-Montbéliard",
+    "Sochaux"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Cédric_Bakambu"
+   ],
+   "wiki": {
+    "title": "Cédric Bakambu",
+    "revid": 1383817471
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 57071,
+   "name": "Péter Gulácsi",
+   "rank": 936,
+   "seniorClubIds": [
+    31,
+    409,
+    1050,
+    1074,
+    3008,
+    23826
+   ],
+   "unlinkedClubNames": [
+    "Hereford United F.C."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Péter_Gulácsi"
+   ],
+   "wiki": {
+    "title": "Péter Gulácsi",
+    "revid": 1385075166
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 257455,
+   "name": "João Palhinha",
+   "rank": 937,
+   "seniorClubIds": [
+    27,
+    148,
+    294,
+    336,
+    931,
+    979,
+    1075,
+    68608
+   ],
+   "unlinkedClubNames": [
+    "Sporting CP"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/João_Palhinha"
+   ],
+   "wiki": {
+    "title": "João Palhinha",
+    "revid": 1384945100
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 136610,
+   "name": "Papy Djilobodji",
+   "rank": 1101,
+   "seniorClubIds": [
+    86,
+    289,
+    518,
+    631,
+    855,
+    995,
+    2832,
+    2969,
+    6646,
+    10484
+   ],
+   "unlinkedClubNames": [
+    "ASC Saloum",
+    "US Sénart-Moissy"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Papy_Djilobodji"
+   ],
+   "wiki": {
+    "title": "Papy Djilobodji",
+    "revid": 1382250659
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 221025,
+   "name": "André Gomes",
+   "rank": 1105,
+   "seniorClubIds": [
+    29,
+    131,
+    294,
+    813,
+    1049,
+    1082
+   ],
+   "unlinkedClubNames": [
+    "Benfica",
+    "S.L. Benfica"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/André_Gomes"
+   ],
+   "wiki": {
+    "title": "André Gomes",
+    "revid": 1385107428
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 341647,
+   "name": "Cengiz Ünder",
+   "rank": 1109,
+   "seniorClubIds": [
+    12,
+    36,
+    114,
+    244,
+    1003,
+    6890,
+    12374,
+    37951,
+    51828
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Cengiz_Ünder"
+   ],
+   "wiki": {
+    "title": "Cengiz Ünder",
+    "revid": 1384899855
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 161869,
+   "name": "Djibril Sidibé",
+   "rank": 1118,
+   "seniorClubIds": [
+    29,
+    162,
+    415,
+    1082,
+    1095,
+    1164,
+    2441,
+    1000000162
+   ],
+   "unlinkedClubNames": [
+    "Lille OSC#Reserve team|Lille"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Djibril_Sidibé_(footballer,_born_1992)"
+   ],
+   "wiki": {
+    "title": "Djibril Sidibé (footballer, born 1992)",
+    "revid": 1382815817
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 195736,
+   "name": "Florian Grillitsch",
+   "rank": 1122,
+   "seniorClubIds": [
+    86,
+    366,
+    533,
+    610,
+    1075,
+    8970
+   ],
+   "unlinkedClubNames": [
+    "SV Werder Bremen",
+    "Werder Bremen"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Florian_Grillitsch"
+   ],
+   "wiki": {
+    "title": "Florian Grillitsch",
+    "revid": 1383169851
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 126719,
+   "name": "Juan Bernat",
+   "rank": 1129,
+   "seniorClubIds": [
+    27,
+    294,
+    583,
+    1049,
+    1050,
+    1533,
+    3709,
+    1000000583,
+    1000016200
+   ],
+   "unlinkedClubNames": [
+    "Valencia",
+    "Valencia CF Mestalla"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Juan_Bernat"
+   ],
+   "wiki": {
+    "title": "Juan Bernat",
+    "revid": 1383115419
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 128969,
+   "name": "Mathew Ryan",
+   "rank": 1132,
+   "seniorClubIds": [
+    11,
+    12,
+    190,
+    681,
+    826,
+    1049,
+    1090,
+    1184,
+    1237,
+    2282,
+    3368,
+    6954
+   ],
+   "unlinkedClubNames": [
+    "Blacktown City FC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mathew_Ryan"
+   ],
+   "wiki": {
+    "title": "Mathew Ryan",
+    "revid": 1385059848
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 184816,
+   "name": "Ahmed Hassan",
+   "rank": 1317,
+   "seniorClubIds": [
+    683,
+    738,
+    1075,
+    2293,
+    2425,
+    3209,
+    7732,
+    11282
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Ahmed_Hassan_(footballer,_born_1993)"
+   ],
+   "wiki": {
+    "title": "Ahmed Hassan (footballer, born 1993)",
+    "revid": 1384870099
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 170895,
+   "name": "Garry Rodrigues",
+   "rank": 1320,
+   "seniorClubIds": [
+    36,
+    141,
+    683,
+    868,
+    1091,
+    1268,
+    1455,
+    1531,
+    2381,
+    8023,
+    1000000156,
+    1000000429
+   ],
+   "unlinkedClubNames": [
+    "Boshuizen",
+    "Rostocker FC",
+    "XerxesDZB"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Garry_Rodrigues"
+   ],
+   "wiki": {
+    "title": "Garry Rodrigues",
+    "revid": 1382772750
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 234781,
+   "name": "Maxwel Cornet",
+   "rank": 1321,
+   "seniorClubIds": [
+    180,
+    252,
+    347,
+    379,
+    1041,
+    1132
+   ],
+   "unlinkedClubNames": [
+    "FC Metz",
+    "Lyon",
+    "Metz",
+    "Olympique Lyonnais"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Maxwel_Cornet"
+   ],
+   "wiki": {
+    "title": "Maxwel Cornet",
+    "revid": 1384814457
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 238752,
+   "name": "Keita Baldé",
+   "rank": 1323,
+   "seniorClubIds": [
+    46,
+    162,
+    232,
+    398,
+    714,
+    1038,
+    1390,
+    2381,
+    2919,
+    1000000162
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Keita_Baldé"
+   ],
+   "wiki": {
+    "title": "Keita Baldé",
+    "revid": 1384439736
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 303259,
+   "name": "Dodi Lukébakio",
+   "rank": 1328,
+   "seniorClubIds": [
+    38,
+    44,
+    58,
+    82,
+    172,
+    294,
+    368,
+    415,
+    1010,
+    1000000172
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Dodi_Lukébakio"
+   ],
+   "wiki": {
+    "title": "Dodi Lukébakio",
+    "revid": 1384458313
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 51152,
+   "name": "Aleksandar Mitrović",
+   "rank": 1329,
+   "seniorClubIds": [
+    58,
+    669,
+    762,
+    931,
+    1114,
+    3229
+   ],
+   "unlinkedClubNames": [
+    "FK Teleoptik"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Aleksandar_Mitrović"
+   ],
+   "wiki": {
+    "title": "Aleksandar Mitrović",
+    "revid": 1384893909
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 216662,
+   "name": "Deniz Türüç",
+   "rank": 1339,
+   "seniorClubIds": [
+    36,
+    1435,
+    2293,
+    3205,
+    6890
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Deniz_Türüç"
+   ],
+   "wiki": {
+    "title": "Deniz Türüç",
+    "revid": 1385024696
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 382528,
+   "name": "Kerem Aktürkoğlu",
+   "rank": 1347,
+   "seniorClubIds": [
+    36,
+    141,
+    294
+   ],
+   "unlinkedClubNames": [
+    "24 Erzincanspor",
+    "BB Bodrumspor",
+    "Karacabey Belediyespor",
+    "İstanbul Başakşehir F.K."
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kerem_Aktürkoğlu"
+   ],
+   "wiki": {
+    "title": "Kerem Aktürkoğlu",
+    "revid": 1384916504
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 182581,
+   "name": "Tonny Vilhena",
+   "rank": 1348,
+   "seniorClubIds": [
+    234,
+    265,
+    380,
+    714,
+    11282,
+    16704
+   ],
+   "unlinkedClubNames": [
+    "Willem",
+    "Willem II Tilburg"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tonny_Vilhena"
+   ],
+   "wiki": {
+    "title": "Tonny Vilhena",
+    "revid": 1385093435
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 129588,
+   "name": "Dennis Praet",
+   "rank": 1352,
+   "seniorClubIds": [
+    58,
+    354,
+    416,
+    1003,
+    1038,
+    1096
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Dennis_Praet"
+   ],
+   "wiki": {
+    "title": "Dennis Praet",
+    "revid": 1382821529
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 119235,
+   "name": "Carlos Bacca",
+   "rank": 1358,
+   "seniorClubIds": [
+    5,
+    368,
+    1050,
+    2282,
+    11854,
+    16795
+   ],
+   "unlinkedClubNames": [
+    "Barranquilla FC",
+    "Deportivo Cali",
+    "Minervén Bolívar FC"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Carlos_Bacca"
+   ],
+   "wiki": {
+    "title": "Carlos Bacca",
+    "revid": 1384585200
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 487969,
+   "name": "Randal Kolo Muani",
+   "rank": 1363,
+   "seniorClubIds": [
+    24,
+    148,
+    506,
+    583,
+    995,
+    7042,
+    1000000583
+   ],
+   "unlinkedClubNames": [
+    "FC Nantes",
+    "Nantes"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Randal_Kolo_Muani"
+   ],
+   "wiki": {
+    "title": "Randal Kolo Muani",
+    "revid": 1384697340
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 18800,
+   "name": "Marc Navarro",
+   "rank": 1460,
+   "seniorClubIds": [
+    714,
+    1010,
+    1244,
+    6107,
+    67375
+   ],
+   "unlinkedClubNames": [
+    "Buriram United F.C.",
+    "Espanyol",
+    "RCD Espanyol"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Marc_Navarro"
+   ],
+   "wiki": {
+    "title": "Marc Navarro",
+    "revid": 1384608209
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 146227,
+   "name": "Jasper Cillessen",
+   "rank": 1530,
+   "seniorClubIds": [
+    131,
+    467,
+    472,
+    610,
+    1049
+   ],
+   "unlinkedClubNames": [
+    "Jong Ajax"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jasper_Cillessen"
+   ],
+   "wiki": {
+    "title": "Jasper Cillessen",
+    "revid": 1385041491
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 364135,
+   "name": "Moise Kean",
+   "rank": 1536,
+   "seniorClubIds": [
+    29,
+    276,
+    430,
+    506,
+    583,
+    1047,
+    1000000583
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Moise_Kean"
+   ],
+   "wiki": {
+    "title": "Moise Kean",
+    "revid": 1382873830
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 124419,
+   "name": "Odysseas Vlachodimos",
+   "rank": 1537,
+   "seniorClubIds": [
+    79,
+    265,
+    294,
+    368,
+    703,
+    762
+   ],
+   "unlinkedClubNames": [
+    "VfB Stuttgart"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Odysseas_Vlachodimos"
+   ],
+   "wiki": {
+    "title": "Odysseas Vlachodimos",
+    "revid": 1384731091
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 203460,
+   "name": "Jack Grealish",
+   "rank": 1542,
+   "seniorClubIds": [
+    29,
+    281,
+    405,
+    1045
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jack_Grealish"
+   ],
+   "wiki": {
+    "title": "Jack Grealish",
+    "revid": 1384798314
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 280701,
+   "name": "Théo Bongonda",
+   "rank": 1544,
+   "seniorClubIds": [
+    232,
+    449,
+    940,
+    1184,
+    2687,
+    3508,
+    1000028848
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Théo_Bongonda"
+   ],
+   "wiki": {
+    "title": "Théo Bongonda",
+    "revid": 1382714314
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 282388,
+   "name": "Giovanni Simeone",
+   "rank": 1551,
+   "seniorClubIds": [
+    209,
+    252,
+    276,
+    416,
+    430,
+    830,
+    1390,
+    6195,
+    15795
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Giovanni_Simeone"
+   ],
+   "wiki": {
+    "title": "Giovanni Simeone",
+    "revid": 1383869092
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 91059,
+   "name": "Joshua King",
+   "rank": 1565,
+   "seniorClubIds": [
+    18,
+    29,
+    36,
+    164,
+    415,
+    466,
+    985,
+    989,
+    1010,
+    3008,
+    6070
+   ],
+   "unlinkedClubNames": [
+    "Borussia Mönchengladbach"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Joshua_King_(footballer,_born_1992)"
+   ],
+   "wiki": {
+    "title": "Joshua King (footballer, born 1992)",
+    "revid": 1382755042
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 295330,
+   "name": "Kelechi Iheanacho",
+   "rank": 1573,
+   "seniorClubIds": [
+    281,
+    368,
+    371,
+    641,
+    1003
+   ],
+   "unlinkedClubNames": [
+    "Bursaspor"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Kelechi_Iheanacho"
+   ],
+   "wiki": {
+    "title": "Kelechi Iheanacho",
+    "revid": 1384916331
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 164771,
+   "name": "Jordan Veretout",
+   "rank": 1777,
+   "seniorClubIds": [
+    12,
+    244,
+    405,
+    430,
+    618,
+    995,
+    1041,
+    1230
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Jordan_Veretout"
+   ],
+   "wiki": {
+    "title": "Jordan Veretout",
+    "revid": 1382915988
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 396894,
+   "name": "Maxi Gómez",
+   "rank": 1783,
+   "seniorClubIds": [
+    449,
+    940,
+    1049,
+    2687,
+    1000002619
+   ],
+   "unlinkedClubNames": [
+    "Club Nacional de Football"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Maxi_Gómez"
+   ],
+   "wiki": {
+    "title": "Maxi Gómez",
+    "revid": 1384609859
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 460939,
+   "name": "Tijjani Reijnders",
+   "rank": 1784,
+   "seniorClubIds": [
+    5,
+    235,
+    281,
+    1090,
+    1269,
+    26069
+   ],
+   "unlinkedClubNames": [
+    "Jong AZ"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tijjani_Reijnders"
+   ],
+   "wiki": {
+    "title": "Tijjani Reijnders",
+    "revid": 1384678741
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 331726,
+   "name": "Tammy Abraham",
+   "rank": 1805,
+   "seniorClubIds": [
+    5,
+    12,
+    114,
+    405,
+    631,
+    698,
+    2288,
+    1000002288
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tammy_Abraham"
+   ],
+   "wiki": {
+    "title": "Tammy Abraham",
+    "revid": 1384098652
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 168157,
+   "name": "Leander Dendoncker",
+   "rank": 1807,
+   "seniorClubIds": [
+    58,
+    405,
+    543,
+    2497,
+    6195,
+    15795
+   ],
+   "unlinkedClubNames": [
+    "HNK Hajduk Split"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Leander_Dendoncker"
+   ],
+   "wiki": {
+    "title": "Leander Dendoncker",
+    "revid": 1382916406
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 179643,
+   "name": "Vladimír Darida",
+   "rank": 1815,
+   "seniorClubIds": [
+    44,
+    60,
+    605,
+    941,
+    1897,
+    11117,
+    1000000605
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Vladimír_Darida"
+   ],
+   "wiki": {
+    "title": "Vladimír Darida",
+    "revid": 1382676855
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 140803,
+   "name": "Anthony Limbombe",
+   "rank": 1816,
+   "seniorClubIds": [
+    204,
+    467,
+    723,
+    995,
+    1184,
+    2282,
+    3057,
+    28643
+   ],
+   "unlinkedClubNames": [
+    "Akritas Chlorakas",
+    "FC Nantes",
+    "Hapoel Ironi Kiryat Shmona F.C.",
+    "Nantes"
+   ],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Anthony_Limbombe"
+   ],
+   "wiki": {
+    "title": "Anthony Limbombe",
+    "revid": 1384896135
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  },
+  {
+   "playerId": 197470,
+   "name": "Mattia Caldara",
+   "rank": 1819,
+   "seniorClubIds": [
+    5,
+    506,
+    607,
+    800,
+    1385,
+    1429,
+    3522,
+    4331
+   ],
+   "unlinkedClubNames": [],
+   "sources": [
+    "https://en.wikipedia.org/wiki/Mattia_Caldara"
+   ],
+   "wiki": {
+    "title": "Mattia Caldara",
+    "revid": 1382870244
+   },
+   "coverage": "REVIEWED_WIKIPEDIA_CURRENT",
+   "reviewedAt": "2026-11-12"
+  }
+ ]
+}

@@ -1,5 +1,7 @@
 # API-Football ile toplu veri güncellemesi
 
+> **Tek anahtar:** Bu araç Cloud Functions'taki fikstür senkronizasyonuyla aynı API-Football anahtarını ve aynı günlük kotayı kullanır. Fonksiyonlar günde en fazla 80 istek harcar; bu araçla bir günde 20 istekten fazlasını kullanmayın (`--max-requests 20`). Başka anahtar oluşturmayın; hesap askıya alınır.
+
 Bu araç API'den transferleri ve güncel kadroları toplar, V4 SQLite ile karşılaştırılacak inceleme raporu üretir. Oyun verisini değiştirmez; Firebase deploy gerekmez. Günün maçları entegrasyonundan bağımsızdır. Python 3.10+ standart kütüphanesi yeterlidir.
 
 ## İlk deneme (PowerShell veya terminal)

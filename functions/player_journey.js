@@ -2,6 +2,10 @@
 const {RewardError} = require("./rewarded_ads");
 const baseCatalog = require("./config/journey_catalog.json");
 const expansion = require("./config/five_mode_expansion.json");
+const Finals = require("./story_finals");
+// Per solved career, per complete chapter, and the original 32-career finale.
+const REWARDS = Object.freeze({player: {coins: 20, xp: 40}, chapter: {coins: 80, xp: 120},
+  final: {coins: 150, xp: 300}});
 const catalog = {...baseCatalog, chapters: [...baseCatalog.chapters, ...[expansion.journey]]};
 const chapters = catalog.chapters;
 const journeys = Object.fromEntries(chapters.flatMap((c) => c.journeys.map((j) => [j.id, j])));
@@ -23,8 +27,30 @@ function accepts(task, keys) {
   return task.type === "timeline" ? keys.every((k, i) => options[k] === options[task.answerKeys[i]]) :
     keys.every((k) => task.answerKeys.includes(k));
 }
-function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
-  const ref = (uid) => db.ref("journeyRewardState/" + uid);
+// The app asset no longer carries answers: after a correct answer the server
+// returns the explanation, and bought coin/ad hints are computed here.
+function resultOf(task) {
+  if (task.result) return task.result;
+  const label = (k) => task.options.find((o) => o.key === k)?.label;
+  return {answer: task.answerKeys.map(label).join(task.type === "timeline" ? " → " : ", "), story: task.explanation};
+}
+function assistOf(task, hints) {
+  if (task.expansion || !hints || !(hints.coin || hints.ad)) return null;
+  const label = (k) => task.options.find((o) => o.key === k)?.label;
+  if (task.type === "timeline") {
+    return {eliminated: [],
+      text: "Doğru başlangıç: " + task.answerKeys.slice(0, hints.coin ? 2 : 1).map(label).join(" → ")};
+  }
+  if (task.type === "missingClub" && !hints.coin) {
+    return {eliminated: [], text: "Kulübün ilk harfi: " + [...label(task.answerKeys[0])][0]};
+  }
+  const wrong = task.options.filter((o) => !task.answerKeys.includes(o.key)).map((o) => o.key);
+  return hints.coin ? {eliminated: wrong, text: "Yanlış seçenekler elendi. Kalan seçeneklerden cevabını oluştur."} :
+    {eliminated: wrong.slice(0, 2), text: "İki yanlış seçenek elendi."};
+}
+function createService({db, documentRef, grantCoins, grantXp, chargeHint, projectBadges, now = Date.now}) {
+  const attempts = require("./story_attempts").create({db, now});
+  const ref = documentRef || ((uid) => db.ref("journeyRewardState/" + uid));
   const get = async (uid) => stateOf((await ref(uid).get()).val());
   async function change(uid, fn) {
     let error;
@@ -49,14 +75,18 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   function accrue(s) {
     for (const c of chapters) {
       for (const j of c.journeys) {
-        if (s.journeys[j.id]?.solved === 4) earned(s, "player__" + j.id, 20, 40);
+        if (s.journeys[j.id]?.solved === 4) earned(s, "player__" + j.id, REWARDS.player.coins, REWARDS.player.xp);
       }
       if (c.journeys.every((j) => s.journeys[j.id]?.solved === 4)) {
-        earned(s, "chapter__" + (chapters.indexOf(c) + 1), 80, 120);
+        earned(s, "chapter__" + (chapters.indexOf(c) + 1), REWARDS.chapter.coins, REWARDS.chapter.xp);
       }
     }
     // Original 32-career finale and badge requirements remain stable.
-    if (counts(s).every((n) => n === 8)) earned(s, "final", 150, 300);
+    if (counts(s).every((n) => n === 8)) earned(s, "final", REWARDS.final.coins, REWARDS.final.xp);
+    // All 40 careers (base + expansion): the expansion's own closing receipt.
+    if (Object.values(journeys).every((j) => s.journeys[j.id]?.solved === 4)) {
+      earned(s, Finals.KEY, Finals.FINALS.player_journey.coins, Finals.FINALS.player_journey.xp);
+    }
   }
   async function settle(uid) {
     const state = await get(uid);
@@ -77,15 +107,23 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     const completed = Object.keys(journeys).filter((id) => s.journeys[id]?.solved === 4);
     return {ok: true, version: catalog.version, completed, progress: s.journeys, hints: s.hints,
       rewards: s.rewards, favorites: s.favorites, chapterCounts: counts(s),
-      results: Object.fromEntries(expansion.journey.journeys.flatMap((j) => j.tasks
-          .filter((t, i) => i < (s.journeys[j.id]?.solved || 0)).map((t) => [t.id, t.result]))),
+      results: Object.fromEntries(Object.values(journeys).flatMap((j) => j.tasks
+          .filter((t, i) => i < (s.journeys[j.id]?.solved || 0)).map((t) => [t.id, resultOf(t)]))),
+      assist: Object.fromEntries(Object.values(journeys).flatMap((j) => j.tasks
+          .map((t) => [t.id, assistOf(t, s.hints[t.id])]).filter(([, v]) => v))),
       finalUnlocked: counts(s).every((n) => n === 8), hintPrice: 10,
-      playerReward: {coins: 20, xp: 40}, chapterReward: {coins: 80, xp: 120}, finalReward: {coins: 150, xp: 300}};
+      playerReward: REWARDS.player, chapterReward: REWARDS.chapter, finalReward: REWARDS.final,
+      expansionFinal: Finals.view("player_journey", s.rewards)};
   }
   async function submit(uid, input) {
     if (input.version !== catalog.version) fail("failed-precondition", "Uygulamanı güncelle.");
     const {journey, task, index} = taskOf(input);
-    if (!accepts(task, input.answers)) fail("invalid-argument", "Cevap doğrulanamadı.");
+    await attempts.before(uid, "player_journey", task.id);
+    if (!accepts(task, input.answers)) {
+      await attempts.wrong(uid, "player_journey", task.id, input.answers);
+      fail("invalid-argument", "Cevap doğrulanamadı.");
+    }
+    await attempts.solved(uid, "player_journey", task.id);
     await change(uid, (s) => {
       const progress = s.journeys[journey.id] ||= {solved: 0};
       if (index > progress.solved) fail("failed-precondition", "Önceki aşamaların eşitlenmesi bekleniyor.");
@@ -109,6 +147,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   }
   async function hint(uid, input) {
     const {task, index, journey} = taskOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     const s = await get(uid);
     if (index > (s.journeys[journey.id]?.solved || 0)) fail("failed-precondition", "Önceki aşamayı eşitle.");
@@ -134,6 +173,7 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
     }
     if (placement !== "story_hint") fail("invalid-argument", "Geçersiz yardım.");
     const {task, index, journey} = taskOf(input);
+    await documentRef?.guardHint?.(uid, task.id);
     if (task.expansion) fail("failed-precondition", "Bu pakette ücretsiz ipucunu kullan.");
     if (index !== (s.journeys[journey.id]?.solved || 0) || s.hints[task.id]?.ad || s.hints[task.id]?.coin) {
       fail("failed-precondition", "Bu aşama için yardım hazır değil veya zaten açıldı.");
@@ -155,4 +195,4 @@ function createService({db, grantCoins, grantXp, chargeHint, projectBadges, now 
   }
   return {status, submit, favorites, hint, prepareReward, settleReward};
 }
-module.exports = {createService, catalog, accepts, journeys};
+module.exports = {createService, catalog, accepts, journeys, REWARDS};

@@ -1,0 +1,37 @@
+{
+ "id": "v4-2026-11-24.1",
+ "baseRevision": "v4-2026-11-23.3",
+ "builtUtc": "2026-11-24T15:00:00+00:00",
+ "scope": "Reported players: senior clubs a V4 player lacked, from his English Wikipedia infobox (revision pinned). Additions only; reserve and affiliate sides dropped.",
+ "sources": {
+  "wikipedia": {
+   "evidence": "infobox revision per player (wiki.revid)",
+   "fetchedUtc": "2026-11-24T14:55:00+00:00"
+  }
+ },
+ "counts": {
+  "players": 1,
+  "operations": {
+   "addPlayerClub": 2,
+   "addSpell": 3
+  }
+ },
+ "players": [
+  {
+   "playerId": 3000350513,
+   "name": "Deniz Gül",
+   "wiki": {
+    "title": "Deniz Gül",
+    "revid": 1387329205
+   },
+   "reason": "Found while preparing the Galatasaray 1-0 Aston Villa reel: only Galatasaray was linked. Infobox: Hammarby IF 2023-2024, Porto 2024-2026, Galatasaray 2026-. Hammarby Talang FF (2023) is Hammarby's affiliate side and is left out.",
+   "ops": [
+    {"op": "addPlayerClub", "clubId": 1059, "source": "reviewed:player-fixes:2026-11-24"},
+    {"op": "addPlayerClub", "clubId": 720, "source": "reviewed:player-fixes:2026-11-24"},
+    {"op": "addSpell", "clubId": 1059, "start": "2023-07-01", "end": "2024-07-01", "confidence": "REVIEWED_YEAR"},
+    {"op": "addSpell", "clubId": 720, "start": "2024-07-01", "end": "2026-07-01", "confidence": "REVIEWED_YEAR"},
+    {"op": "addSpell", "clubId": 141, "start": "2026-07-01", "end": null, "confidence": "REVIEWED_YEAR"}
+   ]
+  }
+ ]
+}

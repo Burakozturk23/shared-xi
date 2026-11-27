@@ -5,6 +5,7 @@ import '../app/bot_game_catalog.dart';
 import '../app/route_appearance.dart';
 import '../widgets/bot_mode_card.dart';
 import '../widgets/grid_club_pool_picker.dart';
+import '../widgets/grid_friend_section.dart';
 import 'bot_game_detail_page.dart';
 
 class VsBotGridModeSelectionPage extends StatelessWidget {
@@ -47,6 +48,8 @@ class VsBotGridModeSelectionPage extends StatelessWidget {
                 },
               ),
             ),
+          const SizedBox(height: 12),
+          const GridFriendSection(),
         ],
       ),
     ),

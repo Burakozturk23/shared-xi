@@ -3,12 +3,12 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const {harness} = require("./support/economy_harness");
-const {createService, dayKey} = require("../rewarded_ads");
+const {createService, dayKey, normalizeUnit} = require("../rewarded_ads");
 const {defaults, validateConfig} = require("../economy_config");
 const ssv = require("../admob_ssv");
 const unit = "ca-app-pub-1234567890123456/1234567890";
 const copy = (v) => JSON.parse(JSON.stringify(v));
-function setup() {
+function setup(extra = {}) {
   const h = harness();
   let linked = true;
   let pro = false;
@@ -20,6 +20,7 @@ function setup() {
     isLinked: async () => linked, isPro: async () => pro,
     grantCoins: (...args) => h.context.lbProgressionGrantCoins(h.db, ...args),
     randomId: () => (++sequence).toString(16).padStart(48, "0"),
+    ...extra,
   });
   let requests = 0;
   const prepare = (placement = "loto_result", uid = "alice", requestId = (++requests).toString(16).padStart(32, "0")) =>
@@ -87,8 +88,11 @@ test("Pro gets the same bonus and limit; callable rejects unverified premium dat
   h.setConfig((c) => c.sources.rewarded_coin.enabled = true);
   const status = await h.call("getRewardedAdStatus", {platform: "android"});
   assert.equal(status.pro, false);
-  await assert.rejects(h.call("prepareRewardedAd", {platform: "android", placement: "loto_result",
-    requestId: "a".repeat(32), pro: true, amount: 99999}), {code: "failed-precondition"});
+  // Forged pro/amount fields are ignored: an ordinary ad ticket, no instant Pro coins.
+  const forged = await h.call("prepareRewardedAd", {platform: "android", placement: "loto_result",
+    requestId: "a".repeat(32), pro: true, amount: 99999});
+  assert.notEqual(forged.ticket.status, "verified");
+  assert.equal(h.read("economyState/alice/balances/coins") || 0, 0);
 });
 test("Pro and ad bonus cannot be combined to exceed two; online placements are rejected", async () => {
   const s = setup();
@@ -176,12 +180,16 @@ test("deleted account has no ticket to resurrect; private ticket keys are valida
   await assert.rejects(s.engine.status("alice", "android", "__proto__"), {code: "invalid-argument"});
   assert.equal(s.coins(), 0);
 });
-test("real exported callables require auth and expose official test units as preview-only", async () => {
+test("real exported callables require auth; the real Android unit is live, iOS and test units are not", async () => {
   const h = harness();
   await assert.rejects(h.call("getRewardedAdStatus", {platform: "android"}, null), {code: "unauthenticated"});
   const status = await h.call("getRewardedAdStatus", {platform: "android"});
-  assert.equal(status.testingOnly, true);
-  assert.equal(status.enabled, false);
+  assert.equal(status.testingOnly, false);
+  assert.equal(status.enabled, true); // the end-of-game coin bonus is on
+  assert.equal(status.amount, 20);
+  assert.equal(status.dailyLimit, 2);
+  assert.equal((await h.call("getRewardedAdStatus", {platform: "ios"})).testingOnly, true);
+  assert.equal(normalizeUnit("ca-app-pub-3940256099942544/5224354917"), "");
 });
 
 const pair = crypto.generateKeyPairSync("ec", {namedCurve: "prime256v1"});
@@ -238,4 +246,49 @@ test("signing key cache is single-flight, rotates and will not use keys older th
   await provider("43");
   clock += 18 * 3600000;
   await assert.rejects(provider("43"), ssv.KeyUnavailableError);
+});
+
+test("an AdMob console probe carries no reward identity; anything with identity still needs a signature", async () => {
+  // Nothing can be granted without user_id and custom_data, so these only get a harmless 200.
+  for (const raw of ["", "ad_network=1&ad_unit=2&reward_amount=1&reward_item=coin&timestamp=1&transaction_id=3",
+    "ad_unit=2&signature=abc&key_id=42"]) assert.equal(ssv.isProbe(raw), true, raw);
+  for (const raw of ["user_id=u", "custom_data=c", "ad_unit=2&user_id=u&custom_data=c&signature=abc&key_id=42",
+    signed()]) assert.equal(ssv.isProbe(raw), false, raw);
+  // A forged reward event is not a probe: it still fails verification.
+  await assert.rejects(ssv.verify("user_id=u&custom_data=c", async () => pair.publicKey, time),
+      ssv.VerificationError);
+});
+
+test("every bot result screen can offer the coin bonus; unknown placements are refused", async () => {
+  for (const placement of ["loto_result", "cinko_result", "team_race_result", "random_five_result", "grid_result"]) {
+    const h = harness();
+    const r = await h.call("prepareRewardedAd", {platform: "android", placement, requestId: "b".repeat(32)});
+    assert.equal(r.ticket.placement ?? placement, placement);
+  }
+  await assert.rejects(harness().call("prepareRewardedAd", {platform: "android", placement: "nope_result",
+    requestId: "c".repeat(32)}), {code: "invalid-argument"});
+});
+
+test("streak repair and ad hints keep their own count; only coin ads share the end-of-game bonus", async () => {
+  let claim = 0;
+  const s = setup({prepareDailyReward: async (_uid, placement) => ({amount: placement === "daily_double" ? 60 : 0,
+    claimKey: placement + "_" + ++claim, context: {}}), settleDailyReward: async () => {}});
+  const watch = async (placement) => {
+    const {ticket} = await s.prepare(placement);
+    await s.engine.accept(s.event(ticket));
+    s.h.setTime(s.h.now + 31000);
+  };
+  // Assistance first: it does not use up the coin bonus.
+  await watch("daily_streak");
+  await watch("daily_hint");
+  assert.equal((await s.engine.status("alice", "android")).remaining, 2);
+  await watch("loto_result");
+  await watch("grid_result");
+  assert.equal((await s.engine.status("alice", "android")).remaining, 0);
+  await assert.rejects(s.prepare("cinko_result"), {code: "resource-exhausted"});
+  await assert.rejects(s.prepare("daily_double"), {code: "resource-exhausted"}); // pays coins, shares the bonus
+  // The bonus being spent never blocks saving a streak.
+  await watch("daily_streak");
+  await watch("daily_hint");
+  await assert.rejects(s.prepare("daily_hint"), {code: "resource-exhausted"}); // its own limit still holds
 });

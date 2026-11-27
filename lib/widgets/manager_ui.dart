@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../services/telemetry_service.dart';
+
 import '../theme/ortak_saha_theme.dart';
 import 'pitch_ui.dart';
 
-String managerError(Object error) => error is StateError
-    ? error.message.toString()
-    : 'İşlem tamamlanamadı. Yeniden deneyebilirsin.';
+String managerError(Object error) {
+  if (error is StateError) return error.message.toString();
+  // Anything else is unexpected: keep a trace instead of only a generic line.
+  TelemetryService.recordNonFatal(error, StackTrace.current, reason: 'managerError');
+  return 'İşlem tamamlanamadı. Yeniden deneyebilirsin.';
+}
 
 class ManagerMessage extends StatelessWidget {
   const ManagerMessage({

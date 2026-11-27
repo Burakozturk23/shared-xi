@@ -5,6 +5,12 @@ import 'rewarded_ad_models.dart';
 
 /// Offline predictions never grant currency or update canonical records. The
 /// server replays the same identities/actions and bounded monotonic durations.
+// Mirrors functions/arcade_engine.js (tiers, round clocks, event floor, hints).
+const _tiers = ['easy', 'normal', 'hard', 'legend'];
+const _speedTiers = ['easy', 'easy', 'normal', 'normal', 'hard', 'hard', 'legend'];
+const _roundMs = {'speed': 30000, 'survival': 75000};
+const _minEventMs = 800;
+
 class BurstOffline {
   BurstOffline(this.kit);
   final Map<String, dynamic> kit;
@@ -19,7 +25,8 @@ class BurstOffline {
     found.sort((a,b) {
       final aa = dailyWordKey('${a['name']}'), bb = dailyWordKey('${b['name']}');
       final priority = (bb.startsWith(key) ? 1 : 0) - (aa.startsWith(key) ? 1 : 0);
-      return priority != 0 ? priority : aa.compareTo(bb) != 0 ? aa.compareTo(bb) : '${a['id']}'.compareTo('${b['id']}');
+      final rank = ((a['rank'] as num?) ?? 1e9).compareTo((b['rank'] as num?) ?? 1e9);
+      return priority != 0 ? priority : rank != 0 ? rank : aa.compareTo(bb) != 0 ? aa.compareTo(bb) : '${a['id']}'.compareTo('${b['id']}');
     });
     return found.take(12).map((p) => {...p, 'type': 'player'}).toList();
   }
@@ -28,7 +35,9 @@ class BurstOffline {
     if (r['mode'] != 'burst' || r['phase'] != 'active' || r['finished'] == true || r['dataVersion'] != kit['version']) {
       throw StateError('Bu kayıt çevrimdışı ilerletilemiyor. Yenile ile bağlan.');
     }
-    final elapsed = n(event['elapsedMs']); if (elapsed < 0) throw StateError('Geçersiz süre.');
+    final raw = n(event['elapsedMs']); if (raw < 0) throw StateError('Geçersiz süre.');
+    final elapsed = r['paused'] != true && const {'answer', 'pass', 'hint'}.contains('${event['action']}') && raw < _minEventMs
+        ? _minEventMs : raw;
     r['message'] = '';
     Map<String, dynamic> question() => questions.firstWhere((q) => q['id'] == rewardMap(r['question'])['id']);
     List<String> found() => (r['found'] as List? ?? []).map((p) => '${rewardMap(p)['id']}').toList();
@@ -40,9 +49,17 @@ class BurstOffline {
       r['offlineHistory'] = all;
     }
     void next() {
-      final used = ids(r['roundIds']); final tier = ['easy','normal','hard','legend'][(n(r['rounds']) ~/ 3).clamp(0,3).toInt()];
-      final choices = questions.where((q) => q['pairType'] == r['pairType'] && !used.contains(q['id']) &&
-        (r['style'] == 'speed' || q['difficulty'] == tier)).map((q) => (q: q,
+      final used = ids(r['roundIds']);
+      final wanted = r['style'] == 'speed' ? _speedTiers[n(r['rounds']).clamp(0, 6).toInt()]
+          : _tiers[(n(r['rounds']) ~/ 3).clamp(0, 3).toInt()];
+      final w = _tiers.indexOf(wanted);
+      final order = [..._tiers]..sort((a, b) {
+        final d = (_tiers.indexOf(a) - w).abs() - (_tiers.indexOf(b) - w).abs();
+        return d != 0 ? d : _tiers.indexOf(a) - _tiers.indexOf(b);
+      });
+      final open = questions.where((q) => q['pairType'] == r['pairType'] && !used.contains(q['id'])).toList();
+      final level = order.firstWhere((t) => open.any((q) => q['difficulty'] == t), orElse: () => '');
+      final choices = open.where((q) => q['difficulty'] == level).map((q) => (q: q,
           rank: sha256.convert(utf8.encode('${r['id']}:${used.length}:${q['id']}')).toString())).toList();
       choices.sort((a,b) => a.rank.compareTo(b.rank));
       if (choices.isEmpty) {end('Doğrulanmış soru havuzu tükendi.'); return;}
@@ -51,9 +68,14 @@ class BurstOffline {
       r['roundIds'] = [...used, q['id']]; r['found'] = []; r['hintedIds'] = []; r['hint'] = ''; r['roundAt'] = r['activeMs'];
     }
     void timeCheck() {
-      if (r['style'] != 'speed') return;
+      if (r['style'] != 'speed') {
+        if (n(r['activeMs']) - n(r['roundAt']) < _roundMs['survival']!) return;
+        archive('timeout'); r['streak'] = 0; r['lives'] = n(r['lives']) - 1;
+        if (n(r['lives']) <= 0) {end('Canların bitti.');} else {next(); r['message'] = 'Tur süresi doldu. −1 can, yeni tur.';}
+        return;
+      }
       if (n(r['activeMs']) + n(r['penaltyMs']) >= 120000) end('Toplam süre doldu.');
-      else if (n(r['activeMs']) - n(r['roundAt']) >= 30000) {archive('timeout'); r['streak'] = 0; next(); r['message'] = 'Tur süresi doldu. Yeni tur.';}
+      else if (n(r['activeMs']) - n(r['roundAt']) >= _roundMs['speed']!) {archive('timeout'); r['streak'] = 0; next(); r['message'] = 'Tur süresi doldu. Yeni tur.';}
     }
     if (r['paused'] != true) r['activeMs'] = n(r['activeMs']) + elapsed;
     timeCheck();
@@ -73,15 +95,18 @@ class BurstOffline {
         } else if (action == 'hint') {
           if (r['style'] != 'survival') throw StateError('Hız Atağı ipucu içermez.');
           final hinted = ids(r['hintedIds']);
-          final candidates = ids(question()['answers']).where((id) => !found().contains(id) && !hinted.contains(id) &&
-            '${rewardMap(players[id])['countryId'] ?? ''}'.isNotEmpty);
+          int times(String id) => hinted.where((x) => x == id).length;
+          final open = ids(question()['answers']).where((id) => !found().contains(id) &&
+            '${rewardMap(players[id])['countryId'] ?? ''}'.isNotEmpty).toList();
+          final candidates = [...open.where((id) => times(id) == 1), ...open.where((id) => times(id) == 0)];
           if (candidates.isEmpty) throw StateError('Yeni ipucu kalmadı.');
           if (r['freeUsed'] != true) {r['freeUsed'] = true;}
           else if (n(r['adCredits']) > 0) {r['adCredits'] = n(r['adCredits']) - 1;}
           else {throw StateError('Doğrulanmış reklam ipucu gerekli.');}
           final id = candidates.first; final p = rewardMap(players[id]); r['hintedIds'] = [...hinted,id];
           r['hints'] = n(r['hints']) + 1;
-          r['hint'] = '${'${p['name']}'.split(RegExp(r'\s+')).map((w) => '${w[0]}.').join(' ')} · ${p['country']}';
+          r['hint'] = times(id) == 0 ? 'Bir cevabın milliyeti: ${p['country']}'
+            : '${'${p['name']}'.split(RegExp(r'\s+')).map((w) => '${w[0]}.').join(' ')} · ${p['country']}';
         } else if (action == 'answer') {
           String? id = event['entityId']?.toString();
           if (id == null) {
@@ -98,6 +123,7 @@ class BurstOffline {
             r['message'] = r['style'] == 'speed' ? 'Bu eşleşme doğru değil. −3 saniye.' : 'Bu eşleşme doğru değil. −1 can.';
           } else {
             r['found'] = [...(r['found'] as List? ?? []), {'id':id, 'name': rewardMap(players[id])['name']}];
+            if (ids(r['hintedIds']).contains(id)) r['hint'] = '';
             r['correct'] = n(r['correct']) + 1; r['streak'] = n(r['streak']) + 1;
             if (n(r['streak']) > n(r['bestStreak'])) r['bestStreak'] = r['streak'];
             r['score'] = n(r['score']) + (n(r['streak']) >= 10 ? 200 : n(r['streak']) >= 5 ? 150 : 100);
@@ -114,7 +140,8 @@ class BurstOffline {
     }
     r['revision'] = n(r['revision']) + 1;
     r['totalRemainingMs'] = (120000 - n(r['activeMs']) - n(r['penaltyMs'])).clamp(0,120000);
-    r['roundRemainingMs'] = (30000 - n(r['activeMs']) + n(r['roundAt'])).clamp(0,30000);
+    final roundMs = _roundMs['${r['style']}'] ?? _roundMs['speed']!;
+    r['roundRemainingMs'] = (roundMs - n(r['activeMs']) + n(r['roundAt'])).clamp(0, roundMs);
     r['serverNow'] = n(r['serverNow']) + elapsed;
     r['earnedCoins'] = 0; r['pendingValidation'] = true;
     if (r['finished'] == true) {

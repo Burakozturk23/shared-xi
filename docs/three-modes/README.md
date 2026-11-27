@@ -1,4 +1,6 @@
-# Hoca 11, Harf 11, Kadro Kasası — PDF uygulaması
+# Harf 11, Kadro Kasası — PDF uygulaması
+
+> Hoca 11 2026-10-31'de uygulamadan kaldırıldı: mod, sunucu kuralları, katalog bölümü, görevler ve destek kayıtları. Aşağıdaki Hoca 11 sütunu tarihsel kayıttır.
 
 Üç kaynak: **Hoca_11(1).pdf**, **Harf_11(1).pdf**, **Kadro_Kasasi(1).pdf** (her biri 5 sayfa).
 Bu değişiklik `codex/home-profile-hub` üzerine kuruludur. Önceki ana sayfa/enerji/ekonomi işlerini içerir; bağımsız eski `main` üzerine dosya kopyalayarak kurulmaz.
@@ -27,9 +29,8 @@ Bu değişiklik `codex/home-profile-hub` üzerine kuruludur. Önceki ana sayfa/e
 
 ## Veri kapsamı ve sınırlar
 
-`data-audit.json` sayıları otomatik üretir: **36.391 futbolcu**, **27 harf**, **7 hoca**, **8 lig / 96 kulüp / 285 kasa**.
+`data-audit.json` sayıları otomatik üretir: **36.391 futbolcu**, **27 harf**, **8 lig / 96 kulüp / 285 kasa**.
 
-Hoca 11 bağlantıları mevcut doğrulanmış StatsBomb/Open Data maç kayıtlarından gelir; hocanın tüm kariyerini kapsamaz. Klopp, Zidane, Ferguson, Guardiola, Allegri, Luis Enrique ve Pochettino açılır. Aynı kulüpte farklı tarihlerde bulunma hiçbir zaman kanıt sayılmaz. Bilinmeyen bağlar reddedilirken yanlış artırılmaz. Yeterli doğrulanmış dönem havuzu olmadığından zor hoca seviyesi kapalıdır. Her kabul edilen bağın kulüp, tarih ve kaynak bağlantısı sonuç ekranındadır.
 
 Kasa kulüp ilişkilerinde ana V4 veritabanının pozitif `player_club_stats.appearances` alanı kullanılır. Bu alanların doğruluğu kaynak veritabanı kapsamındadır; bütün kariyerler harici kaynakla yeniden denetlenmiş değildir. Kadrolar aynı sezona ait değildir. Lig etiketleri `v4-2026-10-05.1` sürümünden alınır, güncel lig iddiası değildir. İlk üç bayrak hem genel havuzda hem kendi liginde birden fazla kulüple uyumludur; böylece tek başına cevabı ele veren veya aşırı belirsiz üçlüler elenir.
 
@@ -80,3 +81,16 @@ firebase deploy --only functions
 Tüm Functions birlikte dağıtılmalıdır: ortak `lbEconomyState` artık `threeModes` alanını korur. Eski ekonomi yazarlarıyla yalnızca yeni callable'ları dağıtmak ilerlemeyi silebilir. RTDB yeni alanları mevcut varsayılan deny kurallarıyla sunucuya özeldir. Reklam ödülleri gerçek AdMob birimlerinin ve SSV callback'inin önceden kurulmuş olmasını gerektirir; sahte/test reklam bonusu verilmez. Ortak enerji rollout'u bu PR tarafından kendiliğinden açılmaz.
 
 Yeni callable'lar: `getThreeMode`, `startThreeMode`, `resumeThreeMode`, `actThreeMode`, `searchThreeMode`, `claimCoachMastery`. Yeni reklam placement'ları: `coach11_hint`, `letter11_hint`, `vault_hint`. Sunucu kataloğu APK'ya eklenmez.
+
+## Harf ruleti: slot makinesi (12 Kasım 2026)
+
+- Ruletten ya da günün harfinden yeni bir Harf 11 oyunu başlayınca harf bir slot makinesinde gelir (`lib/widgets/letter_slot_reveal.dart`). Türk alfabesinin 29 harfi üç satırlık pencerede üç tur döner, yavaşlar, hedefi çeyrek harf geçip yerine oturur. Hızlıyken dikey hareket bulanıklığı vardır.
+- Dönüşün başında rulet sesi, geçen her harfte (en fazla 70 ms'de bir) hafif titreşim, oturunca kilit sesi ve orta titreşim. Harf büyüyüp yeşil parlar; altında zorluk etiketi, kural ve "Kadroyu kur" düğmesi.
+- Dokunmak dönüşü atlar; "animasyonları azalt" açıkken harf doğrudan görünür. Devam edilen oyunlarda makine açılmaz.
+- Harfi sunucu seçer; makine yalnızca onu gösterir. Oturum görünümü harfi ve zorluğunu `letter` ve `letterDifficulty` alanlarıyla verir; eski sunucuda uygulama harfi başlıktan ("K harfi") okur.
+- Makine, sunucunun cevabı geldikten sonra açılır; arkasında yükleniyor göstergesi kalmaz.
+
+## Kasa açılışı (12 Kasım 2026)
+
+- Yeni bir Kadro Kasası açılınca (rastgele, günün kasası, lig ya da arşiv) önce kasa açılır (`lib/widgets/vault_open_reveal.dart`): çelik kapağın kadranı iki buçuk tur döner (rulet sesi), dört sürgü geri çekilir (kilit sesi, orta titreşim), kapak sol menteşesinden açılır ve içerisi yeşil aydınlanır. Sonra ilk üç bayrak kartı (ülke ve mevki) tek tek, zıplayarak düşer (kart sesi, hafif titreşim). En sonda zorluk etiketi, kural ve "Kasayı çöz".
+- Dokunmak atlar; "animasyonları azalt" açıkken kasa açık gelir. Devam edilen ya da bitmiş kasada açılış oynamaz. Kulübü ve bayrakları sunucu seçer; animasyon yalnızca gösterir.

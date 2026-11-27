@@ -17,6 +17,10 @@ const journeyV2Chapters = <String, ({int number, String asset, List<String> ids}
     ids: ['pirlo','henry','gerrard','rooney','kroos','hazard','adriano','mbappe']),
 };
 
+/// Every Player Journey career across the chapters (base + expansion), no asset read.
+int get journeyCareerCount =>
+    journeyV2Chapters.values.fold(0, (n, c) => n + c.ids.length);
+
 Future<List<JourneyV2Definition>> loadChapterOneJourneys() => loadJourneyChapter('chapter_1_goat');
 
 Future<List<JourneyV2Definition>> loadJourneyChapter(String chapterId) async {

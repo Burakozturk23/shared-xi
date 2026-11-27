@@ -1,5 +1,4 @@
 import 'manager_pool.dart';
-import 'manager_rating.dart';
 
 class ManagerTransferOffer {
   final ManagerPoolPlayer player;

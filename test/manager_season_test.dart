@@ -171,10 +171,12 @@ void main() {
   test(
     'Difficulty shifts opponent strength while retaining the same schedule',
     () {
-      final easy = ManagerSeasonService(random: Random(4))
-          .createSeason(difficulty: ManagerDifficulty.easy);
-      final hard = ManagerSeasonService(random: Random(4))
-          .createSeason(difficulty: ManagerDifficulty.hard);
+      final easy = ManagerSeasonService(
+        random: Random(4),
+      ).createSeason(difficulty: ManagerDifficulty.easy);
+      final hard = ManagerSeasonService(
+        random: Random(4),
+      ).createSeason(difficulty: ManagerDifficulty.hard);
       for (var i = 1; i < 20; i++) {
         expect(hard.clubs[i].strength - easy.clubs[i].strength, 10);
       }

@@ -34,6 +34,8 @@ test("coin store exposes four canonical premium avatar offers", () => {
     "speedster_bolt", "tactician_board", "night_owl", "champion_cup",
   ]);
   assert.deepEqual(Object.values(offers).map((o) => o.priceCoins), [150, 250, 400, 600]);
+  // Sold from the store catalog now (300/300/450/450); the config copies stay for the strict schema.
+  assert.ok(Object.values(offers).every((o) => o.enabled === false));
   assert.ok(storeBlock().includes("config.sinks.cosmetics.offers"));
 });
 

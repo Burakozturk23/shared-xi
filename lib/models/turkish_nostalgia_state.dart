@@ -18,6 +18,8 @@ class NostalgiaTask {
       (data['options'] as List).map(nostalgiaMap).toList();
   List<String> get optionIds => options.map((o) => o['id'] as String).toList();
   bool get serverValidated => data['serverValidated'] == true;
+  /// Server-validated task that keeps the paid strong hint.
+  bool get legacyHints => data['legacyHints'] == true;
   int get requiredCount => (data['requiredCount'] as int?) ?? answerKeys.length;
   List<String> get answerKeys => nostalgiaStrings(data['answerKeys']);
   List<String> get slots => nostalgiaStrings(data['slots']);

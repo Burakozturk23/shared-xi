@@ -79,6 +79,13 @@ function createKeyProvider({fetchKeys = async () => {
   };
 }
 
+// AdMob's console check of the callback URL. Without user_id and custom_data no ticket
+// can match, so nothing can be granted; it only needs an HTTP 200.
+function isProbe(rawQuery) {
+  const params = new URLSearchParams(typeof rawQuery === "string" ? rawQuery : "");
+  return !params.has("user_id") && !params.has("custom_data");
+}
+
 async function verify(rawQuery, getKey, now = Date.now()) {
   const {event, signedBytes, signature} = parse(rawQuery);
   const key = await getKey(event.key_id);
@@ -87,4 +94,4 @@ async function verify(rawQuery, getKey, now = Date.now()) {
   if (timestamp > now + 300000 || now - timestamp > MAX_AGE_MS) throw new VerificationError("Expired event");
   return {...event, timestamp};
 }
-module.exports = {verify, parse, createKeyProvider, VerificationError, KeyUnavailableError};
+module.exports = {verify, parse, isProbe, createKeyProvider, VerificationError, KeyUnavailableError};

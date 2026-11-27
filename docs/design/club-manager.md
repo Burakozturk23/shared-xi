@@ -38,3 +38,11 @@ Kayıtlar cihazdaki SharedPreferences içindedir; bu değişiklik bulut senkroni
 - `app_shell_navigation_test.dart`: Kadro & Yönetim grubunda arama olmaması, beş modun bulunması ve genel aramanın çalışmaya devam etmesi.
 
 CI analiz, Flutter testleri ve Android debug APK derlemesini çalıştırır. Fiziksel cihazda yeni kariyer ve mevcut kayıtla ilk açılış ayrıca denenmelidir.
+
+## Bilinen oyuncu havuzu (12 Kasım 2026)
+
+- Solo kadro havuzu ve gözlemci transfer teklifleri yalnızca bilinen oyunculardan gelir: online modlarla aynı oyun puanı ölçeğinde 72 ve üstü (`ManagerRoster.known`). Önceden havuz veritabanındaki yaklaşık 30 bin oyuncunun tamamından çekiliyordu; en ucuz geçerli kadro önce ayrıldığı için başlangıç 11'i tanınmayan oyunculardan oluşuyordu.
+- Solo fiyatlar bilinen havuzun içinde kademelenir (`ManagerTierX.soloFromRating`): değer 72–76 (6 LINK), normal 76+ (10), güçlü 80+ (14), elit 85+ (18, yaklaşık 130 oyuncu). Böylece ucuz kart da tanınan bir oyuncudur ve 165/120/80 LINK bütçeleri değişmeden çalışır. Puan formülü ve online modların fiyatları (`fromRating`) değişmedi; online ve solo puan eşitliği testi korunur.
+- Bir kariyerin sahip olduğu, 72 altında kalan oyuncu kadroda ve havuzda kalır; yalnızca yeni öneriler bilinen oyunculardan gelir.
+- Zorluk artık oyuncuların ne kadar bilinmediğinden değil, bütçeden ve rakip gücünden gelir.
+- Kurgusal rakip listesindeki "Valencia Youth" gerçek bir kulübü andırdığı için "Westfield Youth" oldu.

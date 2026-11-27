@@ -12,7 +12,12 @@ class AppPreferences extends ChangeNotifier {
       orElse: () => ThemeMode.system,
     );
     languageCode = _store.getString('linkball.language') == 'en' ? 'en' : 'tr';
+    // `linkball.sound` keeps meaning game effects. Music is new: an install that
+    // had silenced sound starts with music off too, so nothing becomes louder.
     sound = _store.getBool('linkball.sound') ?? true;
+    music = _store.getBool('linkball.music') ?? sound;
+    musicVolume = _volume('linkball.music_volume', defaultMusicVolume);
+    sfxVolume = _volume('linkball.sfx_volume', defaultSfxVolume);
     haptics = _store.getBool('linkball.haptics') ?? true;
     hapticStrength = HapticStrength.values.firstWhere(
       (value) => value.name == _store.getString('linkball.haptic_strength'),
@@ -20,13 +25,26 @@ class AppPreferences extends ChangeNotifier {
     );
     onboardingComplete =
         (_store.getInt('linkball.onboarding_version') ?? 0) > 0;
+    entryGateComplete = _store.getBool('linkball.entry_gate_done') ?? false;
+    accountCardSnoozedUntil =
+        _store.getInt('linkball.account_card_snooze') ?? 0;
   }
 
   final SharedPreferences _store;
   late ThemeMode themeMode;
   late String languageCode;
   late HapticStrength hapticStrength;
-  late bool sound, haptics, onboardingComplete;
+  late bool sound, music, haptics, onboardingComplete, entryGateComplete;
+
+  /// Until this time (ms) the home "link your account" card stays hidden.
+  late int accountCardSnoozedUntil;
+  late double musicVolume, sfxVolume;
+  static const defaultMusicVolume = .27, defaultSfxVolume = .55;
+  double _volume(String key, double fallback) {
+    final value = _store.getDouble(key);
+    return value == null || !value.isFinite ? fallback : value.clamp(0.0, 1.0);
+  }
+
   static Future<AppPreferences> load() async =>
       AppPreferences._(await SharedPreferences.getInstance());
 
@@ -55,6 +73,32 @@ class AppPreferences extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setMusic(bool value) async {
+    if (!await _store.setBool('linkball.music', value)) {
+      throw StateError('Müzik tercihi kaydedilemedi.');
+    }
+    music = value;
+    notifyListeners();
+  }
+
+  Future<void> setMusicVolume(double value) async {
+    final v = value.clamp(0.0, 1.0);
+    if (!await _store.setDouble('linkball.music_volume', v)) {
+      throw StateError('Müzik seviyesi kaydedilemedi.');
+    }
+    musicVolume = v;
+    notifyListeners();
+  }
+
+  Future<void> setSfxVolume(double value) async {
+    final v = value.clamp(0.0, 1.0);
+    if (!await _store.setDouble('linkball.sfx_volume', v)) {
+      throw StateError('Efekt seviyesi kaydedilemedi.');
+    }
+    sfxVolume = v;
+    notifyListeners();
+  }
+
   Future<void> setHaptics(bool value) async {
     if (!await _store.setBool('linkball.haptics', value)) {
       throw StateError('Titreşim tercihi kaydedilemedi.');
@@ -79,6 +123,27 @@ class AppPreferences extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// The first-run entry gate (Google or guest) has been answered.
+  Future<void> finishEntryGate() async {
+    if (!await _store.setBool('linkball.entry_gate_done', true)) {
+      throw StateError('Giriş tercihi kaydedilemedi.');
+    }
+    entryGateComplete = true;
+    notifyListeners();
+  }
+
+  /// Hides the home account card for a week.
+  Future<void> snoozeAccountCard({DateTime? now}) async {
+    final until = (now ?? DateTime.now())
+        .add(const Duration(days: 7))
+        .millisecondsSinceEpoch;
+    if (!await _store.setInt('linkball.account_card_snooze', until)) {
+      throw StateError('Tercih kaydedilemedi.');
+    }
+    accountCardSnoozedUntil = until;
+    notifyListeners();
+  }
+
   bool notification(String category) =>
       _store.getBool('linkball.notification.$category') ?? false;
   Future<void> setNotification(String category, bool value) async {
@@ -86,6 +151,13 @@ class AppPreferences extends ChangeNotifier {
       throw StateError('Tercih kaydedilemedi.');
     }
     notifyListeners();
+  }
+
+  /// The one-time reminder offer after the first daily game was answered.
+  bool get reminderOffered =>
+      _store.getBool('linkball.notification.offered') ?? false;
+  Future<void> markReminderOffered() async {
+    await _store.setBool('linkball.notification.offered', true);
   }
 }
 

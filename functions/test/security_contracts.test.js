@@ -282,7 +282,7 @@ test("achievement unlocks are server-owned and source-derived", () => {
 
 test("achievement ranked signals come from trusted ranked profiles", () => {
   const block = sliceBetween(
-      "function lbAchievementRankedSignals",
+      "const LB_ACHIEVEMENT_MODE_FAMILIES",
       "exports.syncRankedAchievements",
   );
 
@@ -291,10 +291,9 @@ test("achievement ranked signals come from trusted ranked profiles", () => {
   assert.ok(block.includes("ranked_wins"));
   assert.ok(block.includes("best_win_streak"));
   assert.ok(block.includes("peak_elo"));
-  assert.ok(block.includes("ranked_shared_xi_wins"));
-  assert.ok(block.includes("ranked_grid_wins"));
-  assert.ok(block.includes("ranked_cinko_wins"));
-  assert.ok(block.includes("ranked_five_wins"));
+  // Mode badge signals (ranked_<family>_wins) are built from the family table.
+  assert.ok(block.includes("\"ranked_\" + family + \"_wins\""));
+  for (const family of ["shared_xi", "grid", "cinko", "five"]) assert.ok(block.includes("  " + family + ": ["));
 });
 
 test("trusted ranked profile preserves streak and per-mode statistics", () => {
