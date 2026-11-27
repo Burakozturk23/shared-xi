@@ -320,3 +320,21 @@ test("rules 3 random bot misses by difficulty and completes its own line", () =>
   }
   assert.ok(tries >= 10 && wins >= tries * 0.8, `${wins}/${tries}`);
 });
+test("random grid supports 1-step anchor guess with swap, matching Online 1v1 flow", async () => {
+  const h = setup();
+  let r = await userTurn(h, await start(h, "bot_grid_random"));
+  r = await act(h, r, "generate");
+  const pairCriteria = raw(h, r).pending.criteria;
+  const answerId = G.answers(raw(h, r), 4)[0];
+  assert.ok(answerId);
+  r = await act(h, r, "guess", {target: 4, playerId: answerId, swap: true});
+  assert.equal(r.feedback, "Doğru.");
+  assert.equal(r.pending, null);
+  assert.equal(r.roundsUsed, 1);
+  assert.equal(r.cells["4"].owner, 1);
+  assert.equal(r.cells["4"].player.id, answerId);
+  assert.equal(r.rows[1].id, pairCriteria[1]);
+  assert.equal(r.cols[1].id, pairCriteria[0]);
+  assert.equal(r.turn, "bot");
+});
+

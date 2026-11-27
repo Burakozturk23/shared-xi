@@ -174,8 +174,15 @@ function open(r) {
   return Array.from({length: kind(r) === "reverse" ? 6 : 9}, (_, i) => i)
       .filter((i) => !(kind(r) === "reverse" ? r.axes[i] : r.cells[i]));
 }
+function pendingAnchor(r, target) {
+  const i = Number(target);
+  return kind(r) === "random" && r.pending && !r.pending.playerId &&
+    [2, 4, 6].includes(i) && !r.cells?.[i] && !r.rows?.[i / 3 | 0] && !r.cols?.[i % 3];
+}
 function answers(r, target) {
-  if (target === "pending") return (r.pending?.answers || []).filter((id) => !r.used?.[id]);
+  if (target === "pending" || pendingAnchor(r, target)) {
+    return (r.pending?.answers || []).filter((id) => !r.used?.[id]);
+  }
   const i = Number(target); if (!Number.isInteger(i) || i < 0 || i >= 9 || r.cells[i]) return [];
   if (kind(r) === "classic") return r.puzzle.answers[i].filter((id) => !r.used?.[id]);
   if (kind(r) !== "random" || !r.rows[i / 3 | 0] || !r.cols[i % 3]) return [];
@@ -207,9 +214,10 @@ function targetKey(r, target) {
     if (!Number.isInteger(i) || i < 0 || i >= 6 || r.axes[i]) fail("failed-precondition", "Bu eksen kapandı.");
     return "axis_" + i;
   }
-  if (target === "pending" && r.pending?.playerId) fail("failed-precondition", "Oyuncu zaten doğrulandı.");
+  const isPending = target === "pending" || pendingAnchor(r, target);
+  if (isPending && r.pending?.playerId) fail("failed-precondition", "Oyuncu zaten doğrulandı.");
   if (!answers(r, target).length) fail("failed-precondition", "Bu hedef için kullanılabilir bilgi yok.");
-  return target === "pending" ? "pair_" + r.pairNumber : "cell_" + Number(target);
+  return isPending ? "pair_" + r.pairNumber : "cell_" + Number(target);
 }
 function hint(r, target) {
   const key = targetKey(r, target);
@@ -583,15 +591,23 @@ function createService({db, normalize, project, isLinked, now = Date.now}) {
             check(r, now()); schedule(r, now());
           } else {
             const i = input.target === "pending" ? "pending" : Number(input.target);
-            if (i === "pending" ? !r.pending || !!r.pending.playerId : !Number.isInteger(i) || i < 0 || i >= 9 ||
-                r.cells[i] || !r.rows[i / 3 | 0] || !r.cols[i % 3]) fail("failed-precondition", "Geçersiz hedef.");
+            const anchorGuess = pendingAnchor(r, i);
+            if (i === "pending" ? !r.pending || !!r.pending.playerId :
+                !anchorGuess && (!Number.isInteger(i) || i < 0 || i >= 9 ||
+                  r.cells[i] || !r.rows[i / 3 | 0] || !r.cols[i % 3])) {
+              fail("failed-precondition", "Geçersiz hedef.");
+            }
             if (!catalog.players[input.playerId] || r.used[input.playerId]) {
               fail("invalid-argument", "Oyuncu kullanılamaz.");
             }
-            const ok = answers(r, i).includes(input.playerId);
+            const ok = answers(r, anchorGuess ? "pending" : i).includes(input.playerId);
             r.feedback = ok ? "Doğru." : "Oyuncu iki kritere uymuyor." + wrongAnswer(r);
             if (ok && i === "pending") r.pending.playerId = input.playerId;
-            else {
+            else if (ok && anchorGuess) {
+              r.pending.playerId = input.playerId;
+              place(r, i, input.swap === true, 1, now());
+              schedule(r, now());
+            } else {
               if (ok) claim(r, i, input.playerId, 1, now());
               if (!ok && bot(r)) r.pending = null;
               schedule(r, now());

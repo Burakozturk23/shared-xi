@@ -22,6 +22,7 @@ import '../widgets/club_race_arena.dart';
 import '../widgets/five_slot_reel.dart';
 import '../widgets/manager_draft.dart';
 import '../widgets/online_series.dart';
+import '../widgets/shared_grid_arena.dart';
 import '../widgets/friend_match_invite_button.dart';
 import 'online_mode_catalog.dart';
 
@@ -2052,25 +2053,14 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
     final anchors = [for (final a in room['anchors'] as List? ?? []) a as int];
     final dead = [for (final d in room['dead'] as List? ?? []) d as int];
     final pending = room['pending'] != null;
-    Widget axis(Map<String, dynamic>? k, String name) => ArenaTile(
-      compact: true,
-      minHeight: 74,
-      criterion: ArenaCriterion(k ?? {'label': '$name ?', 'type': 'unknown'}),
-    );
     bool known(int i) =>
         rowsK.length > i ~/ 3 &&
         colsK.length > i % 3 &&
         rowsK[i ~/ 3] != null &&
         colsK[i % 3] != null;
-    return ArenaGrid(
-      top: [
-        for (var i = 0; i < 3; i++)
-          axis(colsK.elementAtOrNull(i), 'Sütun ${i + 1}'),
-      ],
-      left: [
-        for (var i = 0; i < 3; i++)
-          axis(rowsK.elementAtOrNull(i), 'Satır ${i + 1}'),
-      ],
+    return SharedGridClassicBoard(
+      rows: rowsK,
+      cols: colsK,
       cell: (i) {
         final o = rewardMap(owners['$i']);
         final mine = o['uid'] == uid;
@@ -2084,9 +2074,8 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
             (mode != 'grid_random' ||
                 (anchor ? pending : !pending && known(i) && !isDead));
         final chosen = target == '$i' && o.isEmpty;
-        return ArenaTile(
+        return SharedGridCellData(
           key: ValueKey('online-cell-$i'),
-          minHeight: 92,
           emptyPlus: open || chosen,
           semantics: known(i)
               ? '${GridCriterionLabel.text(rowsK[i ~/ 3]!)} × ${GridCriterionLabel.text(colsK[i % 3]!)}'
@@ -2122,45 +2111,29 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
   Widget reverseBoard() {
     final owners = rewardMap(room['owners']);
     final players = rows(room['players']);
-    Widget axis(String a) {
-      final o = rewardMap(owners[a]);
-      if (o.isNotEmpty) {
-        final k = rewardMap(o['criterion']);
-        return ArenaTile(
-          compact: true,
-          minHeight: 74,
-          state: o['uid'] == uid ? ArenaTileState.mine : ArenaTileState.bot,
-          tag: o['uid'] == uid ? 'SEN' : 'RAKİP',
-          criterion: ArenaCriterion(
-            k.isNotEmpty ? k : {'id': o['criterionId'], 'label': '?'},
-          ),
+    return SharedGridReverseBoard(
+      players: players,
+      axis: (axisIndex) {
+        final a = axisIndex < 3 ? 'r$axisIndex' : 'c${axisIndex - 3}';
+        final o = rewardMap(owners[a]);
+        if (o.isNotEmpty) {
+          final k = rewardMap(o['criterion']);
+          return SharedGridAxisData(
+            state: o['uid'] == uid ? ArenaTileState.mine : ArenaTileState.bot,
+            tag: o['uid'] == uid ? 'SEN' : 'RAKİP',
+            criterion: k.isNotEmpty
+                ? k
+                : {'id': o['criterionId'], 'label': '?'},
+          );
+        }
+        return SharedGridAxisData(
+          key: ValueKey('online-axis-$a'),
+          state: target == a ? ArenaTileState.selected : ArenaTileState.idle,
+          tag: target == a ? 'SEÇİLİ' : null,
+          criterion: {'label': '${_axisLabel(a)} ?', 'type': 'unknown'},
+          onTap: myTurn && connected && !done ? () => pickTarget(a) : null,
         );
-      }
-      return ArenaTile(
-        key: ValueKey('online-axis-$a'),
-        compact: true,
-        minHeight: 74,
-        state: target == a ? ArenaTileState.selected : ArenaTileState.idle,
-        tag: target == a ? 'SEÇİLİ' : null,
-        criterion: ArenaCriterion({
-          'label': '${_axisLabel(a)} ?',
-          'type': 'unknown',
-        }),
-        onTap: myTurn && connected && !done ? () => pickTarget(a) : null,
-      );
-    }
-
-    return ArenaGrid(
-      top: [
-        for (final a in ['c0', 'c1', 'c2']) axis(a),
-      ],
-      left: [
-        for (final a in ['r0', 'r1', 'r2']) axis(a),
-      ],
-      cell: (i) => ArenaTile(
-        minHeight: 84,
-        player: players.length > i ? players[i] : {'name': '—'},
-      ),
+      },
     );
   }
 
@@ -3727,41 +3700,17 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       for (final a in room['anchors'] as List? ?? const [])
         if (!rewardMap(room['owners']).containsKey('$a')) a,
     ].isNotEmpty;
-    if (pair.length == 2) {
-      final a = '${pair[0]['label']}', b = '${pair[1]['label']}';
-      return [
-        ClubRaceVersus(
-          left: pair[0],
-          right: pair[1],
-          answerCount: null,
-          task: myTurn
-              ? 'Ortak futbolcuyu yaz ve boş bir çapaya yerleştir.'
-              : 'Rakip bu ikiliyi oynuyor.',
-          footnote: myTurn
-              ? (swapAxes
-                    ? '$b satır, $a sütun başlığı olur.'
-                    : '$a satır, $b sütun başlığı olur.')
-              : 'Doğru bilirse çapa onun olur; ikili satır ve sütun başlığına yerleşir.',
-        ),
-        if (myTurn)
-          SwitchListTile(
-            key: const ValueKey('online-swap'),
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Satır ↔ sütun yönünü çevir'),
-            value: swapAxes,
-            onChanged: busy ? null : (v) => setState(() => swapAxes = v),
-          ),
-        const SizedBox(height: 12),
-      ];
-    }
-    if (!myTurn || !freeAnchor) return const [];
+    if (pair.length != 2 && (!myTurn || !freeAnchor)) return const [];
     return [
-      ArenaPrimaryButton(
-        label: 'Rastgele ikili çek',
-        icon: Icons.casino_outlined,
-        onPressed: busy || !connected ? null : () => action('draw'),
+      SharedGridRandomPairPanel(
+        criteria: pair,
+        myTurn: myTurn,
+        swapAxes: swapAxes,
+        swapKey: const ValueKey('online-swap'),
+        onSwapChanged: busy ? null : (v) => setState(() => swapAxes = v),
+        canDraw: myTurn && freeAnchor,
+        onDraw: busy || !connected ? null : () => action('draw'),
       ),
-      const SizedBox(height: 12),
     ];
   }
 

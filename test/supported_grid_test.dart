@@ -155,7 +155,7 @@ void main() {
             ? find.byKey(const ValueKey('grid-cell-0'))
             : kind == 'reverse'
             ? find.byKey(const ValueKey('grid-axis-0'))
-            : find.text('Ortak oyuncuyu bul');
+            : find.byKey(const ValueKey('grid-cell-4'));
         await t.scrollUntilVisible(
           select.hitTestable(),
           200,
@@ -447,7 +447,9 @@ void main() {
       await t.pumpWidget(MaterialApp(home: SupportedGridPage(mode: 'solo_grid_$kind',
           legacy: const Text('Eski oyun'), service: service)));
       await t.pumpAndSettle();
-      final select = kind == 'classic' ? find.byKey(const ValueKey('grid-cell-0')) : find.text('Ortak oyuncuyu bul');
+      final select = kind == 'classic'
+          ? find.byKey(const ValueKey('grid-cell-0'))
+          : find.byKey(const ValueKey('grid-cell-4'));
       await t.scrollUntilVisible(select.hitTestable(), 200, scrollable: find.byType(Scrollable).first, maxScrolls: 60);
       await t.tap(select);
       await t.pumpAndSettle();
@@ -569,20 +571,40 @@ void main() {
     await t.pumpAndSettle();
     return wire;
   }
-  testWidgets('bot Grid uses the online scoreboard and the pinned input bar', (t) async {
+  testWidgets('bot Grid uses the online scoreboard and the always-pinned input bar', (t) async {
     await openWith(t, 'bot_grid_classic', GridWire());
     expect(find.byKey(const ValueKey('grid-score')), findsOneWidget);
+    expect(find.text('Sen'), findsOneWidget);
     expect(find.text('VS'), findsOneWidget);
     expect(find.text('SIRA SENDE'), findsOneWidget);
     expect(find.text('BOT'), findsWidgets);
-    expect(find.byKey(const ValueKey('grid-input')), findsNothing);
+    expect(find.byKey(const ValueKey('grid-input')), findsOneWidget);
+    expect(find.text('Önce boş bir hücre seç'), findsOneWidget);
     await t.tap(find.byKey(const ValueKey('grid-cell-0')));
     await t.pumpAndSettle();
     expect(find.byKey(const ValueKey('grid-input')), findsOneWidget);
     expect(find.text('Futbolcu ara'), findsOneWidget);
     await t.tap(find.byTooltip('Seçimi kaldır'));
     await t.pumpAndSettle();
-    expect(find.byKey(const ValueKey('grid-input')), findsNothing);
+    expect(find.text('Önce boş bir hücre seç'), findsOneWidget);
+    expect(t.takeException(), isNull);
+    await t.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('bot Random Grid uses the Online 1-step anchor + swap flow', (t) async {
+    await openWith(t, 'bot_grid_random', GridWire());
+    expect(find.text('Grid · Rastgele'), findsOneWidget);
+    expect(find.text('Satır ↔ sütun yönünü çevir'), findsOneWidget);
+    expect(find.text('İkiliyi koyacağın çapayı seç'), findsOneWidget);
+    final swap = find.byKey(const ValueKey('grid-swap'));
+    await t.scrollUntilVisible(swap.hitTestable(), 200, scrollable: find.byType(Scrollable).first);
+    await t.tap(swap);
+    await t.pumpAndSettle();
+    final anchor = find.byKey(const ValueKey('grid-cell-4'));
+    await t.scrollUntilVisible(anchor.hitTestable(), 200, scrollable: find.byType(Scrollable).first);
+    await t.tap(anchor);
+    await t.pumpAndSettle();
+    expect(find.text('SEÇİLİ'), findsOneWidget);
+    expect(find.text('İkiliyi koyacağın çapayı seç'), findsNothing);
     expect(t.takeException(), isNull);
     await t.pumpWidget(const SizedBox.shrink());
   });

@@ -17,6 +17,7 @@ import '../widgets/grid_criterion_label.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/rewarded_coin_card.dart';
 import '../widgets/hint_panel.dart';
+import '../widgets/shared_grid_arena.dart';
 import '../widgets/hub_ui.dart' show hubAmber, upperTr;
 
 /// Account-owned Grid session. Legacy route is selected only by the server's
@@ -275,7 +276,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         _answer.clear();
       });
   Future<void> _watch({String? itemId}) => _work(() async {
-    final target = _target;
+    final target = _hintTarget;
     await _service.watch({
       'mode': widget.mode,
       'sessionId': _run['id'],
@@ -344,24 +345,59 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         '${_criterion(cols.length > i % 3 ? cols[i % 3] : null)}';
   }
 
+  bool _isPendingAnchor(Object? t) {
+    if (!_random || t is! int) return false;
+    final pending = rewardMap(_run['pending']);
+    if (pending.isEmpty || rewardMap(pending['player']).isNotEmpty) {
+      return false;
+    }
+    final cell = rewardMap(rewardMap(_run['cells'])['$t']);
+    return const [2, 4, 6].contains(t) && cell.isEmpty && !_known(t);
+  }
+
+  Object? get _hintTarget => _isPendingAnchor(_target) ? 'pending' : _target;
+
   String get _hintKey => _reverse
       ? 'axis_$_target'
-      : _target == 'pending'
+      : (_target == 'pending' || _isPendingAnchor(_target))
       ? 'pair_${_run['pairNumber']}'
       : 'cell_$_target';
   PitchColors get _p => PitchColors.of(context);
   TextTheme get _text => Theme.of(context).textTheme;
   String get _kindTitle => _reverse
-      ? 'Tersten Grid'
+      ? 'Grid · Tersten'
       : _random
-      ? 'Rastgele Grid'
-      : 'Klasik Grid';
+      ? 'Grid · Rastgele'
+      : 'Grid · Klasik';
   String get _subtitle => _bot
       ? 'Bot düellosu · ${_levels[_difficulty] ?? 'Orta'}'
       : 'Solo antrenman · ${_reverse ? '6 eksen' : '9 kutu'}';
 
-  // The input bar shows while a target waits for an answer (a verified pair only needs an
-  // anchor). It stays up, disabled, while a request is in flight, so the list does not jump.
+  String? get _blockedReason {
+    if (!_active || _accountChanged || _error != null) return 'Oyun hazır değil';
+    if (_run['turn'] == 'bot') return 'Botun sırası';
+    if (_random) {
+      final pending = rewardMap(_run['pending']);
+      if (pending.isNotEmpty) {
+        if (rewardMap(pending['player']).isNotEmpty) {
+          return 'Tahtada boş bir çapaya dokun';
+        }
+        return _isPendingAnchor(_target) || _target == 'pending'
+            ? null
+            : 'İkiliyi koyacağın çapayı seç';
+      }
+      return _target is int && _known(_target as int)
+          ? null
+          : 'İkili çek ya da açık bir hücre seç';
+    }
+    if (_reverse) {
+      return _target is int ? null : 'Önce bir satır ya da sütun seç';
+    }
+    return _target is int ? null : 'Önce boş bir hücre seç';
+  }
+
+  // Matches the online arena: target card shows when a target waits for an answer,
+  // while the input bar stays pinned at the bottom during the match so layout never jumps.
   bool get _answering =>
       _active &&
       !_accountChanged &&
@@ -369,6 +405,12 @@ class _SupportedGridPageState extends State<SupportedGridPage>
       _run['turn'] == 'user' &&
       _target != null &&
       !(_target == 'pending' && rewardMap(_run['pending'])['player'] != null);
+
+  bool get _showInputBar =>
+      _active &&
+      !_accountChanged &&
+      _error == null &&
+      !(_random && rewardMap(rewardMap(_run['pending'])['player']).isNotEmpty);
 
   @override
   Widget build(BuildContext context) {
@@ -449,7 +491,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                     ],
                   ),
                 ),
-                if (answering) _inputBar(),
+                if (_showInputBar) _inputBar(),
               ],
             ),
           ),
@@ -566,10 +608,12 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     return ClubRaceScoreCard(
       key: const ValueKey('grid-score'),
       me: ClubRaceSide(
-        name: _run['assisted'] == true ? 'Yardımlı' : 'Yardımsız',
+        name: 'Sen',
         score: user,
         wrong: 0,
-        caption: '$user $unit',
+        caption: _run['assisted'] == true
+            ? '$user $unit · Yardımlı'
+            : '$user $unit',
       ),
       rival: ClubRaceSide(
         name: '$level bot',
@@ -778,41 +822,18 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     ),
   );
 
-  // Criterion header of the board: a criterion map (badge, kind, name), or a text.
-  Widget _axis(
-    Object content, {
-    Key? key,
-    ArenaTileState state = ArenaTileState.idle,
-    String? tag,
-    VoidCallback? onTap,
-  }) => ArenaTile(
-    key: key,
-    compact: true,
-    minHeight: 74,
-    state: state,
-    tag: tag,
-    onTap: onTap,
-    criterion: ArenaCriterion(
-      content is Map ? content : {'label': '$content', 'type': 'unknown'},
-    ),
-  );
-
   Widget _board() {
-    final rows = _list('rows'), cols = _list('cols');
-    Object label(List<dynamic> list, int i, String name) =>
-        list.length > i && list[i] != null ? rewardMap(list[i]) : '$name ?';
-    return Semantics(
-      container: true,
-      label: 'Grid tahtası',
-      child: ArenaGrid(
-        top: [
-          for (var i = 0; i < 3; i++) _axis(label(cols, i, 'Sütun ${i + 1}')),
-        ],
-        left: [
-          for (var i = 0; i < 3; i++) _axis(label(rows, i, 'Satır ${i + 1}')),
-        ],
-        cell: _cell,
-      ),
+    final rawRows = _list('rows'), rawCols = _list('cols');
+    final rowsK = [
+      for (final r in rawRows) r == null ? null : rewardMap(r),
+    ];
+    final colsK = [
+      for (final c in rawCols) c == null ? null : rewardMap(c),
+    ];
+    return SharedGridClassicBoard(
+      rows: rowsK,
+      cols: colsK,
+      cell: _cellData,
     );
   }
 
@@ -824,26 +845,34 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         cols[i % 3] != null;
   }
 
-  Widget _cell(int i) {
+  SharedGridCellData _cellData(int i) {
     final cell = rewardMap(rewardMap(_run['cells'])['$i']);
     final mine = cell['owner'] == 1, selected = _target == i;
+    final pending = rewardMap(_run['pending']);
+    final hasPending = pending.isNotEmpty;
+    final verified = rewardMap(pending['player']).isNotEmpty;
     // Random: an empty anchor whose row and column are still unnamed.
     final anchor =
         _random && const [2, 4, 6].contains(i) && cell.isEmpty && !_known(i);
-    final verified = rewardMap(rewardMap(_run['pending'])['player']).isNotEmpty;
+    // Legacy/resumed session with an already-verified pending player still places in 1 tap.
     final placing = anchor && verified && _canPlay;
-    final available = _canPlay && cell.isEmpty && (!_random || _known(i));
+    // Online-standard 1-step Random Grid: when a pair is drawn, tap an empty anchor to select it.
+    final openAnchor = anchor && hasPending && !verified && _canPlay;
+    final available =
+        _canPlay &&
+        cell.isEmpty &&
+        (!_random || (!hasPending && _known(i)));
+    final canSelect = available || openAnchor;
     final player = rewardMap(cell['player']);
-    return ArenaTile(
+    return SharedGridCellData(
       key: ValueKey('grid-cell-$i'),
-      minHeight: 92,
-      emptyPlus: available || selected || placing,
+      emptyPlus: canSelect || selected || placing,
       semantics: anchor ? 'Çapa · ${_cellCriteria(i)}' : _cellCriteria(i),
       player: cell.isEmpty ? null : player,
       state: selected || placing
           ? ArenaTileState.selected
           : cell.isEmpty
-          ? (available || anchor || !_active
+          ? (canSelect || (anchor && !_active) || !_active
                 ? ArenaTileState.idle
                 : ArenaTileState.locked)
           : mine
@@ -864,7 +893,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
           : '+20',
       onTap: placing
           ? () => _act('place', {'target': i, 'swap': _swap})
-          : available
+          : canSelect
           ? () => _select(i)
           : null,
     );
@@ -873,44 +902,34 @@ class _SupportedGridPageState extends State<SupportedGridPage>
   // Reverse: the nine players; tap an axis around them to name what they share.
   Widget _reverseBoard() {
     final axes = rewardMap(_run['axes']);
-    final players = _list('witnesses');
-    Widget axis(int i) {
-      final a = rewardMap(axes['$i']);
-      final name = '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}';
-      if (a.isEmpty) {
-        final chosen = _target == i;
-        return _axis(
-          '$name ?',
-          key: ValueKey('grid-axis-$i'),
-          state: chosen ? ArenaTileState.selected : ArenaTileState.idle,
-          tag: chosen ? 'SEÇİLİ' : null,
-          onTap: _canPlay ? () => _select(i) : null,
+    final players = [for (final p in _list('witnesses')) rewardMap(p)];
+    return SharedGridReverseBoard(
+      players: players,
+      axis: (i) {
+        final a = rewardMap(axes['$i']);
+        final name = '${i < 3 ? 'Satır' : 'Sütun'} ${i % 3 + 1}';
+        if (a.isEmpty) {
+          final chosen = _target == i;
+          return SharedGridAxisData(
+            key: ValueKey('grid-axis-$i'),
+            state: chosen ? ArenaTileState.selected : ArenaTileState.idle,
+            tag: chosen ? 'SEÇİLİ' : null,
+            criterion: {'label': '$name ?', 'type': 'unknown'},
+            onTap: _canPlay ? () => _select(i) : null,
+          );
+        }
+        return SharedGridAxisData(
+          state: a['owner'] == 1 ? ArenaTileState.mine : ArenaTileState.bot,
+          tag: a['owner'] == 1 ? 'SEN' : (_bot ? 'BOT' : null),
+          criterion: {
+            'id': a['criterionId'],
+            'label': a['label'],
+            // "club:7" -> club, so the solved axis shows its crest, flag or TD mark.
+            'type': '${a['criterionId'] ?? ''}'.split(':').first,
+            'value': '${a['criterionId'] ?? ''}'.split(':').last,
+          },
         );
-      }
-      return _axis(
-        {
-          'id': a['criterionId'],
-          'label': a['label'],
-          // "club:7" -> club, so the solved axis shows its crest, flag or TD mark.
-          'type': '${a['criterionId'] ?? ''}'.split(':').first,
-          'value': '${a['criterionId'] ?? ''}'.split(':').last,
-        },
-        state: a['owner'] == 1 ? ArenaTileState.mine : ArenaTileState.bot,
-        tag: a['owner'] == 1 ? 'SEN' : (_bot ? 'BOT' : null),
-      );
-    }
-
-    return Semantics(
-      container: true,
-      label: 'Tersten grid tahtası',
-      child: ArenaGrid(
-        top: [for (var i = 3; i < 6; i++) axis(i)],
-        left: [for (var i = 0; i < 3; i++) axis(i)],
-        cell: (i) => ArenaTile(
-          minHeight: 84,
-          player: players.length > i ? rewardMap(players[i]) : {'name': '—'},
-        ),
-      ),
+      },
     );
   }
 
@@ -956,102 +975,61 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     );
   }
 
-  // Random: draw a pair, solve it, then put it on an anchor (as the online pair card).
+  // Random: identical single-step pair card as the Online 1v1 arena.
   List<Widget> _pairArea() {
     final pending = rewardMap(_run['pending']);
     final rounds = (_run['roundsUsed'] as num? ?? 0).toInt();
-    final section = ArenaSection(
-      'Kulüp çiftleri',
-      icon: Icons.link_rounded,
-      trailing: Text(
-        'Yerleştirilen çift: $rounds/3',
-        style: _text.labelSmall?.copyWith(color: Arena.lime),
-      ),
-    );
-    if (pending.isEmpty) {
-      return [
-        section,
-        if (rounds < 3)
-          ArenaPrimaryButton(
-            icon: Icons.casino_outlined,
-            label: 'Kulüp çifti üret',
-            onPressed: _canPlay ? () => _act('generate') : null,
-          )
-        else
-          const ArenaNote(
-            icon: Icons.grid_on_rounded,
-            text: 'Üç çift yerleşti; başlıkları açılmış boş kutuları doldur.',
-          ),
-        const SizedBox(height: 14),
-      ];
-    }
-    final criteria = pending['criteria'] as List;
+    final criteria = [
+      for (final c in pending['criteria'] as List? ?? const []) rewardMap(c),
+    ];
     final player = rewardMap(pending['player']);
-    final a = _criterion(criteria[0]), b = _criterion(criteria[1]);
-    final cancel = TextButton.icon(
-      icon: const Icon(Icons.close_rounded, size: 18),
-      onPressed: _canPlay ? () => _act('cancel') : null,
-      label: const Text('Çifti iptal et'),
-    );
     return [
-      section,
-      ClubRaceVersus(
-        left: rewardMap(criteria[0]),
-        right: rewardMap(criteria[1]),
-        answerCount: null,
-        task: player.isEmpty
-            ? 'İki tarafta da oynamış bir futbolcu bul.'
+      SharedGridRandomPairPanel(
+        criteria: criteria,
+        myTurn: _canPlay,
+        swapAxes: _swap,
+        swapKey: const ValueKey('grid-swap'),
+        onSwapChanged: _canPlay ? (v) => setState(() => _swap = v) : null,
+        canDraw: _canPlay && rounds < 3,
+        onDraw: _canPlay ? () => _act('generate') : null,
+        myTask: player.isEmpty
+            ? 'Ortak futbolcuyu yaz ve boş bir çapaya yerleştir.'
             : '${player['name']} doğrulandı. Tahtada boş bir ÇAPA kutusuna dokun.',
-        footnote: _swap
-            ? '$b satır, $a sütun başlığı olur.'
-            : '$a satır, $b sütun başlığı olur.',
+        rivalTask: 'Bot bu ikiliyi oynuyor.',
+        emptyNote: rounds >= 3
+            ? 'Üç çift yerleşti; başlıkları açılmış boş kutuları doldur.'
+            : null,
       ),
-      const SizedBox(height: 10),
-      if (player.isEmpty) ...[
-        ArenaPrimaryButton(
-          icon: Icons.search_rounded,
-          label: 'Ortak oyuncuyu bul',
-          onPressed: _canPlay ? () => _select('pending') : null,
-        ),
-        Center(child: cancel),
-      ] else
-        // One row: flip the orientation, or drop the pair.
-        Row(
-          children: [
-            Switch(
-              key: const ValueKey('grid-swap'),
-              value: _swap,
-              onChanged: _canPlay ? (v) => setState(() => _swap = v) : null,
-            ),
-            const SizedBox(width: 6),
-            Expanded(child: Text('Satır ↔ sütun', style: _text.bodyMedium)),
-            cancel,
-          ],
-        ),
-      const SizedBox(height: 4),
     ];
   }
 
   // The selected target and its paid hint; the answer goes in the bar below.
   Widget _targetCard() {
     final text = rewardMap(_run['hints'])[_hintKey];
-    final title = _target == 'pending'
-        ? 'Bekleyen kulüp çifti'
+    final hintTarget = _hintTarget;
+    final pendingCriteria = [
+      for (final c in rewardMap(_run['pending'])['criteria'] as List? ?? const [])
+        rewardMap(c),
+    ];
+    final title = (_target == 'pending' || _isPendingAnchor(_target))
+        ? (pendingCriteria.length == 2
+              ? '${_criterion(pendingCriteria[0])} × ${_criterion(pendingCriteria[1])}'
+              : 'Bekleyen kulüp çifti')
         : _reverse
         ? '${(_target as int) < 3 ? 'Satır' : 'Sütun'} ${(_target as int) % 3 + 1} · ortak kriter'
         : _cellCriteria(_target as int);
     return Padding(
-      padding: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.only(top: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ArenaCard(
             glow: Arena.lime,
-            padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
+            padding: const EdgeInsets.fromLTRB(14, 8, 6, 8),
             child: Row(
               children: [
-                const Icon(Icons.adjust_rounded, color: Arena.lime, size: 20),
-                const SizedBox(width: 10),
+                const Icon(Icons.adjust_rounded, color: Arena.lime, size: 18),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
@@ -1073,7 +1051,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           ArenaHintCard(
             children: [
               if (text != null)
@@ -1085,12 +1063,12 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                       : 'Temel destek geçerli bir adayın milliyet ve mevki grubunu verir.',
                 ),
                 const Text('Kullanılırsa sonuç Yardımlı olarak kaydolur.'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 hintEntry(
                       _run,
-                      target: _target,
+                      target: hintTarget,
                       disabled: !_canPlay,
-                      send: (p) => _act('hint', {'target': _target, ...p}),
+                      send: (p) => _act('hint', {'target': hintTarget, ...p}),
                       watch: (id) => _watch(itemId: id),
                     ) ??
                     PaidHintButton(
@@ -1099,7 +1077,7 @@ class _SupportedGridPageState extends State<SupportedGridPage>
                       label: 'Temel bilgi',
                       disabled: !_canPlay,
                       onUse: (payment) =>
-                          _act('hint', {'target': _target, ...payment}),
+                          _act('hint', {'target': hintTarget, ...payment}),
                       onWatch: _watch,
                     ),
               ],
@@ -1110,22 +1088,34 @@ class _SupportedGridPageState extends State<SupportedGridPage>
     );
   }
 
-  void _pick(Map<String, dynamic> p) => _act(
-    'guess',
-    _reverse
-        ? {'target': _target, 'answer': p['id']}
-        : {'target': _target, 'playerId': p['id']},
-  );
+  void _pick(Map<String, dynamic> p) {
+    if (_blockedReason != null) return;
+    _act(
+      'guess',
+      _reverse
+          ? {'target': _target, 'answer': p['id']}
+          : {
+              'target': _target,
+              'playerId': p['id'],
+              if (_isPendingAnchor(_target)) 'swap': _swap,
+            },
+    );
+  }
 
   // Pinned over the keyboard, as in the online arena. Reverse also sends typed text.
   Widget _inputBar() {
     final typed = _answer.text.trim();
-    void sendTyped() => _act('guess', {'target': _target, 'answer': typed});
+    void sendTyped() {
+      if (_blockedReason != null) return;
+      _act('guess', {'target': _target, 'answer': typed});
+    }
+
     return ClubRaceInputBar(
       key: const ValueKey('grid-input'),
       controller: _answer,
       onChanged: _find,
       onSubmitted: (_) {
+        if (_blockedReason != null) return;
         if (_reverse && typed.length >= 2) {
           sendTyped();
         } else if (_suggestions.length == 1) {
@@ -1137,12 +1127,12 @@ class _SupportedGridPageState extends State<SupportedGridPage>
       ],
       onPick: _pick,
       onSend: sendTyped,
-      showSend: _reverse,
       selected: _reverse && typed.length >= 2 ? {'name': typed} : null,
       searching: _searching,
       noMatch: !_reverse && _noMatch,
       lockSeconds: 0,
       outOfWrong: false,
+      blocked: _blockedReason,
       sending: _busy,
       label: _reverse ? 'Ortak kriter ara' : 'Futbolcu ara',
       hint: _reverse
