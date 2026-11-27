@@ -230,3 +230,55 @@ class SharedGridRandomPairPanel extends StatelessWidget {
     return const SizedBox.shrink();
   }
 }
+
+/// Shared N×N matrix board used by both Online 1v1 and Vs Bot (4×4 Loto, 5×5 Çinko).
+/// When [minCellWidth] is set (e.g. 5×5 Çinko), large text scales horizontally with
+/// a scroll view instead of clipping criteria labels.
+class SharedMatrixBoard extends StatelessWidget {
+  const SharedMatrixBoard({
+    super.key,
+    required this.size,
+    required this.cell,
+    this.minCellWidth,
+    this.scrollCellWidth,
+  });
+
+  final int size;
+  final Widget Function(int index) cell;
+  final double? minCellWidth;
+  final double? scrollCellWidth;
+
+  Widget _rows() => Column(
+    children: [
+      for (var row = 0; row < size; row++)
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var col = 0; col < size; col++)
+                Expanded(child: cell(row * size + col)),
+            ],
+          ),
+        ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    if (minCellWidth == null) return _rows();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
+        final narrow = constraints.maxWidth / size < minCellWidth! * scale;
+        final width = narrow
+            ? size * (scrollCellWidth ?? minCellWidth!) * scale
+            : constraints.maxWidth;
+        final grid = SizedBox(width: width, child: _rows());
+        return narrow
+            ? SingleChildScrollView(scrollDirection: Axis.horizontal, child: grid)
+            : grid;
+      },
+    );
+  }
+}
+

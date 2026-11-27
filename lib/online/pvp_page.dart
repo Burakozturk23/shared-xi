@@ -3232,36 +3232,11 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Large type gets wider cells and a sideways scroll instead of cramped names.
-        final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
-        final narrow = constraints.maxWidth / 5 < 62 * scale;
-        final width = narrow ? 5 * 66.0 * scale : constraints.maxWidth;
-        final grid = SizedBox(
-          width: width,
-          child: Column(
-            children: [
-              for (var row = 0; row < 5; row++)
-                IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (var col = 0; col < 5; col++)
-                        Expanded(child: cell(row * 5 + col)),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        );
-        return narrow
-            ? SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: grid,
-              )
-            : grid;
-      },
+    return SharedMatrixBoard(
+      size: 5,
+      minCellWidth: 62,
+      scrollCellWidth: 66,
+      cell: cell,
     );
   }
 
@@ -3613,20 +3588,7 @@ class _PvpPageState extends State<PvpPage> with WidgetsBindingObserver {
       );
     }
 
-    return Column(
-      children: [
-        for (var row = 0; row < 4; row++)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var col = 0; col < 4; col++)
-                  Expanded(child: cell(row * 4 + col)),
-              ],
-            ),
-          ),
-      ],
-    );
+    return SharedMatrixBoard(size: 4, cell: cell);
   }
 
   /// Loto: what to do next, pinned above the system bar.

@@ -148,7 +148,7 @@ void main() {
         expect(avatar.title, title);
         expect(
           UploadedPortraitCatalog.forAvatarId(avatar.id)!.asset,
-          'assets/uploaded_portraits/custom_$slug.png',
+          'assets/uploaded_portraits/custom_$slug.webp',
         );
         expect(UploadedPortraitCatalog.avatarPlayerIds[avatar.id], isNull);
       }

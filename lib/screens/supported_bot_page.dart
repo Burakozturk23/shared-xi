@@ -15,6 +15,7 @@ import '../widgets/game_ui.dart';
 import '../widgets/paid_hint_button.dart';
 import '../widgets/rewarded_coin_card.dart';
 import '../widgets/hint_panel.dart';
+import '../widgets/shared_grid_arena.dart';
 import '../widgets/hub_ui.dart' show hubAmber;
 
 /// Account-owned Loto, Team Race, Çinko and Random Five sessions. The server
@@ -864,20 +865,8 @@ class _SupportedBotPageState extends State<SupportedBotPage>
   );
 
   // Rows of four, each as tall as its tallest tile (large text never clips a criterion).
-  Widget _lotoBoard(Widget Function(int) cell) => Column(
-    children: [
-      for (var row = 0; row < 4; row++)
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var col = 0; col < 4; col++)
-                Expanded(child: cell(row * 4 + col)),
-            ],
-          ),
-        ),
-    ],
-  );
+  Widget _lotoBoard(Widget Function(int) cell) =>
+      SharedMatrixBoard(size: 4, cell: cell);
 
   /// The shown player can still be placed: on the server clock, not paused, not busy.
   bool get _lotoOpen =>
@@ -1344,33 +1333,11 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     );
   }
 
-  Widget _cinkoBoard() => LayoutBuilder(
-    builder: (context, constraints) {
-      // Large type gets wider cells and a sideways scroll instead of cramped names.
-      final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
-      final narrow = constraints.maxWidth / 5 < 62 * scale;
-      final width = narrow ? 5 * 66.0 * scale : constraints.maxWidth;
-      final grid = SizedBox(
-        width: width,
-        child: Column(
-          children: [
-            for (var row = 0; row < 5; row++)
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (var col = 0; col < 5; col++)
-                      Expanded(child: _cinkoCell(row * 5 + col)),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      );
-      return narrow
-          ? SingleChildScrollView(scrollDirection: Axis.horizontal, child: grid)
-          : grid;
-    },
+  Widget _cinkoBoard() => SharedMatrixBoard(
+    size: 5,
+    minCellWidth: 62,
+    scrollCellWidth: 66,
+    cell: _cinkoCell,
   );
 
   Widget _cinkoCell(int i) {
