@@ -300,7 +300,7 @@ void main() {
         await t.pump();
         expect(
           // Every bot mode now shows it on the online scoreboard.
-          find.text('Yardımlı'),
+          find.textContaining('Yardımlı'),
           findsOneWidget,
         );
         expect(t.takeException(), isNull);

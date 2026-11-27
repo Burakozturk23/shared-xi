@@ -9,6 +9,7 @@ import '../services/warm_up.dart';
 import '../services/auth_service.dart';
 import '../services/runtime_v4/game_data_v4_query_service.dart';
 import '../services/story_support_service.dart';
+import '../services/telemetry_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/bot_arena.dart';
 import '../widgets/club_race_arena.dart';
@@ -222,6 +223,11 @@ class _SupportedGridPageState extends State<SupportedGridPage>
         _searchEpoch++;
       }
     });
+    TelemetryService.setGameContext(
+      mode: widget.mode,
+      sessionId: _run['id']?.toString(),
+      revision: _run['revision'],
+    );
     _scheduleBotLoad();
   }
 

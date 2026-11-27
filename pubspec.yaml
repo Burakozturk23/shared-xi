@@ -79,7 +79,7 @@ flutter:
     - assets/data/player_journey_chapter_three.json
     - assets/data/player_journey_chapter_four.json
     - assets/history/
-    - assets/runtime/linkball_game_data_v4.sqlite
+    - assets/runtime/linkball_game_data_v4.sqlite.gz
     - assets/runtime/linkball_game_data_v4_manifest.json
     - assets/logos/leagues/
     - assets/badges/

@@ -38,6 +38,24 @@ class TelemetryService {
         .catchError((Object _) {});
   }
 
+  /// Attaches the active game context to Crashlytics reports so closed-test
+  /// crashes and non-fatal errors carry the exact mode, session and revision.
+  static void setGameContext({
+    required String mode,
+    String? sessionId,
+    Object? revision,
+  }) {
+    if (!_enabled) return;
+    final crashlytics = FirebaseCrashlytics.instance;
+    crashlytics.setCustomKey('active_mode', mode).catchError((Object _) {});
+    crashlytics
+        .setCustomKey('active_session_id', sessionId ?? '')
+        .catchError((Object _) {});
+    crashlytics
+        .setCustomKey('active_revision', '${revision ?? ''}')
+        .catchError((Object _) {});
+  }
+
   static bool get _supportedPlatform =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 

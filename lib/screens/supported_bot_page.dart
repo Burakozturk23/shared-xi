@@ -7,6 +7,7 @@ import '../models/rewarded_ad_models.dart';
 import '../services/warm_up.dart';
 import '../services/auth_service.dart';
 import '../services/story_support_service.dart';
+import '../services/telemetry_service.dart';
 import '../theme/ortak_saha_theme.dart';
 import '../widgets/bot_arena.dart';
 import '../widgets/club_race_arena.dart';
@@ -308,6 +309,11 @@ class _SupportedBotPageState extends State<SupportedBotPage>
         _hintCell = null;
       if (!_legacy) _sounds(previous, _run, action);
     });
+    TelemetryService.setGameContext(
+      mode: widget.mode,
+      sessionId: _run['id']?.toString(),
+      revision: _run['revision'],
+    );
   }
 
   Future<void> _refresh() async {
@@ -890,13 +896,13 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     return ClubRaceScoreCard(
       key: const ValueKey('loto-score'),
       me: ClubRaceSide(
-        name: _run['assisted'] == true ? 'Yardımlı' : 'Yardımsız',
+        name: 'Sen',
         score: (_run['userScore'] as num? ?? 0).toInt(),
         wrong: 0,
         display: done ? null : '$placed',
-        caption: done
-            ? '${((_run['userScore'] as num? ?? 0) / 10).round()} doğru'
-            : 'Pas ${_run['passed'] ?? 0} · Süre ${_run['timedOut'] ?? 0}',
+        caption:
+            '${done ? '${((_run['userScore'] as num? ?? 0) / 10).round()} doğru' : 'Pas ${_run['passed'] ?? 0} · Süre ${_run['timedOut'] ?? 0}'}'
+            '${_run['assisted'] == true ? ' · Yardımlı' : ''}',
       ),
       rival: ClubRaceSide(
         name: '$level bot',
@@ -1079,10 +1085,12 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     return ClubRaceScoreCard(
       key: const ValueKey('race-score'),
       me: ClubRaceSide(
-        name: _run['assisted'] == true ? 'Yardımlı' : 'Yardımsız',
+        name: 'Sen',
         score: (_run['userFound'] as num? ?? 0).toInt(),
         wrong: 0,
-        caption: 'Tur galibiyeti ${_run['userScore'] ?? 0}/3',
+        caption:
+            'Tur galibiyeti ${_run['userScore'] ?? 0}/3'
+            '${_run['assisted'] == true ? ' · Yardımlı' : ''}',
       ),
       rival: ClubRaceSide(
         name: '$level bot',
@@ -1307,11 +1315,12 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     return ClubRaceScoreCard(
       key: const ValueKey('cinko-score'),
       me: ClubRaceSide(
-        name: _run['assisted'] == true ? 'Yardımlı' : 'Yardımsız',
+        name: 'Sen',
         score: (_run['userScore'] as num? ?? 0).toInt(),
         wrong: 0,
         caption:
-            'Kutu $mine${bonus > 0 && botFirst ? ' · +$bonus ikinci başlama' : ''}',
+            'Kutu $mine${bonus > 0 && botFirst ? ' · +$bonus ikinci başlama' : ''}'
+            '${_run['assisted'] == true ? ' · Yardımlı' : ''}',
       ),
       rival: ClubRaceSide(
         name: '$level bot',
@@ -1713,10 +1722,12 @@ class _SupportedBotPageState extends State<SupportedBotPage>
     return ClubRaceScoreCard(
       key: const ValueKey('five-score'),
       me: ClubRaceSide(
-        name: _run['assisted'] == true ? 'Yardımlı' : 'Yardımsız',
+        name: 'Sen',
         score: (_run['userScore'] as num? ?? 0).toInt(),
         wrong: 0,
-        caption: played ? 'Son beşli +${last('user')}' : 'Henüz beşli yok',
+        caption:
+            '${played ? 'Son beşli +${last('user')}' : 'Henüz beşli yok'}'
+            '${_run['assisted'] == true ? ' · Yardımlı' : ''}',
       ),
       rival: ClubRaceSide(
         name: '$level bot',
